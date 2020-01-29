@@ -441,11 +441,11 @@ class AccountsTable extends React.Component {
 
                         {n.balance <= "0" ? (
                           <TableCell style={{ color: "green" }} align="center">
-                            {n.balance}
+                            {"-$"}{Math.abs(n.balance)}
                           </TableCell>
                         ) : (
                           <TableCell style={{ color: "red" }} align="center">
-                            {n.balance}{" "}
+                            {"$"}{n.balance}{" "}
                           </TableCell>
                         )}
                         <TableCell align="center">{n.last_pay_date}</TableCell>
