@@ -25,7 +25,7 @@ import IconButton from "@material-ui/core/IconButton";
 //import Snackbar from "@material-ui/core/Snackbar";
 import SnackbarContent from "@material-ui/core/SnackbarContent";
 //import MaskedInput from "react-text-mask";
-//import NumberFormat from "react-number-format";
+import NumberFormat from "react-number-format";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -33,6 +33,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { Redirect } from "react-router-dom";
 import InputMask from "react-input-mask";
+
 import InputAdornment from "@material-ui/core/InputAdornment";
 
 import API from "../utils/API";
@@ -1167,7 +1168,7 @@ class NewClient extends React.Component {
                   onChange={this.handleChange("sessionCost")}
                   margin="normal"
                 /> */}
-                <InputMask
+                {/* <InputMask
                   mask="999999"
                   //maskPlaceholder=""
                   maskChar={null}
@@ -1192,7 +1193,22 @@ class NewClient extends React.Component {
                       //type="text"
                     />
                   )}
-                </InputMask>
+                </InputMask> */}
+                <NumberFormat 
+                  customInput={TextField} 
+                  variant="outlined" 
+                  className={classes.textFieldSession} 
+                  InputProps={{
+                    startAdornment: (<InputAdornment position="start">$</InputAdornment>)
+                  }} 
+                  label="Session Cost"
+                  margin="normal"
+                  value={this.state.sessionCost}
+                  onChange={this.handleChange("sessionCost")}
+                  thousandSeparator={true}
+                  fixedDecimalScale={true} 
+                  decimalScale={2}
+                />
                 {/*    <TextField
                   id="standard-length"
                   label="Session Length (minutes)"

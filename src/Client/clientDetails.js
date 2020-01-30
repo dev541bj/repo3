@@ -33,7 +33,8 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Typography from "@material-ui/core/Typography";
 import Snackbar from "@material-ui/core/Snackbar";
 import InputMask from "react-input-mask";
-//import InputAdornment from "@material-ui/core/InputAdornment";
+import NumberFormat from "react-number-format";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 import MySnackbarContentWrapper from "../common/MySnackbarContentWrapper";
 
@@ -1637,7 +1638,7 @@ class ClientDetails extends React.Component {
                         </MenuItem>
                       ))}
                     </TextField>
-                    <TextField
+                    {/* <TextField
                       id="standard-cost"
                       label="Session Cost (dollars)"
                       variant="outlined"
@@ -1645,6 +1646,22 @@ class ClientDetails extends React.Component {
                       value={this.state.sessionCost}
                       onChange={this.handleChange("sessionCost")}
                       margin="normal"
+                    /> */}
+                    <NumberFormat
+                      customInput={TextField}
+                      id="standard-cost"
+                      label="Session Cost"
+                      variant="outlined"
+                      className={classes.textFieldSession}
+                      value={this.state.sessionCost}
+                      onChange={this.handleChange("sessionCost")}
+                      margin="normal"
+                      InputProps={{
+                        startAdornment: (<InputAdornment position="start">$</InputAdornment>)
+                      }} 
+                      thousandSeparator={true}
+                      fixedDecimalScale={true} 
+                      decimalScale={2}
                     />
                     {/*      <TextField
                       id="standard-length"
