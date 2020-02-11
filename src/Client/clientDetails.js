@@ -22,7 +22,8 @@ import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
-import NoteHistoryTable from "../Tables/noteHistoryTable";
+import NoteHistoryTableOld from "../Tables/noteHistoryTableOld";
+import NoteHistoryTable from "../Tables/noteHistoryTableNew";
 import Cyan from "@material-ui/core/colors/cyan";
 import Container from "@material-ui/core/Container";
 import Dialog from "@material-ui/core/Dialog";
@@ -1315,7 +1316,7 @@ class ClientDetails extends React.Component {
         >
           <DialogTitle>You changes have been saved</DialogTitle>
           <DialogContent>
-        {/*     <DialogContentText>
+            {/*     <DialogContentText>
              
             </DialogContentText> */}
           </DialogContent>
@@ -1657,10 +1658,12 @@ class ClientDetails extends React.Component {
                       onChange={this.handleChange("sessionCost")}
                       margin="normal"
                       InputProps={{
-                        startAdornment: (<InputAdornment position="start">$</InputAdornment>)
-                      }} 
+                        startAdornment: (
+                          <InputAdornment position="start">$</InputAdornment>
+                        )
+                      }}
                       thousandSeparator={true}
-                      fixedDecimalScale={true} 
+                      fixedDecimalScale={true}
                       decimalScale={2}
                     />
                     {/*      <TextField

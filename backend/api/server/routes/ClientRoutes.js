@@ -15,5 +15,6 @@ router.put("/updateclientinfo", ClientController.updateClientInfo);
 router.put("/updatecontactinfo", ClientController.updateContactInfo);
 router.put("/updatebillinginfo", ClientController.updateBillingInfo);
 router.put("/updategoals", ClientController.updateGoals);
+router.get("/notehist", ClientController.noteHist);
 //export default router;
 module.exports = router;

@@ -62,6 +62,7 @@ import TitleBarRatingScale from "./titleBars/titleBarRatingScale";
 import TitleBarSOAP from "./titleBars/titleBarSOAP";
 import TitleBarPercScale from "./titleBars/titleBarPercScale";
 import TitleBarReports from "./titleBars/titleBarReports";
+import TitleBarNoteHist from "./titleBars/titleBarDocumentationNoteHist";
 // Home
 import KPITest from "./Home/kpiHardCode";
 import EventsTable from "./Tables/eventsTable";
@@ -100,6 +101,7 @@ import AccountsInvoicesTabsNew from "./AcountsInvoices/accountsInvoicesTabsNew";
 // Documentation
 import Documentation from "./Calendar/documentation";
 import Documentation2 from "./Calendar/doc2";
+import NoteHistDoc from "./Calendar/noteHistDoc";
 // Messages
 import MessagesTable from "./Tables/messagesTable";
 import MessageInfo from "./Messages/messageInfo";
@@ -719,6 +721,17 @@ class MainApp extends React.Component {
                 <div>
                   <TitleBarDocumentationHome />
                   <Documentation2 />
+                </div>
+              )}
+            />
+
+            <Route
+              exact
+              path="/dochist"
+              render={() => (
+                <div>
+                  <TitleBarNoteHist />
+                  <NoteHistDoc />
                 </div>
               )}
             />

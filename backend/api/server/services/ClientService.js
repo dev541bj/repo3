@@ -654,6 +654,19 @@ class ClientService {
       throw error;
     }
   }
+
+  static async getNoteHist() {
+    const sql = `SELECT id, date_format(start, '%m/%d/%Y') as start, end, type_note, notes, 
+    date_format(note_date, '%m/%d/%Y') as noteDate, attendance, clientsID 
+    FROM testevent 
+    WHERE note_date IS NOT NULL`;
+
+    try {
+      return await query(sql);
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 // export default ClientService;

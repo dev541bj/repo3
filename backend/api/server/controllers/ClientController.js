@@ -148,6 +148,21 @@ class ClientController {
       return util.send(res);
     }
   }
+
+  static async noteHist(req, res) {
+    try {
+      const records = await ClientService.getNoteHist();
+      if (records.length > 0) {
+        util.setSuccess(200, "Note hist num retrieved", records);
+      } else {
+        util.setSuccess(200, "No note hist num found");
+      }
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error);
+      return util.send(res);
+    }
+  }
 }
 
 // export default ClientController;

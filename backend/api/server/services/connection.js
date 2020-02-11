@@ -6,8 +6,8 @@ var util = require("util");
 
 const conn = mysql.createConnection({
   host: "localhost",
-  user: "", // replace with your mysql user info
-  password: "", // replace with your mysql password
+  user: "root", // replace with your mysql user info
+  password: "Artm@y08", // replace with your mysql password
   database: "nodemysql"
 });
 
