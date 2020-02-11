@@ -51,6 +51,22 @@ class MemberController {
     }
   }
 
+  static async getSelectedClient(req, res) {
+    
+    try {
+      const selected = await MemberService.getSelected(req.params.id);
+      if (selected) {
+        util.setSuccess(200, "Active selected retrieved", selected);
+      } else {
+        util.setSuccess(200, "No active selected found");
+      }
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error);
+      return util.send(res);
+    }
+  }
+
   static async addMember(req, res) {
     const newOne = req.body;
     try {
@@ -89,6 +105,7 @@ class MemberController {
 
   static async assiCli(req, res) {
     const updateOne = req.body;
+
     try {
       const updatedOne = await MemberService.assignClient(updateOne);
       util.setSuccess(201, "Member Privliges Updated!", updatedOne);
@@ -98,6 +115,7 @@ class MemberController {
       return util.send(res);
     }
   }
+
 }
 
 //export default MemberController;

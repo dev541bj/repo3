@@ -21,11 +21,26 @@ class EventController {
     }
   }
 
+  static async getTemplate(req, res) {
+    // console.log('here ->', req.params.id);
+    const id = req.params.id
+    try {
+      const allEvents = await EventService.getTemp(id);
+      if (allEvents.length > 0) {
+
+        util.setSuccess(200, "Events retrieved", allEvents);
+      } else {
+        util.setSuccess(200, "No Event found");
+      }
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error);
+      return util.send(res);
+    }
+  }
+
+
   static async insert(req, res) {
-    // if (!req.body.title || !req.body.price || !req.body.description) {
-    //   util.setError(400, 'Please provide complete details');
-    //   return util.send(res);
-    // }
     const newOne = req.body;
     try {
       const createdOne = await EventService.insertOne(newOne);
@@ -38,13 +53,24 @@ class EventController {
   }
 
   static async updateSole(req, res) {
-    // if (!req.body.title || !req.body.price || !req.body.description) {
-    //   util.setError(400, 'Please provide complete details');
-    //   return util.send(res);
-    // }
+
     const newOne = req.body;
     try {
       const createdOne = await EventService.updateSole(newOne);
+      util.setSuccess(201, "Event Updated!", createdOne);
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error.message);
+      return util.send(res);
+    }
+  }
+
+  static async note(req, res) {
+
+    const newOne = req.body;
+
+    try {
+      const createdOne = await EventService.note_template(newOne);
       util.setSuccess(201, "Event Updated!", createdOne);
       return util.send(res);
     } catch (error) {

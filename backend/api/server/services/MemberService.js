@@ -28,10 +28,20 @@ class MemberService {
 
   // showing the active therapists in the dropdown selection box
   static async getActiveTherapistsDropDown() {
-    const sql = "SELECT id, member_full_name FROM members WHERE active =1";
+    const sql = "SELECT * FROM members WHERE active =1";
 
     try {
       return await query(sql);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getSelected(id) {
+    const sql = "SELECT clients FROM members WHERE id = ?";
+
+    try {
+      return await query(sql, id);
     } catch (error) {
       throw error;
     }
@@ -211,7 +221,8 @@ class MemberService {
     var id = formdata.id;
     var assiCli = formdata.assiCli;
     const sql =
-      `UPDATE members SET clients =` + "'" + assiCli + "'" + `WHERE id =` + id;
+      `UPDATE members SET clients =` + "'" + assiCli + "'" + ` WHERE id =` + id;
+    console.log('assign query:', sql);
     try {
       return await query(sql);
     } catch (error) {

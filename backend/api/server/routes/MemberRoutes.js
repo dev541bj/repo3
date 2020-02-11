@@ -13,6 +13,7 @@ router.post("/addmember", MemberController.addMember);
 router.put("/updatememberinfo", MemberController.updateMemberInfo);
 router.put("/updatememberpriv", MemberController.updateMemberPriv);
 router.put("/assignclient", MemberController.assiCli);
+router.get("/selected/:id", MemberController.getSelectedClient);
 
 //export default router;
 module.exports = router;

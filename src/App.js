@@ -30,7 +30,7 @@ import HomeIcon from "@material-ui/icons/Home";
 import InsertInvitation from "@material-ui/icons/InsertInvitation";
 import Mood from "@material-ui/icons/Mood";
 import PeopleOutline from "@material-ui/icons/PeopleOutline";
-//import InsertChartOutlined from "@material-ui/icons/InsertChartOutlined";
+import InsertChartOutlined from "@material-ui/icons/InsertChartOutlined";
 import AccountBalanceWallet from "@material-ui/icons/AccountBalanceWallet";
 //import AccountBalance from "@material-ui/icons/AccountBalance";
 import LibraryBooks from "@material-ui/icons/LibraryBooks";
@@ -61,6 +61,7 @@ import TitleBarNewMessage from "./titleBars/titleBarNewMessage";
 import TitleBarRatingScale from "./titleBars/titleBarRatingScale";
 import TitleBarSOAP from "./titleBars/titleBarSOAP";
 import TitleBarPercScale from "./titleBars/titleBarPercScale";
+import TitleBarReports from "./titleBars/titleBarReports";
 // Home
 import KPITest from "./Home/kpiHardCode";
 import EventsTable from "./Tables/eventsTable";
@@ -405,20 +406,22 @@ class MainApp extends React.Component {
               </ListItemIcon>
               <ListItemText primary="Payroll" />
             </ListItem> */}
-            {/*     <ListItem button>
-              <ListItemIcon>
-                <InsertChartOutlined />
-              </ListItemIcon>
-              <ListItemText primary="Reports" />
-            </ListItem> */}
-            {/*   <Link style={navStyle} to="/forms">
+            <Link style={navStyle} to="/reports">
+              <ListItem button>
+                <ListItemIcon>
+                  <InsertChartOutlined />
+                </ListItemIcon>
+                <ListItemText primary="Reports" />
+              </ListItem>
+            </Link>
+            {/*       <Link style={navStyle} to="/forms">
               <ListItem button>
                 <ListItemIcon>
                   <InsertDriveFile />
                 </ListItemIcon>
                 <ListItemText primary="Forms" />
               </ListItem>
-            </Link> */}
+            </Link>  */}
             <Link style={navStyle} to="/notetemplates">
               <ListItem button>
                 <ListItemIcon>
@@ -750,6 +753,16 @@ class MainApp extends React.Component {
                 <div>
                   <TitleBarMessageDetails />
                   <MessageInfo />
+                </div>
+              )}
+            />
+
+            <Route
+              exact
+              path="/reports"
+              render={() => (
+                <div>
+                  <TitleBarReports />
                 </div>
               )}
             />

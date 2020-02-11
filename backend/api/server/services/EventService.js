@@ -14,9 +14,21 @@ class EventService {
     }
   }
 
+  static async getTemp(req, res) {
+    var sql = `SELECT type_note, notes FROM testevent where id = ${req} `
+    // console.log('request :', sql);
+
+    try {
+      return await query(sql, [req]);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   // Add calendar event
 
   static async insertOne(reqBody) {
+
     var formdata = reqBody;
     var newClient = formdata.newClient;
     var newBillType = formdata.newBillType;
@@ -45,8 +57,14 @@ class EventService {
     var selected_days = [sun, mon, tues, wed, thu, fri, sat];
     var start_dates = [];
     var end_dates = [];
-    const newClients = formdata.newClients;
-    const newTherapists = formdata.newTherapists;
+    // var clientsEmail = [];
+    const clients = formdata.newClients.toString();
+    const therapists = formdata.newTherapists.toString();
+    const selectedClientID = formdata.selectedClientID.toString();
+    const selectedClientEmail = formdata.selectedClientEmail.toString();
+    const selectedTherapistID = formdata.selectedTherapistID.toString();
+    const selectedTherapistEmail = formdata.selectedTherapistEmail.toString();
+
 
     //------------------occurances-----------------------------
     var newNumOccurences = formdata.newNumOccurences; //"4"
@@ -201,10 +219,14 @@ class EventService {
         fri, 
         sat, 
         billing_email, 
+        email,
         session_cost, 
         session_set_length, 
         clients, 
-        therapists) VALUES` +
+        therapists,
+        clientsID,
+        therapistsID
+        ) VALUES` +
         " ('" +
         newClient +
         "','" +
@@ -218,9 +240,9 @@ class EventService {
         "','" +
         newCategory +
         "','" +
-        start_dates[0] +
+        selectedDate +
         "','" +
-        end_dates[0] +
+        endSelectedDate +
         "','" +
         checkedRepeat +
         "','" +
@@ -250,18 +272,27 @@ class EventService {
         "','" +
         sat +
         "', '" +
-        billingEmail +
-        "', " +
-        sessionCost +
-        "," +
-        sessionLength +
-        ",'" +
-        newClients +
+        selectedClientEmail +
+        "', '" +
+        selectedTherapistEmail +
         "','" +
-        newTherapists +
+        sessionCost +
+        "','" +
+        sessionLength +
+        "','" +
+        clients +
+        "','" +
+        therapists +
+        "','" +
+        selectedClientID +
+        "','" +
+        selectedTherapistID +
         "'" +
         ")";
+
+        // console.log('sql :', insertFirstSql)
       const firstQueryResult = await query(insertFirstSql);
+      
       let updateSQL = "UPDATE testevent SET series_start_id=? WHERE id=?";
       query(updateSQL, [firstQueryResult.insertId, firstQueryResult.insertId]);
       if (start_dates.length == 1)
@@ -285,7 +316,10 @@ class EventService {
           session_cost, 
           session_set_length, 
           clients, 
-          therapists) VALUES`;
+          therapists,
+          clientsID,
+          therapistsID
+        ) VALUES`;
 
       for (let i = 1; i < start_dates.length; i++) {
         sql +=
@@ -322,10 +356,15 @@ class EventService {
           ", " +
           sessionLength +
           ",'" +
-          newClients +
+          clients +
           "','" +
-          newTherapists +
-          "')";
+          therapists +
+          "','" +
+          selectedClientID +
+          "','" +
+          selectedTherapistID +
+          "'" +
+          ")";
         if (i < start_dates.length - 1) sql += ",";
       }
       return await query(sql);
@@ -373,36 +412,29 @@ class EventService {
       transType,
       transDate
     } = updatedOne;
-    const sql = `UPDATE testevent
-    SET bill_type = ?,
-    location = ?,
-    category = ?,
-    start = ?,
-    end = ?,
-    billing_email = ?,
-    session_cost = ?,
-    session_set_length = ?,
-    clients = ?,
-    therapists = ?,
-    transType = ?,
-    trans_date = ?
-    WHERE id = ?`;
+
+    var clients = '';
+    var therapists = '';
+
+    for(let i = 0; i < updatedOne.existingClients.length; i++){
+      if(i == 0) {
+        clients += updatedOne.existingClients[0];
+      } else {
+        clients += "," + updatedOne.existingClients[i];
+      }
+    }
+
+    for(let i = 0; i < updatedOne.existingTherapists.length; i++){
+      if(i == 0) {
+        therapists += updatedOne.existingTherapists[0];
+      } else {
+        therapists += "," + updatedOne.existingTherapists[i];
+      }
+    }
+
+    const sql = `UPDATE testevent SET bill_type = ?, location = ?, category = ?, start = ?, end = ?, billing_email = ?, session_cost = ?, session_set_length = ?, clients = ?, therapists = ?, transType = ?, trans_date = ? WHERE id = ?`;
     try {
-      return await query(sql, [
-        existingBillType,
-        existingLocation,
-        existingCategory,
-        existingStart,
-        existingEnd,
-        billingEmail,
-        sessionCost,
-        sessionLength,
-        existingClients,
-        existingTherapists,
-        transType,
-        transDate,
-        eventId
-      ]);
+      return await query(sql, [existingBillType,existingLocation,existingCategory,existingStart,existingEnd,billingEmail,sessionCost,sessionLength,clients,therapists,transType,transDate, eventId]);
     } catch (error) {
       console.log("exception: ", error);
       throw error;
@@ -419,6 +451,23 @@ class EventService {
     const { attendanceType, narrativeNote, noteDate, calID } = newOne;
     try {
       return await query(sql, [attendanceType, narrativeNote, noteDate, calID]);
+    } catch (error) {
+      console.log("exception: ", error);
+      throw error;
+    }
+  }
+
+  static async note_template(newOne) {
+
+    const sql = `UPDATE testevent 
+    SET 
+    type_note = ?,
+    notes = ?,
+    note_date = ?
+    WHERE id = ?`;
+    const { id, type, sections, note_date } = newOne;
+    try {
+      return await query(sql, [ type, sections, note_date, id]);
     } catch (error) {
       console.log("exception: ", error);
       throw error;

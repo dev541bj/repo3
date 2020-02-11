@@ -21,6 +21,64 @@ class TemplateController {
     }
   }
 
+  static async addSoapTemplate(req, res) {
+    try {
+      const createdAt = new Date();
+      await TemplateService.addSoap( req.body );
+
+      util.setSuccess(200, "Template added.");
+
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error);
+      return util.send(res);
+    }
+  }
+
+  static async addRatingTemplate(req, res) {
+    try {
+      const createdAt = new Date();
+      await TemplateService.addRating( req.body );
+
+      util.setSuccess(200, "Template added.");
+
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error);
+      return util.send(res);
+    }
+  }
+
+  static async addPercentageTemplate(req, res) {
+    try {
+      const createdAt = new Date();
+
+      await TemplateService.addPercentage( req.body );
+
+      util.setSuccess(200, "Template added.");
+
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error);
+      return util.send(res);
+    }
+  }
+
+  static async addNarrativeTemplate(req, res) {
+    try {
+      const createdAt = new Date();
+    
+      await TemplateService.addNarrative( req.body );
+
+      util.setSuccess(200, "Template added.");
+
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error);
+      return util.send(res);
+    }
+  }
+
   //this is this initial Controller for pulling the Templates table
   static async getAllTemplates(req, res) {
     try {
@@ -44,7 +102,7 @@ class TemplateController {
       if (template && template.length) {
         util.setSuccess(200, "Template retrieved", template[0]);
       } else {
-        util.setSuccess(200, "No Templates found");
+        util.setSuccess(200, "Not Templates found");
       }
       return util.send(res);
     } catch (error) {
@@ -53,9 +111,88 @@ class TemplateController {
     }
   }
 
+
+  static async getSoapTemplate(req, res) {
+    try {  
+      const template = await TemplateService.getSoap();
+
+      if (template && template.length) {
+        util.setSuccess(200, "Template retrieved", template[0]);
+      } else {
+        util.setSuccess(200, "Not Templates found");
+      }
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error);
+      return util.send(res);
+    }
+  }
+
+  static async getRatingTemplate(req, res) {
+    try {  
+      const template = await TemplateService.getRating();
+
+      if (template && template.length) {
+        util.setSuccess(200, "Template retrieved", template[0]);
+      } else {
+        util.setSuccess(200, "Not Templates found");
+      }
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error);
+      return util.send(res);
+    }
+  }
+
+  static async getPercentageTemplate(req, res) {
+    try {  
+      const template = await TemplateService.getPercentage();
+
+      if (template && template.length) {
+        util.setSuccess(200, "Template retrieved", template[0]);
+      } else {
+        util.setSuccess(200, "Not Templates found");
+      }
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error);
+      return util.send(res);
+    }
+  }
+
+  static async getNarrativeTemplate(req, res) {
+    try {  
+      const template = await TemplateService.getNarrative();
+
+      if (template && template.length) {
+        util.setSuccess(200, "Template retrieved", template[0]);
+      } else {
+        util.setSuccess(200, "Not Templates found");
+      }
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error);
+      return util.send(res);
+    }
+  }
+
+
   static async updateTemplateById(req, res) {
     try {
       await TemplateService.updateById(req.body, req.params.id);
+
+      util.setSuccess(200, "Template updated.");
+
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error);
+      return util.send(res);
+    }
+  }
+
+  static async updateNewTemplateById(req, res) {
+    try {
+      await TemplateService.updateNewById(req.body, req.params.id);
 
       util.setSuccess(200, "Template updated.");
 

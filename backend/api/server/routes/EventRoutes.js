@@ -12,12 +12,15 @@ router.delete("/series/:id", EventController.deleteSeries);
 router.post("/insert", EventController.insert);
 router.put("/addnote", EventController.addNote);
 router.put("/updatesole", EventController.updateSole);
+router.post("/template", EventController.note);
 // sessions left in the week
 router.get("/sessionsleft", EventController.getSessionsLeftInWeek);
 // total sessions in the week
 router.get("/sessionsweek", EventController.totalSessionsInWeek);
 // events for the current day
 router.get("/curdaycal", EventController.curDayCal);
+
+router.get("/templates/:id", EventController.getTemplate);
 // router.post('/insert', EventController.insertOne)
 //export default router;
 module.exports = router;
