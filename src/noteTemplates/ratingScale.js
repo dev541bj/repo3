@@ -12,8 +12,9 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Button from "@material-ui/core/Button";
 
-//import API from "../utils/API";
+import API from "../utils/API";
 
 const styles = theme => ({
   rootRating: {
@@ -86,11 +87,12 @@ class SliderTest extends React.Component {
     rating1: 10,
     rating2: 10,
     rating3: 10,
-    ratingDesc1: null,
-    ratingDesc2: null,
-    ratingDesc3: null,
+    ratingDesc1: "",
+    ratingDesc2: "",
+    ratingDesc3: "",
     addRating2: false,
-    addRating3: false
+    addRating3: false,
+    sections: []
   };
 
   /*   async componentDidMount() {
@@ -114,6 +116,29 @@ class SliderTest extends React.Component {
 
   componentWillUnmount() {} */
 
+  async componentDidMount() {
+    const res = await API.get(`templates/templates_rating/getRating`);
+    const template = res.data.data;     
+
+    if(!template.sections)return
+
+    this.setState({
+      sections: JSON.parse(template.sections)
+    });
+
+
+    this.setState({
+       rating1: this.state.sections.rating1,
+       rating2: this.state.sections.rating2,
+       rating3: this.state.sections.rating3,
+       ratingDesc1: this.state.sections.ratingDesc1,
+       ratingDesc2: this.state.sections.ratingDesc2,
+       ratingDesc3: this.state.sections.ratingDesc3,
+       addRating2: this.state.sections.addRating2,
+       addRating3: this.state.sections.addRating3
+    })
+}
+
   handleChangeSlider = name => (e, value) => {
     this.setState({
       [name]: value
@@ -122,15 +147,16 @@ class SliderTest extends React.Component {
 
   handleChange = name => event => {
     this.setState({ [name]: event.target.value });
+
   };
   handleAdd2ndRating = name => event => {
     this.setState({
       [name]: event.target.checked,
       addRating2: !this.state.addRating2,
       addRating3: false,
-      ratingDesc2: null,
+      ratingDesc2: '',
       rating2: 10,
-      ratingDesc3: null,
+      ratingDesc3: '',
       rating3: 10
     });
   };
@@ -139,9 +165,34 @@ class SliderTest extends React.Component {
     this.setState({
       [name]: event.target.checked,
       addRating3: !this.state.addRating3,
-      ratingDesc3: null,
+      ratingDesc3: '',
       rating3: 10
     });
+  };
+ 
+  onClickSave = async () => {
+    this.state.sections =  {
+      rating1: this.state.rating1,
+      ratingDesc1: this.state.ratingDesc1,
+      rating2: this.state.rating2,
+      ratingDesc2: this.state.ratingDesc2,
+      rating3: this.state.rating3,
+      ratingDesc3: this.state.ratingDesc3,
+      addRating2: this.state.addRating2,
+      addRating3: this.state.addRating3
+    }
+
+    try {
+      const { sections } = this.state;
+
+      await API.post("templates/templates/rating", {
+        sections: JSON.stringify(sections),
+      });
+
+      this.props.history.push("/notetemplates");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   render() {
@@ -153,9 +204,9 @@ class SliderTest extends React.Component {
           <TextField
             id="first-box"
             label="Title"
+            onChange={this.handleChange("ratingDesc1")}
             value={this.state.ratingDesc1}
             className={classes.textFieldRating}
-            onChange={this.handleChange("ratingDesc1")}
             margin="normal"
             variant="outlined"
           />
@@ -210,7 +261,7 @@ class SliderTest extends React.Component {
                 min={1}
                 max={10}
                 value={this.state.rating2}
-                onChange={this.handleChange("rating2")}
+                onChange={this.handleChangeSlider("rating2")}
                 valueLabelDisplay="auto"
                 marks={marks}
               />
@@ -259,6 +310,29 @@ class SliderTest extends React.Component {
             ) : null}
           </div>
         </MuiThemeProvider>
+        <Grid
+            container
+            direction="row"
+            justify="flex-end"
+            alignItems="center"
+          >
+            <Button
+              variant="contained"
+              className={classes.colorButton}
+              onClick={this.onClickSave}
+            >
+              Save
+            </Button>
+            {this.state.id ? (
+              <Button
+                variant="contained"
+                className={classes.colorButton}
+                onClick={this.handleDeleteDialogOpen}
+              >
+                Delete
+              </Button>
+            ) : null}
+          </Grid>
       </Grid>
     );
   }

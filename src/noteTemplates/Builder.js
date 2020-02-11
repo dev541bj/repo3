@@ -156,6 +156,7 @@ class BuilderTest extends React.Component {
     if (this.props.match.params.id) {
       try {
         const res = await API.get(
+          // `templates/templates/${this.props.match.params.id}`
           `templates/templates/${this.props.match.params.id}`
         );
 
@@ -346,6 +347,7 @@ class BuilderTest extends React.Component {
 
       if (id) {
         // Update
+     
         await API.put(`templates/templates/${id}`, {
           name: newTemplateTitle,
           sections: JSON.stringify(sections),

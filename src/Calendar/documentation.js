@@ -241,7 +241,7 @@ class Documentation extends React.Component {
   state = {
     clientData: [],
     therapistData: [],
-    client: "",
+    client: '',
     noteType: "Narrative",
     attendanceType: "Present ($)",
     sessionDate: "",
@@ -252,7 +252,7 @@ class Documentation extends React.Component {
     checkedPortal: false,
     validationBox: false,
     redirect: false,
-    narrativeNote: null,
+    narrativeNote: '',
     noteTypes: [],
     // SOAP
     s_note: "",
@@ -263,18 +263,26 @@ class Documentation extends React.Component {
     rating1: 10,
     rating2: 10,
     rating3: 10,
-    ratingDesc1: null,
-    ratingDesc2: null,
-    ratingDesc3: null,
+    ratingDesc1: '',
+    ratingDesc2: '',
+    ratingDesc3: '',
     addRating2: false,
     addRating3: false,
     // Percentage Scale
-    scaleResult: null,
-    scaleResult2: null,
-    scaleResult3: null,
+    scaleResult: '',
+    scaleResult2: '',
+    scaleResult3: '',
     addScale2: false,
     addScale3: false,
-    sections: []
+
+    first: '',
+    second: '',
+    third: '',
+    sections: [],
+    selectedID: 2,
+    note_date: '',
+    initTemplate: 2,
+    customType: ''
   };
 
   async componentDidMount() {
@@ -299,66 +307,237 @@ class Documentation extends React.Component {
     } catch (error) {
       console.log("Forms data fetching error: ", error);
     }
-  }
 
-  onSubmit() {
-    //experiment keeping preventDefault
-    //e.preventDefault();
+    const res = await API.get(`events/templates/${this.state.calID}`);
+    const template = res.data.data;
 
-    const noteObj = {
-      narrativeNote: this.state.narrativeNote,
-      attendanceType: this.state.attendanceType,
-      calID: this.state.calID
-    };
-    console.log("submitted note", noteObj);
 
-    if (noteObj.narrativeNote === "") {
-      this.setState({ validationBox: true });
-    } else {
-      API.put("/events/addnote", noteObj)
-        // .then(res => console.log(res.data));
-        .then(async response => {
-          console.log(response.data);
-          this.setState({
-            noteObj,
-            redirect: true
-            //  open: false,
-          });
-        });
+    if(template[0].type_note === 1) {
+      this.setState({
+        sections: JSON.parse(template[0].notes)
+      });
+      this.setState({
+        noteType: 'SOAP',
+        selectedID: 1
+      })
+      this.setState({
+        s_note: this.state.sections.s_note,
+        o_note: this.state.sections.o_note,
+        a_note: this.state.sections.a_note,
+        p_note: this.state.sections.p_note
+      })
+    } else if(template[0].type_note === 2) {
+      this.setState({
+        sections: JSON.parse(template[0].notes)
+      });
+      this.setState({
+        noteType: 'Narrative',
+        selectedID: 2
+      })
+      this.setState({
+        narrativeNote: this.state.sections.narrativeNote
+      })
+    }else if(template[0].type_note === 3) {
+      this.setState({
+        sections: JSON.parse(template[0].notes)
+      });
+      this.setState({
+        noteType: 'Rating Scale',
+        selectedID: 3
+      })
+      this.setState({
+        rating1: this.state.sections.rating1,
+        rating2: this.state.sections.rating2,
+        rating3: this.state.sections.rating3,
+        ratingDesc1: this.state.sections.ratingDesc1,
+        ratingDesc2: this.state.sections.ratingDesc2,
+        ratingDesc3: this.state.sections.ratingDesc3,
+        addRating2: this.state.sections.addRating2,
+        addRating3: this.state.sections.addRating3
+      })
+    }else if(template[0].type_note === 4) {
+      this.setState({
+        sections: JSON.parse(template[0].notes)
+      });
+      this.setState({
+        noteType: 'Percentage Scale',
+        selectedID: 4
+      })
+      this.setState({
+        first: this.state.sections.first,
+        scaleResult: this.state.sections.scaleResult,
+        second: this.state.sections.second,
+        scaleResult2: this.state.sections.scaleResult2,
+        third: this.state.sections.third,
+        scaleResult3: this.state.sections.scaleResult3,
+        addScale2: this.state.sections.addScale2,
+        addScale3: this.state.sections.addScale3
+      })
+    }else if(template[0].type_note > 4) {
+      this.setState({
+        selectedID: template[0].type_note
+      })
+      this.setState({
+        sections: JSON.parse(template[0].notes)
+      });
     }
 
-    /* end of submit */
+    this.setState({
+      initTemplate: this.state.selectedID
+    })
+  }
+
+  async onSubmit(type, calID, narrativeNote, attendanceType) {
+    this.state.note_date = new Date().toISOString()
+
+    if (type == 1) {
+      try {
+        const { s_note, o_note, p_note, a_note } = this.state
+        this.state.sections = {
+          s_note, o_note, p_note, a_note
+        }
+        const { sections, note_date } = this.state;
+        
+        await API.post(`events/template`, {
+          id: calID,
+          type: type,
+          note_date: note_date,
+          sections: JSON.stringify(sections),
+        });
+
+        // this.props.history.push("/notetemplates");
+      } catch (error) {
+        console.log(error);
+      }
+    } else if (type == 2) {
+      this.state.sections = {
+        narrativeNote: this.state.narrativeNote
+      }
+
+      try {
+        const { sections, note_date } = this.state;
+
+        await API.post(`events/template`, {
+          id: calID,
+          type: type,
+          note_date: note_date,
+          sections: JSON.stringify(sections),
+        });
+
+        // this.props.history.push("/notetemplates");
+      } catch (error) {
+        console.log(error);
+      }
+    } else if (type == 3) {
+      this.state.sections = {
+        rating1: this.state.rating1,
+        ratingDesc1: this.state.ratingDesc1,
+        rating2: this.state.rating2,
+        ratingDesc2: this.state.ratingDesc2,
+        rating3: this.state.rating3,
+        ratingDesc3: this.state.ratingDesc3,
+        addRating2: this.state.addRating2,
+        addRating3: this.state.addRating3
+      }
+ 
+      try {
+        const { sections, note_date } = this.state;
+
+        await API.post(`events/template`, {
+          id: calID,
+          type: type,
+          note_date: note_date,
+          sections: JSON.stringify(sections),
+        });
+
+        // this.props.history.push("/notetemplates");
+      } catch (error) {
+        console.log(error);
+      }
+    } else if (type == 4) {
+      this.state.sections = {
+        first: this.state.first,
+        scaleResult: this.state.scaleResult,
+        second: this.state.second,
+        scaleResult2: this.state.scaleResult2,
+        third: this.state.third,
+        scaleResult3: this.state.scaleResult3,
+        addScale2: this.state.addScale2,
+        addScale3: this.state.addScale3
+      }
+
+      try {
+        const { sections, note_date } = this.state;
+
+        await API.post(`events/template`, {
+          id: calID,
+          type: type,
+          note_date: note_date,
+          sections: JSON.stringify(sections),
+        });
+
+        // this.props.history.push("/notetemplates");
+      } catch (error) {
+        console.log(error);
+      }
+    } else if (type > 4) {
+      try {
+        const { sections, note_date } = this.state;
+
+        await API.post(`events/template`, {
+          id: calID,
+          type: type,
+          note_date: note_date,
+          sections: JSON.stringify(sections),
+        });
+
+        // this.props.history.push("/notetemplates");
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
   }
 
   handleChange = name => event => {
     this.setState({ [name]: event.target.value });
   };
 
+  handlePercentageChange = name => event => {
+      this.setState({ [name]: event.target.value });
+  };
+
   handleChangeNoteType = name => event => {
     this.setState({
       [name]: event.target.value,
       // Narrative
-      narrativeNote: null,
+      narrativeNote: '',
       // SOAP
-      s_note: null,
-      o_note: null,
-      a_note: null,
-      p_note: null,
+      s_note: '',
+      o_note: '',
+      a_note: '',
+      p_note: '',
       // Rating Scale
-      rating1: null,
-      rating2: null,
-      rating3: null,
-      ratingDesc1: null,
-      ratingDesc2: null,
-      ratingDesc3: null,
+      rating1: '',
+      rating2: '',
+      rating3: '',
+      ratingDesc1: '',
+      ratingDesc2: '',
+      ratingDesc3: '',
       addRating2: false,
       addRating3: false,
       // Percentage Scale
-      scaleResult: null,
-      scaleResult2: null,
-      scaleResult3: null,
+      scaleResult: '',
+      scaleResult2: '',
+      scaleResult3: '',
       addScale2: false,
-      addScale3: false
+      addScale3: false,
+
+      first: '',
+      second: '',
+      third: '',
+
+      // selectedID: nulll
     });
   };
 
@@ -389,9 +568,9 @@ class Documentation extends React.Component {
       [name]: event.target.checked,
       addRating2: !this.state.addRating2,
       addRating3: false,
-      ratingDesc2: null,
+      ratingDesc2: '',
       rating2: 10,
-      ratingDesc3: null,
+      ratingDesc3: '',
       rating3: 10
     });
   };
@@ -400,13 +579,33 @@ class Documentation extends React.Component {
     this.setState({
       [name]: event.target.checked,
       addRating3: !this.state.addRating3,
-      ratingDesc3: null,
+      ratingDesc3: '',
       rating3: 10
     });
   };
 
-  handleChangeGoalResult1 = event => {
+  
+  handleAdd2ndScale = name => event => {
+    this.setState({
+      [name]: event.target.checked,
+      addScale2: !this.state.addScale2,
+      addScale3: null,
+      scaleResult2: null
+    });
+  };
+
+  handleAdd3rdScale = name => event => {
+    this.setState({
+      [name]: event.target.checked,
+      addScale3: !this.state.addScale3,
+      scaleResult3: null
+    });
+  };
+
+  
+  handleChangeScaleResult1 = event => {
     this.setState({ scaleResult: event.target.value });
+
   };
 
   handleChangeScaleResult2 = event => {
@@ -421,8 +620,8 @@ class Documentation extends React.Component {
     this.setState({
       [name]: event.target.checked,
       addScale2: !this.state.addScale2,
-      addScale3: null,
-      scaleResult2: null
+      addScale3: '',
+      scaleResult2: ''
     });
   };
 
@@ -430,7 +629,7 @@ class Documentation extends React.Component {
     this.setState({
       [name]: event.target.checked,
       addScale3: !this.state.addScale3,
-      scaleResult3: null
+      scaleResult3: ''
     });
   };
 
@@ -463,21 +662,122 @@ class Documentation extends React.Component {
   };
 
   onSelectTemplate = name => async event => {
+
     try {
       const templateId = event.target.value;
 
-      console.log(templateId);
-      const res = await API.get(`templates/templates/${templateId}`);
+      this.state.selectedID = event.target.value;
 
-      const template = res.data.data;
+      if (this.state.selectedID == 1 ) {
+        this.setState({
+          noteType: 'SOAP'
+        })
+        if(this.state.selectedID !== this.state.initTemplate){
+          const res = await API.get(`templates/templates_soap/getSoap`);
+          const template = res.data.data;
+          this.setState({
+            sections: JSON.parse(template.sections)
+          });
+          this.setState({
+            s_note: this.state.sections.s_note,
+            o_note: this.state.sections.o_note,
+            a_note: this.state.sections.a_note,
+            p_note: this.state.sections.p_note
+          })
+        }
+      } else if (this.state.selectedID == 2 ) {
+        this.setState({
+          noteType: 'Narrative'
+        })
+        if(this.state.selectedID !== this.state.initTemplate){
+          const res = await API.get(`templates/templates_narrative/getNarrative`);
+          const template = res.data.data;
+          this.setState({
+            sections: JSON.parse(template.sections)
+          });
+          this.setState({
+            narrativeNote: this.state.sections.narrativeNote
+          })
+        }
+        
+      } else if (this.state.selectedID == 3) {
+        this.setState({
+          noteType: 'Rating Scale'
+        })
+        if(this.state.selectedID !== this.state.initTemplate){
+          const res = await API.get(`templates/templates_rating/getRating`);
+          const template = res.data.data;
+          this.setState({
+            sections: JSON.parse(template.sections)
+          });
+          this.setState({
+            rating1: this.state.sections.rating1,
+            rating2: this.state.sections.rating2,
+            rating3: this.state.sections.rating3,
+            ratingDesc1: this.state.sections.ratingDesc1,
+            ratingDesc2: this.state.sections.ratingDesc2,
+            ratingDesc3: this.state.sections.ratingDesc3,
+            addRating2: this.state.sections.addRating2,
+            addRating3: this.state.sections.addRating3
+          })
+        }
+        
 
-      this.setState({
-        [name]: template.id,
-        sections: JSON.parse(template.sections)
-      });
+      } else if (this.state.selectedID == 4) {
+        this.setState({
+          noteType: 'Percentage Scale'
+        })
+        if(this.state.selectedID !== this.state.initTemplate){
+          const res = await API.get(`templates/templates_percentage/getPercentage`);
+          const template = res.data.data;
+          this.setState({
+            sections: JSON.parse(template.sections)
+          });
+          this.setState({
+            first: this.state.sections.first,
+            scaleResult: this.state.sections.scaleResult,
+            second: this.state.sections.second,
+            scaleResult2: this.state.sections.scaleResult2,
+            third: this.state.sections.third,
+            scaleResult3: this.state.sections.scaleResult3,
+            addScale2: this.state.sections.addScale2,
+            addScale3: this.state.sections.addScale3
+          })
+        }    
+      } else if(this.state.selectedID > 4) {
+
+        const res = await API.get(`templates/templates/${templateId}`);
+        const template = res.data.data;
+        this.state.noteType = template.template_name
+        
+        if(this.state.selectedID !== this.state.initTemplate){
+        
+          this.setState({
+            // [name]: template.id,
+            sections: JSON.parse(template.sections)
+          });
+        } else {
+          const res = await API.get(`events/templates/${this.state.calID}`);
+          const template = res.data.data;
+
+            this.setState({
+              sections: JSON.parse(template[0].notes)
+            });
+        }
+      }
+
+      // const res = await API.get(`templates/templates/${templateId}`);
+
+      // const template = res.data.data;
+
+      // this.setState({
+      //   [name]: template.id,
+      //   sections: JSON.parse(template.sections)
+      // });
     } catch (error) {
       console.error("Failed to fetch template.");
     }
+  
   };
 
   render() {
@@ -567,7 +867,7 @@ class Documentation extends React.Component {
               select
               label="Note Type"
               className={classes.textField2}
-              value={this.state.noteType}
+              value={this.state.selectedID}
               onChange={this.onSelectTemplate("noteType")}
               SelectProps={{
                 MenuProps: {
@@ -590,25 +890,29 @@ class Documentation extends React.Component {
             justify="space-between"
             alignItems="center"
           >
-            <Container maxWidth="lg">
-              <MuiThemeProvider theme={theme}>
-                {this.state.sections.map(section => {
-                  return (
-                    <Section
-                      key={section.id}
-                      fields={section.fields}
-                      classes={classes}
-                      onChange={this.onChangeSectionField}
-                      onChangeCheckbox={this.onChangeCheckboxField}
-                      sectionId={section.id}
-                      sectionType={section.type}
-                      sectionTypes={SECTION_TYPES}
-                      theme={theme}
-                    />
-                  );
-                })}
-              </MuiThemeProvider>
-            </Container>
+            {
+              this.state.selectedID > 4 ?
+
+                <Container maxWidth="lg">
+                  <MuiThemeProvider theme={theme}>
+                    {this.state.sections.map(section => {
+                      return (
+                        <Section
+                          key={section.id}
+                          fields={section.fields}
+                          classes={classes}
+                          onChange={this.onChangeSectionField}
+                          onChangeCheckbox={this.onChangeCheckboxField}
+                          sectionId={section.id}
+                          sectionType={section.type}
+                          sectionTypes={SECTION_TYPES}
+                          theme={theme}
+                        />
+                      );
+                    })}
+                  </MuiThemeProvider>
+                </Container> : null
+            }
             {/*     <MuiThemeProvider theme={theme}>
               <TextField
                 id="note-type"
@@ -657,9 +961,9 @@ class Documentation extends React.Component {
               multiline
               rows="12"
               margin="normal"
-              /*  InputLabelProps={{
-              shrink: true
-            }} */
+            /*  InputLabelProps={{
+            shrink: true
+          }} */
             />
           ) : null}
           {/* SOAP Note */}
@@ -865,16 +1169,17 @@ class Documentation extends React.Component {
                 <TextField
                   id="first-goal"
                   label="Title"
-                  //value={this.state.firstText}
-                  className={classes.textFieldScaleTop}
-                  marginPercScale="normal"
+                  value={this.state.first}
+                  onChange={this.handlePercentageChange("first")}
+                  className={classes.textFieldGoalTracker}
+                  marginGoalTracker="normal"
                   variant="outlined"
                 />
                 <RadioGroup
                   aria-label="first-group"
                   name="first-group"
-                  //   value={this.state.scaleResult}
-                  onChange={this.handleChangeGoalResult1}
+                  // value={this.state.scaleResult}
+                  onChange={this.handleChangeScaleResult1}
                   row
                 >
                   <FormControlLabel
@@ -911,11 +1216,11 @@ class Documentation extends React.Component {
                     <Checkbox
                       color="primary"
                       checked={this.state.addScale2}
-                      onChange={this.handleAdd2ndGoal("addScale2")}
+                      onChange={this.handleAdd2ndScale("addScale2")}
                       value={this.state.addScale2}
                     />
                   }
-                  label="Add additional goal"
+                  label="add additional goal"
                 />
 
                 {/*     Second Goal  */}
@@ -923,9 +1228,10 @@ class Documentation extends React.Component {
                   <TextField
                     id="second-goal"
                     label="Title"
-                    //value={this.state.firstText}
-                    className={classes.textFieldScale}
-                    marginPercScale="normal"
+                    value={this.state.second}
+                    onChange={this.handlePercentageChange("second")}
+                    className={classes.textFieldGoalTracker}
+                    marginGoalTracker="normal"
                     variant="outlined"
                   />
                 ) : null}
@@ -952,9 +1258,7 @@ class Documentation extends React.Component {
                       labelPlacement="end"
                     />
                     <FormControlLabel
-                      checked={
-                        this.state.scaleResult2 === "Inconsistent (51-79%)"
-                      }
+                      checked={this.state.scaleResult2 === "Inconsistent (51-79%)"}
                       value="Inconsistent (51-79%)"
                       control={<Radio color="primary" />}
                       label="Inconsistent (51-79%)"
@@ -976,7 +1280,7 @@ class Documentation extends React.Component {
                       <Checkbox
                         color="primary"
                         checked={this.state.addScale3}
-                        onChange={this.handleAdd3rdGoal("addScale3")}
+                        onChange={this.handleAdd3rdScale("addScale3")}
                         value={this.state.addScale3}
                       />
                     }
@@ -988,9 +1292,10 @@ class Documentation extends React.Component {
                   <TextField
                     id="second-goal"
                     label="Title"
-                    //value={this.state.firstText}
-                    className={classes.textFieldScale}
-                    marginPercScale="normal"
+                    value={this.state.third}
+                    onChange={this.handlePercentageChange("third")}
+                    className={classes.textFieldGoalTracker}
+                    marginGoalTracker="normal"
                     variant="outlined"
                   />
                 ) : null}
@@ -1017,9 +1322,7 @@ class Documentation extends React.Component {
                       labelPlacement="end"
                     />
                     <FormControlLabel
-                      checked={
-                        this.state.scaleResult3 === "Inconsistent (51-79%)"
-                      }
+                      checked={this.state.scaleResult3 === "Inconsistent (51-79%)"}
                       value="Inconsistent (51-79%)"
                       control={<Radio color="primary" />}
                       label="Inconsistent (51-79%)"
@@ -1096,6 +1399,7 @@ class Documentation extends React.Component {
               variant="contained"
               onClick={() => {
                 this.onSubmit(
+                  this.state.selectedID,
                   this.state.calID,
                   this.state.narrativeNote,
                   this.state.attendanceType
@@ -1108,13 +1412,13 @@ class Documentation extends React.Component {
               className={classes.saveAndSendButton}
               size="large"
               variant="contained"
-              /*  onClick={() => {
-                this.onSubmit(
-                  this.state.calID,
-                  this.state.narrativeNote,
-                  this.state.attendanceType
-                );
-              }} */
+            /*  onClick={() => {
+              this.onSubmit(
+                this.state.calID,
+                this.state.narrativeNote,
+                this.state.attendanceType
+              );
+            }} */
             >
               Save and Send
             </Button>

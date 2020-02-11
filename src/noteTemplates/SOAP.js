@@ -11,11 +11,12 @@ import Grid from "@material-ui/core/Grid";
 // import FormLabel from "@material-ui/core/FormLabel";
 // import FormGroup from "@material-ui/core/FormGroup";
 // import MenuItem from "@material-ui/core/MenuItem";
+import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
+import API from "../utils/API";
 
-//import API from "../utils/API";
 
 const styles = theme => ({
   /* 
@@ -135,21 +136,61 @@ const attendanceTypes = [
 
 class SOAP extends React.Component {
   state = {
-    s_note: "",
-    o_note: "",
-    a_note: "",
-    p_note: "",
-    calID: "",
+    s_note: '',
+    o_note: '',
+    a_note: '',
+    p_note: '',
+    calID: '',
     checkedPayor: true,
     checkedFamily: false,
     checkedTherapist: false,
     checkedPortal: false,
     validationBox: false,
-    redirect: false
+    redirect: false,
+    sections: []
   };
+
+  async componentDidMount() {
+        const res = await API.get(`templates/templates_soap/getSoap`);
+        const template = res.data.data;     
+
+        if(!template.sections || template.sections === null) return
+
+        this.setState({
+          sections: JSON.parse(template.sections)
+        });
+
+        this.setState({
+           s_note: this.state.sections.s_note,
+           o_note: this.state.sections.o_note,
+           a_note: this.state.sections.a_note,
+           p_note: this.state.sections.p_note
+        })
+  }
 
   handleChange = name => event => {
     this.setState({ [name]: event.target.value });
+
+    this.state.sections =  {
+      s_note: this.state.s_note,
+      a_note: this.state.a_note,
+      o_note: this.state.o_note,
+      p_note: this.state.p_note
+    }
+  };
+
+  onClickSave = async () => {
+    try {
+      const { sections } = this.state;
+
+      await API.post("templates/templates/soap", {
+        sections: JSON.stringify(sections),
+      });
+
+      this.props.history.push("/notetemplates");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   render() {
@@ -242,6 +283,29 @@ class SOAP extends React.Component {
                 shrink: true
               }}
             />
+          </Grid>
+          <Grid
+            container
+            direction="row"
+            justify="flex-end"
+            alignItems="center"
+          >
+            <Button
+              variant="contained"
+              className={classes.colorButton}
+              onClick={this.onClickSave}
+            >
+              Save
+            </Button>
+            {this.state.id ? (
+              <Button
+                variant="contained"
+                className={classes.colorButton}
+                onClick={this.handleDeleteDialogOpen}
+              >
+                Delete
+              </Button>
+            ) : null}
           </Grid>
         </Container>
       </div>

@@ -389,6 +389,12 @@ class ReactCalendarBase extends Component {
       /*Added by Sasa*/
       newClients: [],
       newTherapists: [],
+      selectedTherapistID: [],
+      selectedTherapistEmail: [],
+      selectedClientID: [],
+      selectedClientEmail: [],
+      selectedTherapists: [],
+      selectedClients: [],
       /**/
       newLocation: "",
       newCategory: "",
@@ -486,8 +492,8 @@ class ReactCalendarBase extends Component {
       newCategory: this.state.newCategory,
       newClient: this.state.newClient,
       newDescription: "Session with " + this.state.newTherapists,
-      selectedDate: this.state.selectedDate,
-      endSelectedDate: this.state.endSelectedDate,
+      selectedDate: this.state.selectedDate === undefined ? '' : this.state.selectedDate,
+      endSelectedDate: this.state.endSelectedDate === undefined ? '' : this.state.endSelectedDate,
       checkedRepeat: +this.state.checkedRepeat, //true,false
       repeatOption: this.state.repeatOption, //"Daily","Weekly","Monthly","Custom"
       newEndRepeat: this.state.newEndRepeat, //"After","On Date"
@@ -510,9 +516,17 @@ class ReactCalendarBase extends Component {
       amount: this.state.amount,
       transType: this.state.transType,
       newDescription: "Session with " + this.state.newTherapist,
-      newClients: this.state.newClients,
-      newTherapists: this.state.newTherapists
+      // newClients: this.state.newClients,
+      // newTherapists: this.state.newTherapists,
+      newClients: this.state.selectedClients,
+      newTherapists: this.state.selectedTherapists,
+      selectedClientID: this.state.selectedClientID,
+      selectedClientEmail: this.state.selectedClientEmail,
+      selectedTherapistID: this.state.selectedTherapistID,
+      selectedTherapistEmail: this.state.selectedTherapistEmail
     };
+
+
 
     //Here I have just added some basic validation messages for fields that are needed for repeat appointments
     //I guess you will add validations in your form later on
@@ -738,99 +752,21 @@ class ReactCalendarBase extends Component {
       existingTherapists: this.state.existingTherapists,
       transType: this.state.transType
     };
+
+    console.log('event :', seriesObj);
     if (this.state.isShowRepeatOptionInExistingDalog)
       API.put("/events/updateseries", seriesObj)
-        // .then(res => console.log(res.data));
         .then(async res => {
-          /*   this.setState({
-          seriesObj
-          // redirect: true
-          //infoValidationBox: true
-        }); */
           this.handleCloseExisting();
           await this.updateContent();
         });
     else
       API.put("/events/updatesole", seriesObj)
-        // .then(res => console.log(res.data));
         .then(async res => {
-          /* this.setState({
-        seriesObj
-        // redirect: true
-        //infoValidationBox: true
-      }); */
           this.handleCloseExisting();
           await this.updateContent();
         });
   };
-
-  /* onSaveExistingSeriesEvent() {
-    const seriesObj = {
-      seriesStartId: this.state.seriesStartId,
-      existingBillType: this.state.existingBillType,
-      existingClient: this.state.existingClient,
-      existingTherapist: this.state.existingTherapist,
-      existingLocation: this.state.existingLocation,
-      existingCategory: this.state.existingCategory,
-      existingStart: this.state.existingStart,
-      existingEnd: this.state.existingEnd,
-      existingRepeatOption: this.state.existingRepeatOption,
-      existingEveryNumDays: this.state.existingEveryNumDays,
-      existingEveryNumWeeks: this.state.existingEveryNumWeeks,
-      existingEveryNumMonths: this.state.existingEveryNumMonths,
-      existingCheckedRepeat: this.state.existingCheckedRepeat,
-      existingEndRepeat: this.state.existingEndRepeat,
-      existingCustomFreq: this.state.existingCustomFreq,
-      existingNumOccurences: this.state.existingNumOccurences,
-      existingEndDateOccurrence: this.state.existingEndDateOccurrence,
-      sun: this.state.sun,
-      mon: this.state.mon,
-      tues: this.state.tues,
-      wed: this.state.wed,
-      thu: this.state.thu,
-      fri: this.state.fri,
-      sat: this.state.sat,
-      billingEmail: this.state.billingEmail,
-      sessionCost: this.state.sessionCost,
-      sessionLength: this.state.sessionLength,
-      existingClients: this.state.existingClients,
-      existingTherapists: this.state.existingTherapists
-    };
-
-    API.put("/events/updateseries", seriesObj)
-      // .then(res => console.log(res.data));
-      .then(async res => {
-        this.setState({
-          seriesObj,
-          // redirect: true
-          infoValidationBox: true
-        });
-      });
-
-    /*    if (memberObj.firstName === "") {
-      this.setState({ infoValidationBox: true });
-    } else if (memberObj.lastName === "") {
-      this.setState({ infoValidationBox: true });
-    } else if (memberObj.email === "") {
-      this.setState({ infoValidationBox: true });
-    }
-
-    // submit data
-    else {
-      API.post("/members/updatemember", memberObj)
-        // .then(res => console.log(res.data));
-        .then(async response => {
-          console.log(response.data);
-          this.setState({
-            memberObj
-            //  open: false,
-            // ** put snackbar here **
-          });
-        });
-    } */
-
-  /* end of save Priv */
-  // }
 
   handleSnackbarClose = () => {
     this.setState({ deleteFailureSnackbarOpen: false });
@@ -969,8 +905,16 @@ class ReactCalendarBase extends Component {
   };
 
   handleChange = name => event => {
-    if (name === "newClient" || name === "existingClient")
-      this.updateClientInfo(event.target.value);
+    // console.log('client :', name, event.target.value);
+    // if (name === "newClient" || name === "existingClient")
+    //   this.updateClientInfo(event.target.value);
+    if(name === 'existingRepeatOption' || name === 'repeatOption'){
+      this.setState({
+        repeatOption: event.target.value,
+        existingRepeatOption: event.target.value
+      })
+    }
+
     this.setState({
       [name]: event.target.value,
       newCustomFreq: "",
@@ -985,8 +929,14 @@ class ReactCalendarBase extends Component {
   };
 
   handleMultiSelectorChange = name => event => {
-    // if (name === "newClient" || name === "existingClient")
-    //   this.updateClientInfo(event.target.value);
+    console.log('therapist :', name, event.target.value);
+    if (name === "newTherapists" || name === "existingTherapists"){
+      this.updateTherapistInfo(event.target.value);
+
+    }
+    else if(name === 'newClients' || name === "existingClients"){
+      this.updateClientInfo(event.target.value);
+    }
     this.setState({
       [name]: event.target.value,
       newCustomFreq: "",
@@ -1001,6 +951,23 @@ class ReactCalendarBase extends Component {
   };
 
   updateClientInfo = clientName => {
+
+    const { selectedClientID, selectedClientEmail, selectedClients } = this.state
+
+    // selectedTherapistID = []
+    // newClients: this.state.newClients,
+
+    for(let i = 0; i < clientName.length; i++){
+      selectedClientID[i] = clientName[i].id
+      selectedClientEmail[i] = clientName[i].email
+      // newClients[i] = clientName[i].client_full_name
+      selectedClients[i] = clientName[i].client_full_name
+      // selectedTherapistID.push(therapistName[i].id)
+    }
+    console.log('here --->', selectedClientID);
+
+
+    console.log('clent name:', clientName);
     const { clientData } = this.state;
     const currentClient = clientData.find(
       client => client.client_full_name === clientName
@@ -1030,6 +997,53 @@ class ReactCalendarBase extends Component {
       );
     }
   };
+
+  updateTherapistInfo = therapistName => {
+
+    const { selectedTherapistID, selectedTherapistEmail, selectedTherapists } = this.state
+
+    // selectedTherapistID = []
+    // newClients[i] = clientName[i].client_full_name
+
+    for(let i = 0; i < therapistName.length; i++){
+      selectedTherapistID[i] = therapistName[i].id
+      selectedTherapistEmail[i] = therapistName[i].email
+      // newTherapists[i] = therapistName[i].member_full_name
+      selectedTherapists[i] = therapistName[i].member_full_name
+      // selectedTherapistID.push(therapistName[i].id)
+    }
+    console.log('here --->', selectedTherapistID);
+
+    const { therapistData } = this.state;
+    const currentTherapist = therapistData.find(
+      therapist => therapist.therapist_full_name === therapistName
+    );
+    if (currentTherapist) {
+      const {
+        billing_email,
+        session_length,
+        session_cost,
+        assi_therapist_full_name
+      } = currentTherapist;
+      this.setState(
+        {
+          billingEmail: billing_email,
+          sessionCost: session_cost,
+          sessionLength: session_length,
+          newTherapist: assi_therapist_full_name
+        },
+        () => {
+          console.log(
+            this.state.billingEmail,
+            this.state.sessionCost,
+            this.state.sessionLength,
+            this.state.newTherapist
+          );
+        }
+      );
+    }
+  };
+
   handleChange2 = name => event => {
     this.setState({
       [name]: event.target.value
@@ -1183,6 +1197,7 @@ class ReactCalendarBase extends Component {
   };
 
   handleClientMultiFilterChange = event => {
+    console.log('multi Clients:', event.target.value);
     const multiFilters = {
       therapists: this.state.multiFilters.therapists,
       clients: this.state.multiFilters.clients
@@ -1735,7 +1750,7 @@ class ReactCalendarBase extends Component {
                     id="existing-select-therapists"
                     multiple
                     value={this.state.existingTherapists}
-                    onChange={this.handleMultiSelectorChange("")}
+                    onChange={this.handleMultiSelectorChange("existingTherapists")}
                     // margin="normal"
                     // variant="outlined"
                     renderValue={selected => (
@@ -1835,7 +1850,7 @@ class ReactCalendarBase extends Component {
                       label="Date picker"
                       className={classes.textField2}
                       value={this.state.existingEnd}
-                      onChange={date => this.setState({ existingStart: date })}
+                      onChange={date => this.setState({ existingEnd: date })}
                     />
                     <TimePicker
                       inputVariant="outlined"
@@ -1843,7 +1858,7 @@ class ReactCalendarBase extends Component {
                       label="Time picker"
                       className={classes.textField2}
                       value={this.state.existingEnd}
-                      onChange={date => this.setState({ existingStart: date })}
+                      onChange={date => this.setState({ existingEnd: date })}
                     />
                   </MuiThemeProvider>
                 </Grid>
@@ -2262,7 +2277,7 @@ class ReactCalendarBase extends Component {
                   renderValue={selected => (
                     <div className={classes.chips}>
                       {selected.map(value => (
-                        <Chip key={value} label={value} />
+                        <Chip key={value.id} label={value.client_full_name} />
                       ))}
                     </div>
                   )}
@@ -2270,7 +2285,7 @@ class ReactCalendarBase extends Component {
                   {clientData.map((value, index) => (
                     <MenuItem
                       key={`client-${index + 1}`}
-                      value={value.client_full_name}
+                      value={value}
                     >
                       {value.client_full_name}
                     </MenuItem>
@@ -2291,7 +2306,7 @@ class ReactCalendarBase extends Component {
                   renderValue={selected => (
                     <div className={classes.chips}>
                       {selected.map(value => (
-                        <Chip key={value} label={value} />
+                        <Chip key={value.id} label={value.member_full_name} />
                       ))}
                     </div>
                   )}
@@ -2299,7 +2314,7 @@ class ReactCalendarBase extends Component {
                   {therapistData.map((value, index) => (
                     <MenuItem
                       key={`therapist-${index + 1}`}
-                      value={value.member_full_name}
+                      value={value}
                     >
                       {value.member_full_name}
                     </MenuItem>

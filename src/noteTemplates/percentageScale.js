@@ -4,6 +4,7 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
 import {
   withStyles,
   createMuiTheme,
@@ -11,6 +12,8 @@ import {
 } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Checkbox from "@material-ui/core/Checkbox";
+
+import API from "../utils/API";
 
 const styles = theme => ({
   marginGoalTracker: {
@@ -31,15 +34,44 @@ const theme = createMuiTheme({
 
 class PercentageScale extends React.Component {
   state = {
-    scaleResult: null,
-    scaleResult2: null,
-    scaleResult3: null,
+    first: '',
+    second: '',
+    third: '',
+    scaleResult: false,
+    scaleResult2: false,
+    scaleResult3: false,
     addScale2: false,
     addScale3: false
   };
 
+  async componentDidMount() {
+    const res = await API.get(`templates/templates_percentage/getPercentage`);
+    const template = res.data.data; 
+    
+    if(!template.sections)return
+
+    this.setState({
+      sections: JSON.parse(template.sections)
+    });
+
+
+    this.setState({
+      first: this.state.sections.first,
+      scaleResult: this.state.sections.scaleResult,
+      second: this.state.sections.second,
+      scaleResult2: this.state.sections.scaleResult2,
+      third: this.state.sections.third,
+      scaleResult3: this.state.sections.scaleResult3,
+      addScale2: this.state.sections.addScale2,
+      addScale3: this.state.sections.addScale3
+    })
+
+}
+
+
   handleChangeScaleResult1 = event => {
     this.setState({ scaleResult: event.target.value });
+
   };
 
   handleChangeScaleResult2 = event => {
@@ -67,6 +99,36 @@ class PercentageScale extends React.Component {
     });
   };
 
+  handleChange = name => event => {
+    this.setState({ [name]: event.target.value });
+    // console.log('rating :', name, event.target.value);
+  };
+
+  onClickSave = async () => {
+    this.state.sections =  {
+      first: this.state.first,
+      scaleResult: this.state.scaleResult,
+      second: this.state.second,
+      scaleResult2: this.state.scaleResult2,
+      third: this.state.third,
+      scaleResult3: this.state.scaleResult3,
+      addScale2: this.state.addScale2,
+      addScale3: this.state.addScale3
+    }
+  
+    try {
+      const { sections } = this.state;
+
+      await API.post("templates/templates_percentage/percentage", {
+        sections: JSON.stringify(sections),
+      });
+
+      this.props.history.push("/notetemplates");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   render() {
     const { classes } = this.props;
     return (
@@ -76,7 +138,8 @@ class PercentageScale extends React.Component {
             <TextField
               id="first-goal"
               label="Title"
-              //value={this.state.firstText}
+              value={this.state.first}
+              onChange={this.handleChange("first")}
               className={classes.textFieldGoalTracker}
               marginGoalTracker="normal"
               variant="outlined"
@@ -84,7 +147,7 @@ class PercentageScale extends React.Component {
             <RadioGroup
               aria-label="first-group"
               name="first-group"
-              //   value={this.state.scaleResult}
+              // value={this.state.scaleResult}
               onChange={this.handleChangeScaleResult1}
               row
             >
@@ -134,7 +197,8 @@ class PercentageScale extends React.Component {
               <TextField
                 id="second-goal"
                 label="Title"
-                //value={this.state.firstText}
+                value={this.state.second}
+                onChange={this.handleChange("second")}
                 className={classes.textFieldGoalTracker}
                 marginGoalTracker="normal"
                 variant="outlined"
@@ -197,7 +261,8 @@ class PercentageScale extends React.Component {
               <TextField
                 id="second-goal"
                 label="Title"
-                //value={this.state.firstText}
+                value={this.state.third}
+                onChange={this.handleChange("third")}
                 className={classes.textFieldGoalTracker}
                 marginGoalTracker="normal"
                 variant="outlined"
@@ -243,6 +308,29 @@ class PercentageScale extends React.Component {
             ) : null}
           </MuiThemeProvider>
         </FormControl>
+        <Grid
+            container
+            direction="row"
+            justify="flex-end"
+            alignItems="center"
+          >
+            <Button
+              variant="contained"
+              className={classes.colorButton}
+              onClick={this.onClickSave}
+            >
+              Save
+            </Button>
+            {this.state.id ? (
+              <Button
+                variant="contained"
+                className={classes.colorButton}
+                onClick={this.handleDeleteDialogOpen}
+              >
+                Delete
+              </Button>
+            ) : null}
+          </Grid>
       </Grid>
     );
   }
