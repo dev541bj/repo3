@@ -1,5 +1,9 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
+import { withRouter } from "react-router";
+import moment from "moment";
+import { saveAs } from "file-saver";
+import { pdf } from "@react-pdf/renderer";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -12,8 +16,12 @@ import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Paper from "@material-ui/core/Paper";
 import Cyan from "@material-ui/core/colors/cyan";
 import Container from "@material-ui/core/Container";
+import IconButton from "@material-ui/core/IconButton";
+import Badge from "@material-ui/core/Badge";
+import DownloadIcon from "@material-ui/icons/CloudDownload";
 
 import API from "../utils/API";
+import NoteHistoryTemplate from "../PDFTemplates/NoteHistoryTemplate";
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -72,6 +80,9 @@ class EnhancedTableHead extends React.Component {
     return (
       <TableHead>
         <TableRow>
+          <CustomTableCell align="center">
+            <TableSortLabel />
+          </CustomTableCell>
           {rows.map(
             row => (
               <CustomTableCell
@@ -133,17 +144,21 @@ const styles = theme => ({
 // Table Body
 
 class EventsTable extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      order: "asc",
+      open: false,
+      orderBy: "",
+      noteData: [],
+      curEventId: 0,
+      redirectDocs: false,
+      page: 0,
+      rowsPerPage: 5
+    };
+  }
   static defaultProps = { TableSortLabel: "asc" };
-  state = {
-    order: "asc",
-    open: false,
-    orderBy: "",
-    noteData: [],
-    curEventId: 0,
-    redirectDocs: false,
-    page: 0,
-    rowsPerPage: 5
-  };
 
   async componentDidMount() {
     try {
@@ -204,6 +219,147 @@ class EventsTable extends React.Component {
     });
   };
 
+  handleDownload = async id => {
+    try {
+      let pdfData = {
+        clientData: [],
+        therapistData: [],
+        client: this.props.location.state.client,
+        noteType: "Narrative",
+        attendanceType: "Present ($)",
+        sessionDate: moment(this.props.location.state.sessionDate).format(
+          "MM/DD/YYYY h:mm a"
+        ),
+        calID: this.props.location.state.calID,
+        checkedPayor: true,
+        checkedFamily: false,
+        checkedTherapist: false,
+        checkedPortal: false,
+        validationBox: false,
+        redirect: false,
+        narrativeNote: "",
+        noteTypes: [],
+        // SOAP
+        s_note: "",
+        o_note: "",
+        a_note: "",
+        p_note: "",
+        // Rating Scale
+        rating1: 10,
+        rating2: 10,
+        rating3: 10,
+        ratingDesc1: "",
+        ratingDesc2: "",
+        ratingDesc3: "",
+        addRating2: false,
+        addRating3: false,
+        // Percentage Scale
+        scaleResult: "",
+        scaleResult2: "",
+        scaleResult3: "",
+        addScale2: false,
+        addScale3: false,
+
+        first: "",
+        second: "",
+        third: "",
+        sections: [],
+        selectedID: 2,
+        note_date: "",
+        initTemplate: 2,
+        customType: ""
+      };
+
+      const formsResp = await API.get("/templates/templates");
+      const formData = formsResp.data.data;
+
+      pdfData = {
+        ...pdfData,
+        noteTypes: formData.map(template => {
+          return {
+            value: template.id,
+            label: template.template_name
+          };
+        })
+      };
+
+      const res = await API.get(`events/templates/${id}`);
+      const template = res.data.data;
+
+      if (template[0].type_note === 1) {
+        pdfData = {
+          ...pdfData,
+          sections: JSON.parse(template[0].notes),
+          noteType: "SOAP",
+          selectedID: 1,
+          s_note: this.state.sections.s_note,
+          o_note: this.state.sections.o_note,
+          a_note: this.state.sections.a_note,
+          p_note: this.state.sections.p_note
+        };
+      } else if (template[0].type_note === 2) {
+        pdfData = {
+          ...pdfData,
+          sections: JSON.parse(template[0].notes),
+          noteType: "Narrative",
+          selectedID: 2,
+          narrativeNote: this.state.sections.narrativeNote
+        };
+      } else if (template[0].type_note === 3) {
+        pdfData = {
+          ...pdfData,
+          sections: JSON.parse(template[0].notes),
+          noteType: "Rating Scale",
+          selectedID: 3,
+          rating1: this.state.sections ? this.state.sections.rating1 : 1,
+          rating2: this.state.sections ? this.state.sections.rating2 : 1,
+          rating3: this.state.sections ? this.state.sections.rating3 : 1,
+          ratingDesc1: this.state.sections
+            ? this.state.sections.ratingDesc1
+            : 1,
+          ratingDesc2: this.state.sections
+            ? this.state.sections.ratingDesc2
+            : 1,
+          ratingDesc3: this.state.sections
+            ? this.state.sections.ratingDesc3
+            : 1,
+          addRating2: this.state.sections ? this.state.sections.addRating2 : 1,
+          addRating3: this.state.sections ? this.state.sections.addRating3 : 1
+        };
+      } else if (template[0].type_note === 4) {
+        pdfData = {
+          ...pdfData,
+          sections: JSON.parse(template[0].notes),
+          noteType: "Percentage Scale",
+          selectedID: 4,
+          first: this.state.sections.first,
+          scaleResult: this.state.sections.scaleResult,
+          second: this.state.sections.second,
+          scaleResult2: this.state.sections.scaleResult2,
+          third: this.state.sections.third,
+          scaleResult3: this.state.sections.scaleResult3,
+          addScale2: this.state.sections.addScale2,
+          addScale3: this.state.sections.addScale3
+        };
+      } else if (template[0].type_note > 4) {
+        pdfData = {
+          ...pdfData,
+          selectedID: template[0].type_note,
+          sections: JSON.parse(template[0].notes)
+        };
+      }
+
+      pdfData = {
+        ...pdfData,
+        initTemplate: this.state.selectedID
+      };
+      const blob = await pdf(<NoteHistoryTemplate data={pdfData} />).toBlob();
+      saveAs(blob, "note.pdf");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
@@ -246,8 +402,20 @@ class EventsTable extends React.Component {
                           key={n.id}
                           onClick={() => this.handleClickRedirect(n.id)}
                         >
+                          <TableCell align="center">
+                            <IconButton
+                              color="inherit"
+                              onClick={e => {
+                                e.stopPropagation();
+                                this.handleDownload(n.id);
+                              }}
+                            >
+                              <Badge color="inherit">
+                                <DownloadIcon />
+                              </Badge>
+                            </IconButton>
+                          </TableCell>
                           <TableCell align="center">{n.start}</TableCell>
-
                           <TableCell align="center">{n.noteDate}</TableCell>
                           {/* <TableCell align="center">{n.clients}</TableCell> */}
                         </TableRow>
@@ -293,4 +461,4 @@ EventsTable.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(EventsTable);
+export default withRouter(withStyles(styles)(EventsTable));
