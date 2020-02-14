@@ -8,7 +8,21 @@ export const regularFont = "Roboto-Regular";
 export const styles = StyleSheet.create({
   page: {
     backgroundColor: "#FFF",
-    fontFamily: regularFont
+    fontFamily: regularFont,
+    padding: "30 40"
+  },
+  wrapper: {
+    // backgroundColor: lightGreen
+  },
+  title: {
+    textAlign: "center",
+    fontSize: 18,
+    marginBottom: 20
+  },
+  infos: {
+    display: "flex",
+    flexDirection: "row",
+    margin: "10 0"
   },
   label: {
     fontSize: 9,
@@ -18,6 +32,12 @@ export const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 6
   },
+  sections: {
+    display: "flex",
+    width: "100%",
+    marginTop: 6
+  },
+  section: {},
   radio: {
     display: "flex",
     flexDirection: "row",

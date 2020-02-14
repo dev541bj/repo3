@@ -1,1 +1,1 @@
-export { default } from "./NoteHistoryTemplate";
+export { default } from "./NoteHistory";

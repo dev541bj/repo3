@@ -225,12 +225,12 @@ class EventsTable extends React.Component {
         clientData: [],
         therapistData: [],
         client: this.props.location.state.client,
-        noteType: "Narrative",
-        attendanceType: "Present ($)",
         sessionDate: moment(this.props.location.state.sessionDate).format(
           "MM/DD/YYYY h:mm a"
         ),
         calID: this.props.location.state.calID,
+        noteType: "Narrative",
+        attendanceType: "Present ($)",
         checkedPayor: true,
         checkedFamily: false,
         checkedTherapist: false,
@@ -286,72 +286,76 @@ class EventsTable extends React.Component {
       const res = await API.get(`events/templates/${id}`);
       const template = res.data.data;
 
+      let sections = null;
+
+      console.log("template", template);
+      try {
+        sections = JSON.parse(template[0].notes);
+      } catch (error) {
+        console.log(error);
+      }
+      console.log("sections", sections);
+
       if (template[0].type_note === 1) {
         pdfData = {
           ...pdfData,
-          sections: JSON.parse(template[0].notes),
+          sections: sections,
           noteType: "SOAP",
           selectedID: 1,
-          s_note: this.state.sections.s_note,
-          o_note: this.state.sections.o_note,
-          a_note: this.state.sections.a_note,
-          p_note: this.state.sections.p_note
+          s_note: sections ? sections.s_note : "",
+          o_note: sections ? sections.o_note : "",
+          a_note: sections ? sections.a_note : "",
+          p_note: sections ? sections.p_note : ""
         };
       } else if (template[0].type_note === 2) {
         pdfData = {
           ...pdfData,
-          sections: JSON.parse(template[0].notes),
+          sections: sections,
           noteType: "Narrative",
           selectedID: 2,
-          narrativeNote: this.state.sections.narrativeNote
+          narrativeNote: sections ? sections.narrativeNote : ""
         };
       } else if (template[0].type_note === 3) {
         pdfData = {
           ...pdfData,
-          sections: JSON.parse(template[0].notes),
+          sections: sections,
           noteType: "Rating Scale",
           selectedID: 3,
-          rating1: this.state.sections ? this.state.sections.rating1 : 1,
-          rating2: this.state.sections ? this.state.sections.rating2 : 1,
-          rating3: this.state.sections ? this.state.sections.rating3 : 1,
-          ratingDesc1: this.state.sections
-            ? this.state.sections.ratingDesc1
-            : 1,
-          ratingDesc2: this.state.sections
-            ? this.state.sections.ratingDesc2
-            : 1,
-          ratingDesc3: this.state.sections
-            ? this.state.sections.ratingDesc3
-            : 1,
-          addRating2: this.state.sections ? this.state.sections.addRating2 : 1,
-          addRating3: this.state.sections ? this.state.sections.addRating3 : 1
+          rating1: sections ? sections.rating1 : 1,
+          rating2: sections ? sections.rating2 : 1,
+          rating3: sections ? sections.rating3 : 1,
+          ratingDesc1: sections ? sections.ratingDesc1 : 1,
+          ratingDesc2: sections ? sections.ratingDesc2 : 1,
+          ratingDesc3: sections ? sections.ratingDesc3 : 1,
+          addRating2: sections ? sections.addRating2 : 1,
+          addRating3: sections ? sections.addRating3 : 1
         };
       } else if (template[0].type_note === 4) {
         pdfData = {
           ...pdfData,
-          sections: JSON.parse(template[0].notes),
+          sections: sections,
           noteType: "Percentage Scale",
           selectedID: 4,
-          first: this.state.sections.first,
-          scaleResult: this.state.sections.scaleResult,
-          second: this.state.sections.second,
-          scaleResult2: this.state.sections.scaleResult2,
-          third: this.state.sections.third,
-          scaleResult3: this.state.sections.scaleResult3,
-          addScale2: this.state.sections.addScale2,
-          addScale3: this.state.sections.addScale3
+          first: sections ? sections.first : "",
+          scaleResult: sections ? sections.scaleResult : "",
+          second: sections ? sections.second : "",
+          scaleResult2: sections ? sections.scaleResult2 : "",
+          third: sections ? sections.third : "",
+          scaleResult3: sections ? sections.scaleResult3 : "",
+          addScale2: sections ? sections.addScale2 : false,
+          addScale3: sections ? sections.addScale3 : false
         };
       } else if (template[0].type_note > 4) {
         pdfData = {
           ...pdfData,
           selectedID: template[0].type_note,
-          sections: JSON.parse(template[0].notes)
+          sections: sections
         };
       }
 
       pdfData = {
         ...pdfData,
-        initTemplate: this.state.selectedID
+        initTemplate: template[0].type_note
       };
       const blob = await pdf(<NoteHistoryTemplate data={pdfData} />).toBlob();
       saveAs(blob, "note.pdf");
