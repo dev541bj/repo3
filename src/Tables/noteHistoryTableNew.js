@@ -19,6 +19,8 @@ import Container from "@material-ui/core/Container";
 import IconButton from "@material-ui/core/IconButton";
 import Badge from "@material-ui/core/Badge";
 import DownloadIcon from "@material-ui/icons/CloudDownload";
+import Button from "@material-ui/core/Button";
+import AddIcon from "@material-ui/icons/Add";
 
 import API from "../utils/API";
 import NoteHistoryTemplate from "../PDFTemplates/NoteHistoryTemplate";
@@ -374,6 +376,16 @@ class EventsTable extends React.Component {
 
     return (
       <Container maxWidth="md">
+        <Button
+          variant="contained"
+          className={classes.colorButton}
+          //onClick={this.handleClickOpen}
+        >
+          <AddIcon
+          // className={classNames(classes.leftIcon, classes.iconSmall)}
+          />
+          Download selected
+        </Button>
         {this.state.redirectDocs ? (
           <Redirect
             to={{
