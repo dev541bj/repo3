@@ -1,11 +1,7 @@
 import React from "react";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
-import {
-  withStyles,
-  createMuiTheme,
-  MuiThemeProvider
-} from "@material-ui/core/styles";
+import { withStyles, createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormLabel from "@material-ui/core/FormLabel";
@@ -634,14 +630,10 @@ class Documentation extends React.Component {
   onChangeCheckboxField = (sectionId, checkboxId = 0, name, value) => {
     const { sections } = this.state;
 
-    const sectionIndex = sections.findIndex(
-      section => section.id === sectionId
-    );
+    const sectionIndex = sections.findIndex(section => section.id === sectionId);
 
     const updatedSections = sections.slice();
-    updatedSections[sectionIndex]["fields"][0]["checkboxes"][checkboxId][
-      name
-    ] = value;
+    updatedSections[sectionIndex]["fields"][0]["checkboxes"][checkboxId][name] = value;
 
     this.setState({ sections: updatedSections });
   };
@@ -649,9 +641,7 @@ class Documentation extends React.Component {
   onChangeSectionField = (sectionId, fieldId = 0, name, value) => {
     const { sections } = this.state;
 
-    const sectionIndex = sections.findIndex(
-      section => section.id === sectionId
-    );
+    const sectionIndex = sections.findIndex(section => section.id === sectionId);
 
     const updatedSections = sections.slice();
     updatedSections[sectionIndex]["fields"][fieldId][name] = value;
@@ -687,9 +677,7 @@ class Documentation extends React.Component {
           noteType: "Narrative"
         });
         if (this.state.selectedID !== this.state.initTemplate) {
-          const res = await API.get(
-            `templates/templates_narrative/getNarrative`
-          );
+          const res = await API.get(`templates/templates_narrative/getNarrative`);
           const template = res.data.data;
           this.setState({
             sections: JSON.parse(template.sections)
@@ -724,9 +712,7 @@ class Documentation extends React.Component {
           noteType: "Percentage Scale"
         });
         if (this.state.selectedID !== this.state.initTemplate) {
-          const res = await API.get(
-            `templates/templates_percentage/getPercentage`
-          );
+          const res = await API.get(`templates/templates_percentage/getPercentage`);
           const template = res.data.data;
           this.setState({
             sections: JSON.parse(template.sections)
@@ -790,15 +776,10 @@ class Documentation extends React.Component {
             }}
           />
         ) : null}
-        <Dialog
-          open={this.state.validationBox}
-          onClose={this.handleValidationClose}
-        >
+        <Dialog open={this.state.validationBox} onClose={this.handleValidationClose}>
           <DialogTitle>Oops! You missed a field!</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              Please fill out any field with an asterisk.
-            </DialogContentText>
+            <DialogContentText>Please fill out any field with an asterisk.</DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={this.handleValidationClose}>Got it!</Button>
@@ -817,14 +798,7 @@ class Documentation extends React.Component {
             //justify="space-between"
             alignItems="center"
           >
-            <TextField
-              id="client-textbox"
-              label="Client"
-              value={this.state.client}
-              className={classes.textField}
-              margin="normal"
-              variant="outlined"
-            />
+            <TextField id="client-textbox" label="Client" value={this.state.client} className={classes.textField} margin="normal" variant="outlined" />
             <TextField
               id="session-date"
               label="Session Date"
@@ -879,12 +853,7 @@ class Documentation extends React.Component {
               ))}
             </TextField>
           </Grid>
-          <Grid
-            container
-            direction="row"
-            justify="space-between"
-            alignItems="center"
-          >
+          <Grid container direction="row" justify="space-between" alignItems="center">
             {this.state.selectedID > 4 ? (
               <Container maxWidth="lg">
                 <MuiThemeProvider theme={theme}>
@@ -1074,12 +1043,7 @@ class Documentation extends React.Component {
 
                 <FormControlLabel
                   control={
-                    <Checkbox
-                      color="primary"
-                      checked={this.state.addRating2}
-                      onChange={this.handleAdd2ndRating("addRating2")}
-                      value={this.state.addRating2}
-                    />
+                    <Checkbox color="primary" checked={this.state.addRating2} onChange={this.handleAdd2ndRating("addRating2")} value={this.state.addRating2} />
                   }
                   label="Add additional rating"
                 />
@@ -1206,12 +1170,7 @@ class Documentation extends React.Component {
                 </RadioGroup>
                 <FormControlLabel
                   control={
-                    <Checkbox
-                      color="primary"
-                      checked={this.state.addScale2}
-                      onChange={this.handleAdd2ndScale("addScale2")}
-                      value={this.state.addScale2}
-                    />
+                    <Checkbox color="primary" checked={this.state.addScale2} onChange={this.handleAdd2ndScale("addScale2")} value={this.state.addScale2} />
                   }
                   label="add additional goal"
                 />
@@ -1251,9 +1210,7 @@ class Documentation extends React.Component {
                       labelPlacement="end"
                     />
                     <FormControlLabel
-                      checked={
-                        this.state.scaleResult2 === "Inconsistent (51-79%)"
-                      }
+                      checked={this.state.scaleResult2 === "Inconsistent (51-79%)"}
                       value="Inconsistent (51-79%)"
                       control={<Radio color="primary" />}
                       label="Inconsistent (51-79%)"
@@ -1272,12 +1229,7 @@ class Documentation extends React.Component {
                 {this.state.addScale2 ? (
                   <FormControlLabel
                     control={
-                      <Checkbox
-                        color="primary"
-                        checked={this.state.addScale3}
-                        onChange={this.handleAdd3rdScale("addScale3")}
-                        value={this.state.addScale3}
-                      />
+                      <Checkbox color="primary" checked={this.state.addScale3} onChange={this.handleAdd3rdScale("addScale3")} value={this.state.addScale3} />
                     }
                     label="Add additional goal"
                   />
@@ -1317,9 +1269,7 @@ class Documentation extends React.Component {
                       labelPlacement="end"
                     />
                     <FormControlLabel
-                      checked={
-                        this.state.scaleResult3 === "Inconsistent (51-79%)"
-                      }
+                      checked={this.state.scaleResult3 === "Inconsistent (51-79%)"}
                       value="Inconsistent (51-79%)"
                       control={<Radio color="primary" />}
                       label="Inconsistent (51-79%)"
@@ -1344,24 +1294,12 @@ class Documentation extends React.Component {
           <MuiThemeProvider theme={theme}>
             <FormGroup row>
               <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={this.state.checkedPayor}
-                    onChange={this.handleChangeCheck("checkedPayor")}
-                    value="checkedPayor"
-                    color="primary"
-                  />
-                }
+                control={<Checkbox checked={this.state.checkedPayor} onChange={this.handleChangeCheck("checkedPayor")} value="checkedPayor" color="primary" />}
                 label="Payor"
               />
               <FormControlLabel
                 control={
-                  <Checkbox
-                    checked={this.state.checkedFamily}
-                    onChange={this.handleChangeCheck("checkedFamily")}
-                    value="checkedFamily"
-                    color="primary"
-                  />
+                  <Checkbox checked={this.state.checkedFamily} onChange={this.handleChangeCheck("checkedFamily")} value="checkedFamily" color="primary" />
                 }
                 label="Family"
               />
