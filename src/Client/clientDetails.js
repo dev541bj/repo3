@@ -1,11 +1,7 @@
 import React from "react";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
-import {
-  withStyles,
-  createMuiTheme,
-  MuiThemeProvider
-} from "@material-ui/core/styles";
+import { withStyles, createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import green from "@material-ui/core/colors/green";
@@ -776,9 +772,7 @@ class ClientDetails extends React.Component {
   }
 
   changeContentWithClientId() {
-    const client = this.state.clientData.find(
-      ({ id }) => id === this.state.client
-    );
+    const client = this.state.clientData.find(({ id }) => id === this.state.client);
     if (client) {
       const {
         id,
@@ -928,7 +922,7 @@ class ClientDetails extends React.Component {
         obj10_2_desc,
         obj10_3_desc
       } = client;
-      console.log(client);
+      // console.log(client);
       this.setState({
         client: id,
         clientType: client_type,
@@ -1093,8 +1087,7 @@ class ClientDetails extends React.Component {
       checkedA: this.state.checkedA,
       //clientInitials: this.state.clientInitials,
       // CLIENT INFO TAB
-      clientFullName:
-        this.state.clientFirstName + " " + this.state.clientLastName,
+      clientFullName: this.state.clientFirstName + " " + this.state.clientLastName,
       clientFirstName: this.state.clientFirstName,
       clientFacility: this.state.clientFacility,
       clientLastName: this.state.clientLastName,
@@ -1310,16 +1303,11 @@ class ClientDetails extends React.Component {
 
     return (
       <div>
-        <Dialog
-          open={this.state.infoValidationBox}
-          onClose={this.handleValidationClose}
-        >
+        <Dialog open={this.state.infoValidationBox} onClose={this.handleValidationClose}>
           <DialogTitle>You changes have been saved</DialogTitle>
-          <DialogContent>
-            {/*     <DialogContentText>
+          <DialogContent>{/*     <DialogContentText>
              
-            </DialogContentText> */}
-          </DialogContent>
+            </DialogContentText> */}</DialogContent>
           <DialogActions>
             <Button onClick={this.handleValidationClose}>Awesome!</Button>
           </DialogActions>
@@ -1327,11 +1315,7 @@ class ClientDetails extends React.Component {
         <Container maxWidth="lg">
           {/* Avatar */}
           <Grid container justify="center" alignItems="center">
-            <IconButton
-              color="primary"
-              className={classes.clientAvatar}
-              onClick={this.handleClickAvatar}
-            >
+            <IconButton color="primary" className={classes.clientAvatar} onClick={this.handleClickAvatar}>
               {this.state.clientInitials}
             </IconButton>
             <Menu
@@ -1350,13 +1334,9 @@ class ClientDetails extends React.Component {
                 type="file"
               />
               <label htmlFor="contained-button-file">
-                <MenuItem onClick={this.handleCloseAvatar}>
-                  Upload Picture{" "}
-                </MenuItem>
+                <MenuItem onClick={this.handleCloseAvatar}>Upload Picture </MenuItem>
               </label>
-              <MenuItem onClick={this.handleCloseAvatar}>
-                Remove Picture
-              </MenuItem>
+              <MenuItem onClick={this.handleCloseAvatar}>Remove Picture</MenuItem>
             </Menu>
           </Grid>
           <Paper className={classes.root} elevation={2}>
@@ -1417,11 +1397,7 @@ class ClientDetails extends React.Component {
           </Paper>
 
           <AppBar className={classes.root2} position="static">
-            <Tabs
-              indicatorColor="primary"
-              value={tabValue}
-              onChange={this.handleChangeTabs}
-            >
+            <Tabs indicatorColor="primary" value={tabValue} onChange={this.handleChangeTabs}>
               <Tab label="Client Information" />
               <Tab label="Contact Information" />
               <Tab label="Payor Information" />
@@ -1432,10 +1408,7 @@ class ClientDetails extends React.Component {
           </AppBar>
 
           {tabValue === 0 && (
-            <form
-              /* className={classes.container} */ noValidate
-              autoComplete="off"
-            >
+            <form /* className={classes.container} */ noValidate autoComplete="off">
               <Paper className={classes.infoRoot} elevation={2}>
                 <Grid container justify="center" alignItems="center">
                   <TextField
@@ -1658,9 +1631,7 @@ class ClientDetails extends React.Component {
                       onChange={this.handleChange("sessionCost")}
                       margin="normal"
                       InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">$</InputAdornment>
-                        )
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>
                       }}
                       thousandSeparator={true}
                       fixedDecimalScale={true}
@@ -1712,10 +1683,7 @@ class ClientDetails extends React.Component {
                         }}
                       >
                         {therapistData.map(option => (
-                          <MenuItem
-                            key={option.id}
-                            value={option.member_full_name}
-                          >
+                          <MenuItem key={option.id} value={option.member_full_name}>
                             {option.member_full_name}
                           </MenuItem>
                         ))}
@@ -1742,12 +1710,7 @@ class ClientDetails extends React.Component {
                     </MuiThemeProvider>
                   </Grid>
                   <Grid container justify="space-between">
-                    <Button
-                      className={classes.deleteButton}
-                      size="large"
-                      variant="contained"
-                      onClick={this.handleDeleteDialogOpen}
-                    >
+                    <Button className={classes.deleteButton} size="large" variant="contained" onClick={this.handleDeleteDialogOpen}>
                       Delete
                     </Button>
                     <Snackbar
@@ -1765,24 +1728,16 @@ class ClientDetails extends React.Component {
                         message={`Something went wrong while removing client: ${this.state.deleteClientErrorMsg}`}
                       />
                     </Snackbar>
-                    <Dialog
-                      open={this.state.deleteDialog}
-                      onClose={this.handleDeleteDialogClose}
-                    >
-                      <DialogTitle>
-                        Are you sure you want to delete this client?
-                      </DialogTitle>
+                    <Dialog open={this.state.deleteDialog} onClose={this.handleDeleteDialogClose}>
+                      <DialogTitle>Are you sure you want to delete this client?</DialogTitle>
                       <DialogContent>
                         <DialogContentText>
-                          Once this client has been deleted, it cannot be
-                          undone. If this client has references elsewhere, this
-                          client will be marked as inactive.
+                          Once this client has been deleted, it cannot be undone. If this client has references elsewhere, this client will be marked as
+                          inactive.
                         </DialogContentText>
                       </DialogContent>
                       <DialogActions>
-                        <Button onClick={this.handleDeleteDialogClose}>
-                          No
-                        </Button>
+                        <Button onClick={this.handleDeleteDialogClose}>No</Button>
                         <Button onClick={this.handleDelete} autoFocus>
                           Yes
                         </Button>
@@ -1956,12 +1911,8 @@ class ClientDetails extends React.Component {
                           control={
                             <Checkbox
                               color="primary"
-                              checked={Boolean(
-                                this.state.contactCheckedRecEmails
-                              )}
-                              onChange={this.handleChangeChecked(
-                                "contactCheckedRecEmails"
-                              )}
+                              checked={Boolean(this.state.contactCheckedRecEmails)}
+                              onChange={this.handleChangeChecked("contactCheckedRecEmails")}
                               classes={{
                                 root: classes.checkedRoot,
                                 checked: classes.checked
@@ -1981,9 +1932,7 @@ class ClientDetails extends React.Component {
                           <Checkbox
                             color="primary"
                             checked={Boolean(this.state.checkedContact2)}
-                            onChange={this.handleChangeCheck2(
-                              "checkedContact2"
-                            )}
+                            onChange={this.handleChangeCheck2("checkedContact2")}
                             classes={{
                               root: classes.checkedRoot,
                               checked: classes.checked
@@ -2164,12 +2113,8 @@ class ClientDetails extends React.Component {
                         control={
                           <Checkbox
                             color="primary"
-                            checked={Boolean(
-                              this.state.contact2CheckedRecEmails
-                            )}
-                            onChange={this.handleChangeChecked(
-                              "contact2CheckedRecEmails"
-                            )}
+                            checked={Boolean(this.state.contact2CheckedRecEmails)}
+                            onChange={this.handleChangeChecked("contact2CheckedRecEmails")}
                             classes={{
                               root: classes.checkedRoot,
                               checked: classes.checked
@@ -2190,9 +2135,7 @@ class ClientDetails extends React.Component {
                             <Checkbox
                               color="primary"
                               checked={Boolean(this.state.checkedContact3)}
-                              onChange={this.handleChangeCheck3(
-                                "checkedContact3"
-                              )}
+                              onChange={this.handleChangeCheck3("checkedContact3")}
                               classes={{
                                 root: classes.checkedRoot,
                                 checked: classes.checked
@@ -2375,12 +2318,8 @@ class ClientDetails extends React.Component {
                         control={
                           <Checkbox
                             color="primary"
-                            checked={Boolean(
-                              this.state.contact3CheckedRecEmails
-                            )}
-                            onChange={this.handleChangeChecked(
-                              "contact3CheckedRecEmails"
-                            )}
+                            checked={Boolean(this.state.contact3CheckedRecEmails)}
+                            onChange={this.handleChangeChecked("contact3CheckedRecEmails")}
                             classes={{
                               root: classes.checkedRoot,
                               checked: classes.checked
@@ -2429,9 +2368,7 @@ class ClientDetails extends React.Component {
                         control={
                           <Checkbox
                             checked={this.state.billSameAsContact}
-                            onChange={this.handleChangeChecked(
-                              "billSameAsContact"
-                            )}
+                            onChange={this.handleChangeChecked("billSameAsContact")}
                             value="billSameAsContact"
                             color="primary"
                           />
@@ -2678,13 +2615,8 @@ class ClientDetails extends React.Component {
             <form className={classes.container} noValidate autoComplete="off">
               <Paper className={classes.infoRoot} elevation={2}>
                 {this.state.addGoal1 ? null : (
-                  <Typography
-                    className={classes.title}
-                    align="center"
-                    variant="h6"
-                  >
-                    It looks like you haven't added any goals or objectives.
-                    Check the box below to begin adding some!
+                  <Typography className={classes.title} align="center" variant="h6">
+                    It looks like you haven't added any goals or objectives. Check the box below to begin adding some!
                   </Typography>
                 )}
                 {this.state.addGoal1 ? null : (

@@ -1,5 +1,6 @@
 import { StyleSheet } from "@react-pdf/renderer";
 
+export const dark = "#333";
 export const grey = "#666";
 export const lightGreen = "#ebf7f5";
 export const green = "#b6e1db";
@@ -9,7 +10,7 @@ export const styles = StyleSheet.create({
   page: {
     backgroundColor: "#FFF",
     fontFamily: regularFont,
-    padding: "30 40"
+    padding: "40 50"
   },
   wrapper: {
     // backgroundColor: lightGreen
@@ -94,5 +95,11 @@ export const styles = StyleSheet.create({
     fontSize: 10,
     left: -3,
     top: 8
+  },
+  divider: {
+    margin: "24 0",
+    width: "100%",
+    height: 3,
+    backgroundColor: dark
   }
 });
