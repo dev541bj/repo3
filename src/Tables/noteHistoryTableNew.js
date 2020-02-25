@@ -48,7 +48,9 @@ function stableSort(array, cmp) {
 }
 
 function getSorting(order, orderBy) {
-  return order === "desc" ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
+  return order === "desc"
+    ? (a, b) => desc(a, b, orderBy)
+    : (a, b) => -desc(a, b, orderBy);
 }
 
 const rows = [
@@ -89,16 +91,27 @@ class EnhancedTableHead extends React.Component {
                 toggleAllSelected();
               }}
             >
-              <Badge color="inherit">{allSelected ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}</Badge>
+              <Badge color="inherit">
+                {allSelected ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+              </Badge>
             </IconButton>
           </CustomTableCell>
-          <CustomTableCell align="center">
+          {/*    <CustomTableCell align="center">
             <TableSortLabel />
-          </CustomTableCell>
+          </CustomTableCell> */}
           {rows.map(
             row => (
-              <CustomTableCell key={row.id} padding={row.disablePadding ? "none" : "default"} align="center" sortDirection={orderBy === row.id ? order : false}>
-                <TableSortLabel active={orderBy === row.id} direction={order} onClick={this.createSortHandler(row.id)}>
+              <CustomTableCell
+                key={row.id}
+                padding={row.disablePadding ? "none" : "default"}
+                align="center"
+                sortDirection={orderBy === row.id ? order : false}
+              >
+                <TableSortLabel
+                  active={orderBy === row.id}
+                  direction={order}
+                  onClick={this.createSortHandler(row.id)}
+                >
                   {row.label}
                 </TableSortLabel>
               </CustomTableCell>
@@ -236,7 +249,9 @@ class EventsTable extends React.Component {
       clientData: [],
       therapistData: [],
       client: this.props.location.state.client,
-      sessionDate: moment(this.props.location.state.sessionDate).format("MM/DD/YYYY h:mm a"),
+      sessionDate: moment(this.props.location.state.sessionDate).format(
+        "MM/DD/YYYY h:mm a"
+      ),
       calID: this.props.location.state.calID,
       noteType: "Narrative",
       attendanceType: "Present ($)",
@@ -398,7 +413,8 @@ class EventsTable extends React.Component {
   render() {
     const { classes } = this.props;
     const { noteData, order, orderBy, rowsPerPage, page } = this.state;
-    const emptyRows = rowsPerPage - Math.min(rowsPerPage, noteData.length - page * rowsPerPage);
+    const emptyRows =
+      rowsPerPage - Math.min(rowsPerPage, noteData.length - page * rowsPerPage);
 
     return (
       <Container maxWidth="md">
@@ -445,21 +461,38 @@ class EventsTable extends React.Component {
                     .map(n => {
                       // const isSelected = this.isSelected(n.id);
                       return (
-                        <TableRow hover className={classes.row} tabIndex={-1} key={n.id} onClick={() => this.handleClickRedirect(n.id)}>
+                        <TableRow
+                          hover
+                          className={classes.row}
+                          tabIndex={-1}
+                          key={n.id}
+                          onClick={() => this.handleClickRedirect(n.id)}
+                        >
                           <TableCell align="center">
                             <IconButton
                               color="inherit"
                               onClick={e => {
                                 e.stopPropagation();
                                 this.setState(state => {
-                                  return { selected: { ...state.selected, [n.id]: !state.selected[n.id] } };
+                                  return {
+                                    selected: {
+                                      ...state.selected,
+                                      [n.id]: !state.selected[n.id]
+                                    }
+                                  };
                                 });
                               }}
                             >
-                              <Badge color="inherit">{this.state.selected[n.id] ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}</Badge>
+                              <Badge color="inherit">
+                                {this.state.selected[n.id] ? (
+                                  <CheckBoxIcon />
+                                ) : (
+                                  <CheckBoxOutlineBlankIcon />
+                                )}
+                              </Badge>
                             </IconButton>
                           </TableCell>
-                          <TableCell align="center">
+                          {/*            <TableCell align="center">
                             <IconButton
                               color="inherit"
                               onClick={e => {
@@ -472,7 +505,7 @@ class EventsTable extends React.Component {
                                 <DownloadIcon />
                               </Badge>
                             </IconButton>
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell align="center">{n.start}</TableCell>
                           <TableCell align="center">{n.noteDate}</TableCell>
                           {/* <TableCell align="center">{n.clients}</TableCell> */}

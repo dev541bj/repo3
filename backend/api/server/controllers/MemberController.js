@@ -52,7 +52,6 @@ class MemberController {
   }
 
   static async getSelectedClient(req, res) {
-    
     try {
       const selected = await MemberService.getSelected(req.params.id);
       if (selected) {
@@ -116,6 +115,58 @@ class MemberController {
     }
   }
 
+  static async catReport(req, res) {
+    const updateOne = req.body;
+
+    try {
+      const updatedOne = await MemberService.categoryReport(updateOne);
+      util.setSuccess(201, "Report calculated", updatedOne);
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error.message);
+      return util.send(res);
+    }
+  }
+
+  static async billReport(req, res) {
+    const updateOne = req.body;
+
+    try {
+      const updatedOne = await MemberService.billableHours(updateOne);
+      util.setSuccess(201, "Report calculated", updatedOne);
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error.message);
+      return util.send(res);
+    }
+  }
+
+  static async addReport(req, res) {
+    const newOne = req.body;
+    try {
+      const createdOne = await MemberService.newReport(newOne);
+      util.setSuccess(201, "Report Added!", createdOne);
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error.message);
+      return util.send(res);
+    }
+  }
+
+  static async getReports(req, res) {
+    try {
+      const allReports = await MemberService.getReports();
+      if (allReports.length > 0) {
+        util.setSuccess(200, "Reports retrieved", allReports);
+      } else {
+        util.setSuccess(200, "No report found");
+      }
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error);
+      return util.send(res);
+    }
+  }
 }
 
 //export default MemberController;

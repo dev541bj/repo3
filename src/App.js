@@ -72,6 +72,7 @@ import PaymentSettings from "./Settings/paymentSettings";
 import TeamMemberActionsHideInactive from "./Actions/teamMemberActionsHideInactive";
 import TeamMemberActionsShowAll from "./Actions/teamMemberActionsShowAll";
 import NoteTemplatesActions from "./Actions/noteTemplatesActions";
+import ReportActions from "./Actions/reportActions";
 //import FormsActions from "./Actions/formsActions";
 import ClientActionsShowAll from "./Actions/clientActionsShowAll";
 import ClientActionsHideInactive from "./Actions/clientActionsHideInactive";
@@ -111,6 +112,7 @@ import SOAP from "./noteTemplates/SOAP";
 import RatingScale from "./noteTemplates/ratingScale";
 import PercentageScale from "./noteTemplates/percentageScale";
 import Builder from "./noteTemplates/Builder";
+import ReportTable from "./Tables/reportTable";
 
 //width of drawer
 const drawerWidth = 240;
@@ -776,6 +778,8 @@ class MainApp extends React.Component {
               render={() => (
                 <div>
                   <TitleBarReports />
+                  <ReportActions />
+                  <ReportTable />
                 </div>
               )}
             />
