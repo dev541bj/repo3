@@ -15,13 +15,15 @@ router.put("/updatememberpriv", MemberController.updateMemberPriv);
 router.put("/assignclient", MemberController.assiCli);
 router.get("/selected/:id", MemberController.getSelectedClient);
 // category report
-router.post("/catreport", MemberController.catReport);
+router.get("/catreport", MemberController.catReport);
 // billable hours report
 router.post("/billreport", MemberController.billReport);
 // add report
 router.post("/addreport", MemberController.addReport);
 // get reports
 router.get("/getreports", MemberController.getReports);
+// pull a single report by id
+router.get("/report/:id", MemberController.getReportById);
 
 //export default router;
 module.exports = router;

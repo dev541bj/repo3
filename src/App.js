@@ -84,9 +84,9 @@ import TeamMembersTable from "./Tables/teamMembersTable";
 import TeamMembersTableActive from "./Tables/teamMembersTableActive";
 import ClientsTable from "./Tables/clientsTable";
 import ClientsTableActive from "./Tables/clientsActiveTable";
-//import AccountDetailsTable from "./Tables/accountDetailsTable2";
-//import AccountDetailsTable from "./Tables/accountDetailsTable";
 import AccountDetailsTableNew from "./Tables/accountDetailsTableNew";
+import ReportTable from "./Tables/reportTable";
+import ReportDetailsTable from "./Tables/reportDetailsTable";
 // Clients
 import NewClient from "./Client/newClient";
 import NewClientHideInac from "./Client/newClientHideInac";
@@ -112,7 +112,6 @@ import SOAP from "./noteTemplates/SOAP";
 import RatingScale from "./noteTemplates/ratingScale";
 import PercentageScale from "./noteTemplates/percentageScale";
 import Builder from "./noteTemplates/Builder";
-import ReportTable from "./Tables/reportTable";
 
 //width of drawer
 const drawerWidth = 240;
@@ -780,6 +779,17 @@ class MainApp extends React.Component {
                   <TitleBarReports />
                   <ReportActions />
                   <ReportTable />
+                </div>
+              )}
+            />
+
+            <Route
+              exact
+              path="/reports/view/:id?"
+              render={() => (
+                <div>
+                  <TitleBarReports />
+                  <ReportDetailsTable />
                 </div>
               )}
             />

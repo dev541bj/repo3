@@ -167,6 +167,22 @@ class MemberController {
       return util.send(res);
     }
   }
+
+  static async getReportById(req, res) {
+    try {
+      const report = await MemberService.getById(req.params.id);
+
+      if (report && report.length) {
+        util.setSuccess(200, "Report retrieved", report[0]);
+      } else {
+        util.setSuccess(200, "No Reports found");
+      }
+      return util.send(res);
+    } catch (error) {
+      util.setError(400, error);
+      return util.send(res);
+    }
+  }
 }
 
 //export default MemberController;

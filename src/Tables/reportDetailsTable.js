@@ -42,10 +42,8 @@ function getSorting(order, orderBy) {
 }
 
 const rows = [
-  { id: "report_type", disablePadding: true, label: "Report Type" },
-  { id: "start_date", label: "Start" },
-  { id: "end_date", label: "End" },
-  { id: "create_date", label: "Created" }
+  { id: "category", disablePadding: true, label: "Category" },
+  { id: "hours_by_category", label: "Hours" }
 ];
 
 const CustomTableCell = withStyles(theme => ({
@@ -133,35 +131,85 @@ const styles = theme => ({
 
 // Table Body
 
-class ReportsTable extends React.Component {
+class ReportDetailsTable extends React.Component {
   static defaultProps = { TableSortLabel: "asc" };
   state = {
     order: "asc",
     open: false,
     orderBy: "",
     reportData: [],
-    curReportId: 0,
+    newReportData: [],
+    curReportId: "",
     redirect: false,
+    report: 0,
+    reportType: "",
+    startDate: "",
+    endDate: "",
     page: 0,
     rowsPerPage: 5
   };
 
   async componentDidMount() {
     try {
+      // change the below route to just pull all report details
       const { data: reports } = await API.get("/members/getreports");
       const reportData = reports.data || [];
       this.setState({
         reportData
       });
-      console.log("here's the report data length: ", reportData.length);
+      this.setState({ report: this.props.location.state.curReportId }, () => {
+        this.changeContentWithReportID();
+        //this.changeInitialsWithMemberId();
+      });
+      /*   this.setState({ report: this.props.location.state.curMemberId }, () => {
+        console.log("props ID: ", this.props.location.state.curMemberId);
+        console.log("report ID: ", this.state.report);
+        this.changeContentWithReportID();
+      }); */
+      const { data: selectedReport } = await API.get("/members/catreport");
+      const newReportData = selectedReport.data || [];
+      this.setState({
+        newReportData
+      });
     } catch (error) {
       const reportData = this.state.reportData;
+      const newReportData = this.state.newReportData;
+      const curReportId = this.state.curReportId;
+      const report = this.state.report;
       console.log("report fetch error: ", error);
-      console.log("Here's the error length: ", reportData.length);
+      console.log("here is the report info: ", reportData);
+      console.log("here is the report ID being passed: ", report);
+      /* console.log("report fetch error: ", error);
+      console.log(
+        "Here's the initial report error length: ",
+        reportData.length
+      );
+      console.log("Here's the new report error length: ", newReportData.length);
+      console.log("curReportId : ", curReportId);
+      console.log("report : ", report); */
     }
   }
 
   componentWillUnmount() {}
+
+  changeContentWithReportID() {
+    const report = this.state.reportData.find(
+      ({ id }) => id === this.state.report
+    );
+    if (report) {
+      const { id, report_type, start_date, end_date } = report;
+      this.setState({
+        //report: id,
+        reportType: report_type,
+        startDate: start_date,
+        endDate: end_date
+      });
+      console.log("report ID: ", this.state.report);
+      console.log("report type: ", this.state.reportType);
+      console.log("start date: ", this.state.startDate);
+      console.log("end date: ", this.state.endDate);
+    }
+  }
 
   handleRequestSort = (report, property) => {
     const orderBy = property;
@@ -188,7 +236,7 @@ class ReportsTable extends React.Component {
 
   handleClickRedirect = (reportId = 0) => {
     this.setState({
-      redirect: true,
+      redirectDocs: true,
       curReportId: reportId
     });
   };
@@ -197,22 +245,14 @@ class ReportsTable extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { reportData, order, orderBy, rowsPerPage, page } = this.state;
+    const { newReportData, order, orderBy, rowsPerPage, page } = this.state;
     const emptyRows =
       rowsPerPage -
-      Math.min(rowsPerPage, reportData.length - page * rowsPerPage);
+      Math.min(rowsPerPage, newReportData.length - page * rowsPerPage);
 
     return (
       <Container maxWidth="md">
-        {this.state.redirect ? (
-          <Redirect
-            to={{
-              pathname: `/reports/view/${this.state.curReportId}`,
-              state: { curReportId: this.state.curReportId }
-            }}
-          />
-        ) : null}
-        {reportData.length > 0 ? (
+        {newReportData.length > 0 ? (
           <Paper className={classes.root}>
             <div className={classes.tableWrapper}>
               <Table className={classes.table} aria-labelledby="tableTitle">
@@ -221,10 +261,10 @@ class ReportsTable extends React.Component {
                   order={order}
                   orderBy={orderBy}
                   onRequestSort={this.handleRequestSort}
-                  rowCount={reportData.length}
+                  rowCount={newReportData.length}
                 />
                 <TableBody>
-                  {stableSort(reportData, getSorting(order, orderBy))
+                  {stableSort(newReportData, getSorting(order, orderBy))
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map(n => {
                       // const isSelected = this.isSelected(n.id);
@@ -234,12 +274,12 @@ class ReportsTable extends React.Component {
                           className={classes.row}
                           tabIndex={-1}
                           key={n.id}
-                          onClick={() => this.handleClickRedirect(n.id)}
+                          // onClick={() => this.handleClickRedirect(n.id)}
                         >
-                          <TableCell align="center">{n.report_type}</TableCell>
-                          <TableCell align="center">{n.start_date}</TableCell>
-                          <TableCell align="center">{n.end_date}</TableCell>
-                          <TableCell align="center">{n.create_date}</TableCell>
+                          <TableCell align="center">{n.category}</TableCell>
+                          <TableCell align="center">
+                            {n.hours_by_category}
+                          </TableCell>
                         </TableRow>
                       );
                     })}
@@ -258,7 +298,7 @@ class ReportsTable extends React.Component {
             <TablePagination
               rowsPerPageOptions={[5, 10, 20]}
               component="div"
-              count={reportData.length}
+              count={newReportData.length}
               rowsPerPage={rowsPerPage}
               page={page}
               backIconButtonProps={{
@@ -279,8 +319,8 @@ class ReportsTable extends React.Component {
   }
 }
 
-ReportsTable.propTypes = {
+ReportDetailsTable.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(ReportsTable);
+export default withStyles(styles)(ReportDetailsTable);

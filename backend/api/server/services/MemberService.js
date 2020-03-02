@@ -235,7 +235,7 @@ class MemberService {
   static async categoryReport(newOne) {
     const sql = `
     
-    SELECT category, SUM(TRUNCATE((TIMESTAMPDIFF(MINUTE, start,end)/60),2))  AS 'hours by category' 
+    SELECT category, SUM(TRUNCATE((TIMESTAMPDIFF(MINUTE, start,end)/60),2))  AS 'hours_by_category' 
     FROM testevent 
     WHERE bill_type = 'Billable' 
     AND (trans_date >= ? AND trans_date <= ?)
@@ -287,6 +287,18 @@ class MemberService {
 
     try {
       return await query(sql);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getReportsById(curReportId) {
+    const sql = `SELECT 
+    id, report_type, 
+    DATE_FORMAT(start_date, '%m/%d/%Y') AS start_date, DATE_FORMAT(end_date, '%m/%d/%Y') AS end_date
+    FROM reports WHERE id = ?`;
+    try {
+      return await query(sql, [curReportId]);
     } catch (error) {
       throw error;
     }
