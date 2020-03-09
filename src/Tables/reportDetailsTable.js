@@ -151,7 +151,6 @@ class ReportDetailsTable extends React.Component {
 
   async componentDidMount() {
     try {
-      // change the below route to just pull all report details
       const { data: reports } = await API.get("/members/getreports");
       const reportData = reports.data || [];
       this.setState({
@@ -159,8 +158,11 @@ class ReportDetailsTable extends React.Component {
       });
       this.setState({ report: this.props.location.state.curReportId }, () => {
         this.changeContentWithReportID();
-        //this.changeInitialsWithMemberId();
       });
+      console.log(
+        "here is the correct info",
+        this.props.location.state.curReportId
+      );
       /*   this.setState({ report: this.props.location.state.curMemberId }, () => {
         console.log("props ID: ", this.props.location.state.curMemberId);
         console.log("report ID: ", this.state.report);
@@ -177,8 +179,11 @@ class ReportDetailsTable extends React.Component {
       const curReportId = this.state.curReportId;
       const report = this.state.report;
       console.log("report fetch error: ", error);
-      console.log("here is the report info: ", reportData);
-      console.log("here is the report ID being passed: ", report);
+      console.log("here is all of the report info being pulled: ", reportData);
+      console.log(
+        "here is the failed report ID being passed (it should be the same as the id in the URL): ",
+        report
+      );
       /* console.log("report fetch error: ", error);
       console.log(
         "Here's the initial report error length: ",
@@ -312,7 +317,7 @@ class ReportDetailsTable extends React.Component {
             />
           </Paper>
         ) : (
-          "you do not have any reports! click the button above to create one!"
+          "this report does not show anything!"
         )}
       </Container>
     );
