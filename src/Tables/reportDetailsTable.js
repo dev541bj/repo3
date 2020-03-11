@@ -1,5 +1,6 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
+import { withRouter } from "react-router";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -36,9 +37,7 @@ function stableSort(array, cmp) {
 }
 
 function getSorting(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => desc(a, b, orderBy)
-    : (a, b) => -desc(a, b, orderBy);
+  return order === "desc" ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
 const rows = [
@@ -73,17 +72,8 @@ class EnhancedTableHead extends React.Component {
         <TableRow>
           {rows.map(
             row => (
-              <CustomTableCell
-                key={row.id}
-                padding={row.disablePadding ? "none" : "default"}
-                align="center"
-                sortDirection={orderBy === row.id ? order : false}
-              >
-                <TableSortLabel
-                  active={orderBy === row.id}
-                  direction={order}
-                  onClick={this.createSortHandler(row.id)}
-                >
+              <CustomTableCell key={row.id} padding={row.disablePadding ? "none" : "default"} align="center" sortDirection={orderBy === row.id ? order : false}>
+                <TableSortLabel active={orderBy === row.id} direction={order} onClick={this.createSortHandler(row.id)}>
                   {row.label}
                 </TableSortLabel>
               </CustomTableCell>
@@ -156,19 +146,18 @@ class ReportDetailsTable extends React.Component {
       this.setState({
         reportData
       });
+      console.log(this.props);
       this.setState({ report: this.props.location.state.curReportId }, () => {
         this.changeContentWithReportID();
       });
-      console.log(
-        "here is the correct info",
-        this.props.location.state.curReportId
-      );
+      console.log("here is the correct info", this.props.location.state.curReportId);
       /*   this.setState({ report: this.props.location.state.curMemberId }, () => {
         console.log("props ID: ", this.props.location.state.curMemberId);
         console.log("report ID: ", this.state.report);
         this.changeContentWithReportID();
       }); */
       const { data: selectedReport } = await API.get("/members/catreport");
+      console.log(selectedReport);
       const newReportData = selectedReport.data || [];
       this.setState({
         newReportData
@@ -180,10 +169,7 @@ class ReportDetailsTable extends React.Component {
       const report = this.state.report;
       console.log("report fetch error: ", error);
       console.log("here is all of the report info being pulled: ", reportData);
-      console.log(
-        "here is the failed report ID being passed (it should be the same as the id in the URL): ",
-        report
-      );
+      console.log("here is the failed report ID being passed (it should be the same as the id in the URL): ", report);
       /* console.log("report fetch error: ", error);
       console.log(
         "Here's the initial report error length: ",
@@ -198,9 +184,7 @@ class ReportDetailsTable extends React.Component {
   componentWillUnmount() {}
 
   changeContentWithReportID() {
-    const report = this.state.reportData.find(
-      ({ id }) => id === this.state.report
-    );
+    const report = this.state.reportData.find(({ id }) => id === this.state.report);
     if (report) {
       const { id, report_type, start_date, end_date } = report;
       this.setState({
@@ -251,9 +235,7 @@ class ReportDetailsTable extends React.Component {
   render() {
     const { classes } = this.props;
     const { newReportData, order, orderBy, rowsPerPage, page } = this.state;
-    const emptyRows =
-      rowsPerPage -
-      Math.min(rowsPerPage, newReportData.length - page * rowsPerPage);
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, newReportData.length - page * rowsPerPage);
 
     return (
       <Container maxWidth="md">
@@ -282,9 +264,7 @@ class ReportDetailsTable extends React.Component {
                           // onClick={() => this.handleClickRedirect(n.id)}
                         >
                           <TableCell align="center">{n.category}</TableCell>
-                          <TableCell align="center">
-                            {n.hours_by_category}
-                          </TableCell>
+                          <TableCell align="center">{n.hours_by_category}</TableCell>
                         </TableRow>
                       );
                     })}
@@ -328,4 +308,4 @@ ReportDetailsTable.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(ReportDetailsTable);
+export default withRouter(withStyles(styles)(ReportDetailsTable));

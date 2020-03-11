@@ -5,8 +5,9 @@ import Rating from "./Rating";
 import { styles } from "./NoteHistoryStyles";
 import { checkboxChecked, checkboxUnchecked } from "./constants";
 
-Font.register("https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxP.ttf", {
-  family: "Roboto-Regular"
+Font.register({
+  family: "Roboto-Regular",
+  src: "https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxP.ttf"
 });
 
 const NoteHistoryTemplate = props => {
