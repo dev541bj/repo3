@@ -232,16 +232,14 @@ class MemberService {
   }
 
   // category report
-  static async categoryReport(newOne) {
-    const sql = `
-    
-    SELECT category, SUM(TRUNCATE((TIMESTAMPDIFF(MINUTE, start,end)/60),2))  AS 'hours_by_category' 
+
+  static async categoryReport(dates) {
+    const { startDate, endDate } = dates;
+    const sql = `SELECT category, SUM(TRUNCATE((TIMESTAMPDIFF(MINUTE, start,end)/60),2))  AS 'hours_by_category' 
     FROM testevent 
     WHERE bill_type = 'Billable' 
-    AND (trans_date >= ? AND trans_date <= ?)
-    GROUP BY category
-    `;
-    const { startDate, endDate } = newOne;
+    AND (trans_date >= '${startDate}' AND trans_date <= '${endDate}')
+    GROUP BY category`;
     try {
       return await query(sql, [startDate, endDate]);
     } catch (error) {

@@ -13,6 +13,7 @@ import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Paper from "@material-ui/core/Paper";
 import Cyan from "@material-ui/core/colors/cyan";
 import Container from "@material-ui/core/Container";
+import moment from "moment";
 
 import API from "../utils/API";
 
@@ -37,7 +38,9 @@ function stableSort(array, cmp) {
 }
 
 function getSorting(order, orderBy) {
-  return order === "desc" ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
+  return order === "desc"
+    ? (a, b) => desc(a, b, orderBy)
+    : (a, b) => -desc(a, b, orderBy);
 }
 
 const rows = [
@@ -72,8 +75,17 @@ class EnhancedTableHead extends React.Component {
         <TableRow>
           {rows.map(
             row => (
-              <CustomTableCell key={row.id} padding={row.disablePadding ? "none" : "default"} align="center" sortDirection={orderBy === row.id ? order : false}>
-                <TableSortLabel active={orderBy === row.id} direction={order} onClick={this.createSortHandler(row.id)}>
+              <CustomTableCell
+                key={row.id}
+                padding={row.disablePadding ? "none" : "default"}
+                align="center"
+                sortDirection={orderBy === row.id ? order : false}
+              >
+                <TableSortLabel
+                  active={orderBy === row.id}
+                  direction={order}
+                  onClick={this.createSortHandler(row.id)}
+                >
                   {row.label}
                 </TableSortLabel>
               </CustomTableCell>
@@ -140,63 +152,49 @@ class ReportDetailsTable extends React.Component {
   };
 
   async componentDidMount() {
+    const { startDate, endDate } = this.state;
     try {
       const { data: reports } = await API.get("/members/getreports");
       const reportData = reports.data || [];
       this.setState({
         reportData
       });
-      console.log(this.props);
+      console.log("here's the intial report data: ", reportData);
       this.setState({ report: this.props.location.state.curReportId }, () => {
         this.changeContentWithReportID();
       });
-      console.log("here is the correct info", this.props.location.state.curReportId);
-      /*   this.setState({ report: this.props.location.state.curMemberId }, () => {
-        console.log("props ID: ", this.props.location.state.curMemberId);
-        console.log("report ID: ", this.state.report);
-        this.changeContentWithReportID();
-      }); */
-      const { data: selectedReport } = await API.get("/members/catreport");
-      console.log(selectedReport);
-      const newReportData = selectedReport.data || [];
+      console.log("here is the new start date: ", startDate);
+
+      /*  const { data: newReports } = await API.get("/members/catreport");
+      const newReportData = newReports.data || [];
       this.setState({
         newReportData
       });
+      console.log("here's the new report data length: ", newReportData.length); */
     } catch (error) {
-      const reportData = this.state.reportData;
       const newReportData = this.state.newReportData;
-      const curReportId = this.state.curReportId;
-      const report = this.state.report;
       console.log("report fetch error: ", error);
-      console.log("here is all of the report info being pulled: ", reportData);
-      console.log("here is the failed report ID being passed (it should be the same as the id in the URL): ", report);
-      /* console.log("report fetch error: ", error);
-      console.log(
-        "Here's the initial report error length: ",
-        reportData.length
-      );
-      console.log("Here's the new report error length: ", newReportData.length);
-      console.log("curReportId : ", curReportId);
-      console.log("report : ", report); */
+      console.log("here is the startDate: ", startDate);
+      console.log("Here's the error length: ", newReportData.length);
     }
   }
 
   componentWillUnmount() {}
 
   changeContentWithReportID() {
-    const report = this.state.reportData.find(({ id }) => id === this.state.report);
+    const report = this.state.reportData.find(
+      ({ id }) => id === this.state.report
+    );
+    //console.log("here is the report id: ", report.report_type);
     if (report) {
       const { id, report_type, start_date, end_date } = report;
       this.setState({
         //report: id,
-        reportType: report_type,
+        reportType: report.id,
         startDate: start_date,
-        endDate: end_date
+        endDate: moment(end_date).format("YYYY-MM-DD")
       });
-      console.log("report ID: ", this.state.report);
-      console.log("report type: ", this.state.reportType);
-      console.log("start date: ", this.state.startDate);
-      console.log("end date: ", this.state.endDate);
+      console.log("here is the new report type: ", this.state.reportType);
     }
   }
 
@@ -235,7 +233,9 @@ class ReportDetailsTable extends React.Component {
   render() {
     const { classes } = this.props;
     const { newReportData, order, orderBy, rowsPerPage, page } = this.state;
-    const emptyRows = rowsPerPage - Math.min(rowsPerPage, newReportData.length - page * rowsPerPage);
+    const emptyRows =
+      rowsPerPage -
+      Math.min(rowsPerPage, newReportData.length - page * rowsPerPage);
 
     return (
       <Container maxWidth="md">
@@ -264,7 +264,9 @@ class ReportDetailsTable extends React.Component {
                           // onClick={() => this.handleClickRedirect(n.id)}
                         >
                           <TableCell align="center">{n.category}</TableCell>
-                          <TableCell align="center">{n.hours_by_category}</TableCell>
+                          <TableCell align="center">
+                            {n.hours_by_category}
+                          </TableCell>
                         </TableRow>
                       );
                     })}
