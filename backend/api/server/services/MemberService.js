@@ -249,13 +249,14 @@ class MemberService {
   }
 
   // billable hours report
-  static async billableHours(newOne) {
+  static async billableHours(dates) {
+    const { startDate, endDate } = dates;
     var sql = `SELECT therapists, SUM(TRUNCATE((TIMESTAMPDIFF(MINUTE, start,end)/60),2))  AS 'billable hours'  
     FROM testevent 
     WHERE bill_type = 'Billable' 
-    AND (trans_date >= ? AND trans_date <= ?)
+    AND (trans_date >= ${startDate} AND trans_date <= ${endDate})
     GROUP BY therapists `;
-    const { startDate, endDate } = newOne;
+
     try {
       return await query(sql, [startDate, endDate]);
     } catch (error) {
