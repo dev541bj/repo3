@@ -116,7 +116,7 @@ class MemberController {
   }
 
   static async catReport(req, res) {
-    const updateOne = req.body;
+    const updateOne = req.query;
 
     try {
       const updatedOne = await MemberService.categoryReport(updateOne);
