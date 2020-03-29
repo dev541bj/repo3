@@ -153,7 +153,10 @@ class ReportsTable extends React.Component {
       this.setState({
         reportData
       });
-      console.log("here's the report data length: ", reportData.length);
+      console.log(
+        "here's the data length from the main report page: ",
+        reportData.length
+      );
     } catch (error) {
       const reportData = this.state.reportData;
       console.log("report fetch error: ", error);
