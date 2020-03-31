@@ -13,6 +13,9 @@ import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Paper from "@material-ui/core/Paper";
 import Cyan from "@material-ui/core/colors/cyan";
 import Container from "@material-ui/core/Container";
+import Button from "@material-ui/core/Button";
+import classNames from "classnames";
+import Add from "@material-ui/icons/Add";
 import moment from "moment";
 
 import API from "../utils/API";
@@ -44,8 +47,13 @@ function getSorting(order, orderBy) {
 }
 
 const categoryRows = [
-  { id: "category", disablePadding: true, label: "Category" },
+  { id: "category", label: "Category" },
   { id: "hours_by_category", label: "Hours" }
+];
+
+const billableRows = [
+  { id: "therapists", label: "Therapist" },
+  { id: "billable_hours", label: "Billable Hours" }
 ];
 
 const CustomTableCell = withStyles(theme => ({
@@ -73,25 +81,26 @@ class EnhancedTableHead extends React.Component {
     return (
       <TableHead>
         <TableRow>
-          {categoryRows.map(
-            row => (
-              <CustomTableCell
-                key={row.id}
-                padding={row.disablePadding ? "none" : "default"}
-                align="center"
-                sortDirection={orderBy === row.id ? order : false}
-              >
-                <TableSortLabel
-                  active={orderBy === row.id}
-                  direction={order}
-                  onClick={this.createSortHandler(row.id)}
+          {categoryRows /*billableRows (if reportType = "Billable Hours"*/
+            .map(
+              row => (
+                <CustomTableCell
+                  key={row.id}
+                  padding={row.disablePadding ? "none" : "default"}
+                  align="center"
+                  sortDirection={orderBy === row.id ? order : false}
                 >
-                  {row.label}
-                </TableSortLabel>
-              </CustomTableCell>
-            ),
-            this
-          )}
+                  <TableSortLabel
+                    active={orderBy === row.id}
+                    direction={order}
+                    onClick={this.createSortHandler(row.id)}
+                  >
+                    {row.label}
+                  </TableSortLabel>
+                </CustomTableCell>
+              ),
+              this
+            )}
         </TableRow>
       </TableHead>
     );
@@ -102,14 +111,12 @@ EnhancedTableHead.propTypes = {
   onRequestSort: PropTypes.func.isRequired,
   order: PropTypes.string.isRequired,
   orderBy: PropTypes.string.isRequired
-  //rowCount: PropTypes.number.isRequired,
 };
 
 const styles = theme => ({
   root: {
     //width: "60%",
     marginTop: theme.spacing(1) * 3,
-    // marginLeft: theme.spacing(1) * 30,
     overflowX: "auto",
     alignItems: "center"
   },
@@ -118,9 +125,7 @@ const styles = theme => ({
     backgroundColor: Cyan[800]
   },
 
-  table: {
-    //minWidth: 1020,
-  },
+  table: {},
   tableWrapper: {
     overflowX: "auto"
   },
@@ -148,7 +153,7 @@ class ReportDetailsTable extends React.Component {
     startDate: "",
     endDate: "",
     page: 0,
-    categoryRowsPerPage: 5
+    rowsPerPage: 5
   };
 
   async componentDidMount() {
@@ -174,6 +179,13 @@ class ReportDetailsTable extends React.Component {
         newReportData
       });
       // *** If reportType = "Billable Hours", then pull the "/members/billreport" route (query needed below) ***
+      /*  const { data: newReports } = await API.get("/members/catreport", {
+        params: { startDate, endDate }
+      });
+      console.log("here is the category report information ", newReports);
+      const newReportData = newReports.data || [];
+      this.setState({
+        newReportData */
     } catch (error) {
       console.log("report fetch error: ", error);
     }
@@ -212,22 +224,13 @@ class ReportDetailsTable extends React.Component {
     this.setState({ page });
   };
 
-  handleChangecategoryRowsPerPage = report => {
-    this.setState({ categoryRowsPerPage: report.target.value });
+  handleChangeRowsPerPage = report => {
+    this.setState({ rowsPerPage: report.target.value });
   };
 
   handleClose = () => {
     this.setState({ open: false });
   };
-
-  handleClickRedirect = (reportId = 0) => {
-    this.setState({
-      redirectDocs: true,
-      curReportId: reportId
-    });
-  };
-
-  // isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
     const { classes } = this.props;
@@ -235,24 +238,30 @@ class ReportDetailsTable extends React.Component {
       newReportData,
       order,
       orderBy,
-      categoryRowsPerPage,
+      rowsPerPage,
+
       page
     } = this.state;
-    const emptycategoryRows =
-      categoryRowsPerPage -
-      Math.min(
-        categoryRowsPerPage,
-        newReportData.length - page * categoryRowsPerPage
-      );
+    const emptyRows =
+      rowsPerPage -
+      Math.min(rowsPerPage, newReportData.length - page * rowsPerPage);
 
     return (
       <Container maxWidth="md">
+        <Button
+          variant="contained"
+          onClick={this.handleClickOpenAdd}
+          className={classes.button}
+        >
+          <Add className={classNames(classes.leftIcon, classes.iconSmall)} />
+          Download Report
+        </Button>
+
         {newReportData.length > 0 ? (
           <Paper className={classes.root}>
             <div className={classes.tableWrapper}>
               <Table className={classes.table} aria-labelledby="tableTitle">
                 <EnhancedTableHead
-                  //numSelected={selected.length}
                   order={order}
                   orderBy={orderBy}
                   onRequestSort={this.handleRequestSort}
@@ -260,31 +269,33 @@ class ReportDetailsTable extends React.Component {
                 />
                 <TableBody>
                   {stableSort(newReportData, getSorting(order, orderBy))
-                    .slice(
-                      page * categoryRowsPerPage,
-                      page * categoryRowsPerPage + categoryRowsPerPage
-                    )
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map(n => {
-                      // const isSelected = this.isSelected(n.id);
                       return (
                         <TableRow
                           hover
                           className={classes.row}
                           tabIndex={-1}
                           key={n.id}
-                          // onClick={() => this.handleClickRedirect(n.id)}
                         >
+                          {/* If reportType = "Hours By Category", the have a table with the following cells below */}
                           <TableCell align="center">{n.category}</TableCell>
                           <TableCell align="center">
                             {n.hours_by_category}
                           </TableCell>
+                          {/* If reportType = "Billable Hours", the have a table with the following cells below */}
+
+                          {/*   <TableCell align="center">{n.therapists}</TableCell>
+                          <TableCell align="center">
+                            {n.billable_hours}
+                            </TableCell> */}
                         </TableRow>
                       );
                     })}
-                  {emptycategoryRows > 0 && (
+                  {emptyRows > 0 && (
                     <TableRow
                       style={{
-                        height: 49 * emptycategoryRows
+                        height: 49 * emptyRows
                       }}
                     >
                       <TableCell colSpan={6} />
@@ -294,10 +305,10 @@ class ReportDetailsTable extends React.Component {
               </Table>
             </div>
             <TablePagination
-              categoryRowsPerPageOptions={[5, 10, 20]}
+              rowsPerPageOptions={[5, 10, 20]}
               component="div"
               count={newReportData.length}
-              categoryRowsPerPage={categoryRowsPerPage}
+              rowsPerPage={rowsPerPage}
               page={page}
               backIconButtonProps={{
                 "aria-label": "Previous Page"
@@ -306,7 +317,7 @@ class ReportDetailsTable extends React.Component {
                 "aria-label": "Next Page"
               }}
               onChangePage={this.handleChangePage}
-              onChangecategoryRowsPerPage={this.handleChangecategoryRowsPerPage}
+              onChangerowsPerPage={this.handleChangeRowsPerPage}
             />
           </Paper>
         ) : (

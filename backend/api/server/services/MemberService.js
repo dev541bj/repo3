@@ -4,7 +4,8 @@ var query = require("./connection");
 
 class MemberService {
   static async getAllMembers() {
-    const sql = "SELECT *, concat(substring(member_first_name, 1, 1), substring(member_last_name, 1, 1)) initials FROM members";
+    const sql =
+      "SELECT *, concat(substring(member_first_name, 1, 1), substring(member_last_name, 1, 1)) initials FROM members";
 
     try {
       return await query(sql);
@@ -219,7 +220,8 @@ class MemberService {
     var formdata = updatedOne;
     var id = formdata.id;
     var assiCli = formdata.assiCli;
-    const sql = `UPDATE members SET clients =` + "'" + assiCli + "'" + ` WHERE id =` + id;
+    const sql =
+      `UPDATE members SET clients =` + "'" + assiCli + "'" + ` WHERE id =` + id;
     console.log("assign query:", sql);
     try {
       return await query(sql);
@@ -250,7 +252,7 @@ class MemberService {
   // billable hours report
   static async billableHours(dates) {
     const { startDate, endDate } = dates;
-    var sql = `SELECT therapists, SUM(TRUNCATE((TIMESTAMPDIFF(MINUTE, start,end)/60),2))  AS 'billable hours'  
+    var sql = `SELECT therapists, SUM(TRUNCATE((TIMESTAMPDIFF(MINUTE, start,end)/60),2))  AS 'billable_hours'  
     FROM testevent 
     WHERE bill_type = 'Billable' 
     AND (trans_date >= ${startDate} AND trans_date <= ${endDate})
