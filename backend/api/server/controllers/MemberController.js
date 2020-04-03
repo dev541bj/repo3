@@ -129,7 +129,7 @@ class MemberController {
   }
 
   static async billReport(req, res) {
-    const updateOne = req.body;
+    const updateOne = req.query;
 
     try {
       const updatedOne = await MemberService.billableHours(updateOne);

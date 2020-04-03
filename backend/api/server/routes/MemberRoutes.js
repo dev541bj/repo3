@@ -17,7 +17,7 @@ router.get("/selected/:id", MemberController.getSelectedClient);
 // category report
 router.get("/catreport", MemberController.catReport);
 // billable hours report
-router.post("/billreport", MemberController.billReport);
+router.get("/billreport", MemberController.billReport);
 // add report
 router.post("/addreport", MemberController.addReport);
 // get reports

@@ -255,7 +255,7 @@ class MemberService {
     var sql = `SELECT therapists, SUM(TRUNCATE((TIMESTAMPDIFF(MINUTE, start,end)/60),2))  AS 'billable_hours'  
     FROM testevent 
     WHERE bill_type = 'Billable' 
-    AND (trans_date >= ${startDate} AND trans_date <= ${endDate})
+    AND (trans_date >= '${startDate}' AND trans_date <= '${endDate}')
     GROUP BY therapists `;
 
     try {

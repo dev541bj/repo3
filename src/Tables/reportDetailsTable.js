@@ -81,7 +81,7 @@ class EnhancedTableHead extends React.Component {
     return (
       <TableHead>
         <TableRow>
-          {categoryRows /*billableRows (if reportType = "Billable Hours"*/
+          {billableRows /* billableRows (if reportType = "Billable Hours"; categoryRows (if reportType = "Hours By Category" */
             .map(
               row => (
                 <CustomTableCell
@@ -115,7 +115,6 @@ EnhancedTableHead.propTypes = {
 
 const styles = theme => ({
   root: {
-    //width: "60%",
     marginTop: theme.spacing(1) * 3,
     overflowX: "auto",
     alignItems: "center"
@@ -135,8 +134,6 @@ const styles = theme => ({
     }
   }
 });
-
-// Table Body
 
 class ReportDetailsTable extends React.Component {
   static defaultProps = { TableSortLabel: "asc" };
@@ -170,22 +167,23 @@ class ReportDetailsTable extends React.Component {
 
       const { startDate, endDate } = this.state;
       // *** If reportType = "Hours By Category", then pull the "/members/catreport" route ***
-      const { data: newReports } = await API.get("/members/catreport", {
-        params: { startDate, endDate }
-      });
-      console.log("here is the category report information ", newReports);
-      const newReportData = newReports.data || [];
-      this.setState({
-        newReportData
-      });
-      // *** If reportType = "Billable Hours", then pull the "/members/billreport" route (query needed below) ***
       /*  const { data: newReports } = await API.get("/members/catreport", {
         params: { startDate, endDate }
       });
       console.log("here is the category report information ", newReports);
       const newReportData = newReports.data || [];
       this.setState({
-        newReportData */
+        newReportData
+      }); */
+      // *** If reportType = "Billable Hours", then pull the "/members/billreport" route (query needed below) ***
+      const { data: newReports } = await API.get("/members/billreport", {
+        params: { startDate, endDate }
+      });
+      console.log("here is the billable hours report information ", newReports);
+      const newReportData = newReports.data || [];
+      this.setState({
+        newReportData
+      });
     } catch (error) {
       console.log("report fetch error: ", error);
     }
@@ -248,11 +246,7 @@ class ReportDetailsTable extends React.Component {
 
     return (
       <Container maxWidth="md">
-        <Button
-          variant="contained"
-          onClick={this.handleClickOpenAdd}
-          className={classes.button}
-        >
+        <Button variant="contained" className={classes.button}>
           <Add className={classNames(classes.leftIcon, classes.iconSmall)} />
           Download Report
         </Button>
@@ -278,17 +272,19 @@ class ReportDetailsTable extends React.Component {
                           tabIndex={-1}
                           key={n.id}
                         >
-                          {/* If reportType = "Hours By Category", the have a table with the following cells below */}
-                          <TableCell align="center">{n.category}</TableCell>
+                          {/* If reportType = "Hours By Category", then have a table with the following cells below */}
+
+                          {/*     <TableCell align="center">{n.category}</TableCell>
                           <TableCell align="center">
                             {n.hours_by_category}
-                          </TableCell>
-                          {/* If reportType = "Billable Hours", the have a table with the following cells below */}
+                          </TableCell> */}
 
-                          {/*   <TableCell align="center">{n.therapists}</TableCell>
+                          {/* If reportType = "Billable Hours", then have a table with the following cells below */}
+
+                          <TableCell align="center">{n.therapists}</TableCell>
                           <TableCell align="center">
                             {n.billable_hours}
-                            </TableCell> */}
+                          </TableCell>
                         </TableRow>
                       );
                     })}
