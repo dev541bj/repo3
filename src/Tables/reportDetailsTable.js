@@ -37,41 +37,39 @@ function stableSort(array, cmp) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  return stabilizedThis.map(el => el[0]);
+  return stabilizedThis.map((el) => el[0]);
 }
 
 function getSorting(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => desc(a, b, orderBy)
-    : (a, b) => -desc(a, b, orderBy);
+  return order === "desc" ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
 const categoryRows = [
   { id: "category", label: "Category" },
-  { id: "hours_by_category", label: "Hours" }
+  { id: "hours_by_category", label: "Hours" },
 ];
 
 const billableRows = [
   { id: "therapists", label: "Therapist" },
-  { id: "billable_hours", label: "Billable Hours" }
+  { id: "billable_hours", label: "Billable Hours" },
 ];
 
-const CustomTableCell = withStyles(theme => ({
+const CustomTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: Cyan[800],
     color: theme.palette.common.white,
-    fontSize: 18
+    fontSize: 18,
   },
   body: {
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 }))(TableCell);
 
 // Table Header
 
 class EnhancedTableHead extends React.Component {
   static defaultProps = { order: "asc" };
-  createSortHandler = property => report => {
+  createSortHandler = (property) => (report) => {
     this.props.onRequestSort(report, property);
   };
 
@@ -83,18 +81,14 @@ class EnhancedTableHead extends React.Component {
         <TableRow>
           {billableRows /* billableRows (if reportType = "Billable Hours"; categoryRows (if reportType = "Hours By Category" */
             .map(
-              row => (
+              (row) => (
                 <CustomTableCell
                   key={row.id}
                   padding={row.disablePadding ? "none" : "default"}
                   align="center"
                   sortDirection={orderBy === row.id ? order : false}
                 >
-                  <TableSortLabel
-                    active={orderBy === row.id}
-                    direction={order}
-                    onClick={this.createSortHandler(row.id)}
-                  >
+                  <TableSortLabel active={orderBy === row.id} direction={order} onClick={this.createSortHandler(row.id)}>
                     {row.label}
                   </TableSortLabel>
                 </CustomTableCell>
@@ -110,29 +104,29 @@ class EnhancedTableHead extends React.Component {
 EnhancedTableHead.propTypes = {
   onRequestSort: PropTypes.func.isRequired,
   order: PropTypes.string.isRequired,
-  orderBy: PropTypes.string.isRequired
+  orderBy: PropTypes.string.isRequired,
 };
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     marginTop: theme.spacing(1) * 3,
     overflowX: "auto",
-    alignItems: "center"
+    alignItems: "center",
   },
   appBar: {
     position: "relative",
-    backgroundColor: Cyan[800]
+    backgroundColor: Cyan[800],
   },
 
   table: {},
   tableWrapper: {
-    overflowX: "auto"
+    overflowX: "auto",
   },
   row: {
     "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.background.default
-    }
-  }
+      backgroundColor: theme.palette.background.default,
+    },
+  },
 });
 
 class ReportDetailsTable extends React.Component {
@@ -150,7 +144,7 @@ class ReportDetailsTable extends React.Component {
     startDate: "",
     endDate: "",
     page: 0,
-    rowsPerPage: 5
+    rowsPerPage: 5,
   };
 
   async componentDidMount() {
@@ -158,7 +152,7 @@ class ReportDetailsTable extends React.Component {
       const { data: reports } = await API.get("/members/getreports");
       const reportData = reports.data || [];
       this.setState({
-        reportData
+        reportData,
       });
 
       this.setState({ report: this.props.location.state.curReportId }, () => {
@@ -177,12 +171,12 @@ class ReportDetailsTable extends React.Component {
       }); */
       // *** If reportType = "Billable Hours", then pull the "/members/billreport" route (query needed below) ***
       const { data: newReports } = await API.get("/members/billreport", {
-        params: { startDate, endDate }
+        params: { startDate, endDate },
       });
       console.log("here is the billable hours report information ", newReports);
       const newReportData = newReports.data || [];
       this.setState({
-        newReportData
+        newReportData,
       });
     } catch (error) {
       console.log("report fetch error: ", error);
@@ -192,15 +186,13 @@ class ReportDetailsTable extends React.Component {
   componentWillUnmount() {}
 
   changeContentWithReportID() {
-    const report = this.state.reportData.find(
-      ({ id }) => id === this.state.report
-    );
+    const report = this.state.reportData.find(({ id }) => id === this.state.report);
     if (report) {
       const { id, report_type, start_date, end_date } = report;
       this.setState({
         reportType: report_type,
         startDate: moment(start_date).format("YYYY-MM-DD"),
-        endDate: moment(end_date).format("YYYY-MM-DD")
+        endDate: moment(end_date).format("YYYY-MM-DD"),
       });
       console.log("here is the report data pulled: ", report);
       console.log("here is the report type pulled: ", this.state.reportType);
@@ -222,7 +214,7 @@ class ReportDetailsTable extends React.Component {
     this.setState({ page });
   };
 
-  handleChangeRowsPerPage = report => {
+  handleChangeRowsPerPage = (report) => {
     this.setState({ rowsPerPage: report.target.value });
   };
 
@@ -238,11 +230,9 @@ class ReportDetailsTable extends React.Component {
       orderBy,
       rowsPerPage,
 
-      page
+      page,
     } = this.state;
-    const emptyRows =
-      rowsPerPage -
-      Math.min(rowsPerPage, newReportData.length - page * rowsPerPage);
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, newReportData.length - page * rowsPerPage);
 
     return (
       <Container maxWidth="md">
@@ -255,23 +245,13 @@ class ReportDetailsTable extends React.Component {
           <Paper className={classes.root}>
             <div className={classes.tableWrapper}>
               <Table className={classes.table} aria-labelledby="tableTitle">
-                <EnhancedTableHead
-                  order={order}
-                  orderBy={orderBy}
-                  onRequestSort={this.handleRequestSort}
-                  rowCount={newReportData.length}
-                />
+                <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={this.handleRequestSort} rowCount={newReportData.length} />
                 <TableBody>
                   {stableSort(newReportData, getSorting(order, orderBy))
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map(n => {
+                    .map((n) => {
                       return (
-                        <TableRow
-                          hover
-                          className={classes.row}
-                          tabIndex={-1}
-                          key={n.id}
-                        >
+                        <TableRow hover className={classes.row} tabIndex={-1} key={n.id}>
                           {/* If reportType = "Hours By Category", then have a table with the following cells below */}
 
                           {/*     <TableCell align="center">{n.category}</TableCell>
@@ -282,16 +262,14 @@ class ReportDetailsTable extends React.Component {
                           {/* If reportType = "Billable Hours", then have a table with the following cells below */}
 
                           <TableCell align="center">{n.therapists}</TableCell>
-                          <TableCell align="center">
-                            {n.billable_hours}
-                          </TableCell>
+                          <TableCell align="center">{n.billable_hours}</TableCell>
                         </TableRow>
                       );
                     })}
                   {emptyRows > 0 && (
                     <TableRow
                       style={{
-                        height: 49 * emptyRows
+                        height: 49 * emptyRows,
                       }}
                     >
                       <TableCell colSpan={6} />
@@ -307,10 +285,10 @@ class ReportDetailsTable extends React.Component {
               rowsPerPage={rowsPerPage}
               page={page}
               backIconButtonProps={{
-                "aria-label": "Previous Page"
+                "aria-label": "Previous Page",
               }}
               nextIconButtonProps={{
-                "aria-label": "Next Page"
+                "aria-label": "Next Page",
               }}
               onChangePage={this.handleChangePage}
               onChangerowsPerPage={this.handleChangeRowsPerPage}
@@ -325,7 +303,7 @@ class ReportDetailsTable extends React.Component {
 }
 
 ReportDetailsTable.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withRouter(withStyles(styles)(ReportDetailsTable));

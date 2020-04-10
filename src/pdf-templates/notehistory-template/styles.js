@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
   page: {
     backgroundColor: "#FFF",
     fontFamily: regularFont,
-    padding: "40 50"
+    padding: "40 50",
   },
   wrapper: {
     // backgroundColor: lightGreen
@@ -18,68 +18,68 @@ export const styles = StyleSheet.create({
   title: {
     textAlign: "center",
     fontSize: 18,
-    marginBottom: 20
+    marginBottom: 20,
   },
   infos: {
     display: "flex",
     flexDirection: "row",
-    margin: "10 0"
+    margin: "10 0",
   },
   label: {
     fontSize: 9,
-    color: grey
+    color: grey,
   },
   content: {
     fontSize: 11,
-    marginTop: 6
+    marginTop: 6,
   },
   sections: {
     display: "flex",
     width: "100%",
-    marginTop: 6
+    marginTop: 6,
   },
   section: {},
   radio: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    marginRight: 12
+    marginRight: 12,
   },
   radioIcon: {
     width: 14,
-    height: 14
+    height: 14,
   },
   radioText: {
     fontSize: 11,
-    marginLeft: 4
+    marginLeft: 4,
   },
   checkbox: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    marginRight: 12
+    marginRight: 12,
   },
   checkboxIcon: {
     width: 16,
-    height: 16
+    height: 16,
   },
   checkboxText: {
     fontSize: 11,
-    marginLeft: 4
+    marginLeft: 4,
   },
   sliderLine: {
     position: "relative",
     width: 36,
     height: 2,
     marginLeft: 1,
-    backgroundColor: green
+    backgroundColor: green,
   },
   sliderLineLight: {
     position: "relative",
     width: 36,
     height: 2,
     marginLeft: 1,
-    backgroundColor: lightGreen
+    backgroundColor: lightGreen,
   },
   sliderCircle: {
     position: "absolute",
@@ -88,18 +88,18 @@ export const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 5,
-    backgroundColor: green
+    backgroundColor: green,
   },
   sliderNum: {
     position: "absolute",
     fontSize: 10,
     left: -3,
-    top: 8
+    top: 8,
   },
   divider: {
     margin: "24 0",
     width: "100%",
     height: 3,
-    backgroundColor: dark
-  }
+    backgroundColor: dark,
+  },
 });

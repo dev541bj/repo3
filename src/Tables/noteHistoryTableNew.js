@@ -25,7 +25,7 @@ import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 
 import API from "../utils/API";
-import NoteHistoryTemplate from "../PDFTemplates/NoteHistoryTemplate";
+import NoteHistoryTemplate from "../pdf-templates/notehistory-template";
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -44,37 +44,35 @@ function stableSort(array, cmp) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  return stabilizedThis.map(el => el[0]);
+  return stabilizedThis.map((el) => el[0]);
 }
 
 function getSorting(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => desc(a, b, orderBy)
-    : (a, b) => -desc(a, b, orderBy);
+  return order === "desc" ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
 const rows = [
   { id: "start", disablePadding: true, label: "Start" },
-  { id: "noteDate", label: "Note Date" }
+  { id: "noteDate", label: "Note Date" },
   //{ id: "clients", label: "Clients" }
 ];
 
-const CustomTableCell = withStyles(theme => ({
+const CustomTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: Cyan[800],
     color: theme.palette.common.white,
-    fontSize: 18
+    fontSize: 18,
   },
   body: {
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 }))(TableCell);
 
 // Table Header
 
 class EnhancedTableHead extends React.Component {
   static defaultProps = { order: "asc" };
-  createSortHandler = property => event => {
+  createSortHandler = (property) => (event) => {
     this.props.onRequestSort(event, property);
   };
 
@@ -86,32 +84,21 @@ class EnhancedTableHead extends React.Component {
           <CustomTableCell align="center">
             <IconButton
               color="inherit"
-              onClick={e => {
+              onClick={(e) => {
                 e.stopPropagation();
                 toggleAllSelected();
               }}
             >
-              <Badge color="inherit">
-                {allSelected ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
-              </Badge>
+              <Badge color="inherit">{allSelected ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}</Badge>
             </IconButton>
           </CustomTableCell>
           {/*    <CustomTableCell align="center">
             <TableSortLabel />
           </CustomTableCell> */}
           {rows.map(
-            row => (
-              <CustomTableCell
-                key={row.id}
-                padding={row.disablePadding ? "none" : "default"}
-                align="center"
-                sortDirection={orderBy === row.id ? order : false}
-              >
-                <TableSortLabel
-                  active={orderBy === row.id}
-                  direction={order}
-                  onClick={this.createSortHandler(row.id)}
-                >
+            (row) => (
+              <CustomTableCell key={row.id} padding={row.disablePadding ? "none" : "default"} align="center" sortDirection={orderBy === row.id ? order : false}>
+                <TableSortLabel active={orderBy === row.id} direction={order} onClick={this.createSortHandler(row.id)}>
                   {row.label}
                 </TableSortLabel>
               </CustomTableCell>
@@ -127,34 +114,34 @@ class EnhancedTableHead extends React.Component {
 EnhancedTableHead.propTypes = {
   onRequestSort: PropTypes.func.isRequired,
   order: PropTypes.string.isRequired,
-  orderBy: PropTypes.string.isRequired
+  orderBy: PropTypes.string.isRequired,
   //rowCount: PropTypes.number.isRequired,
 };
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     //width: "60%",
     marginTop: theme.spacing(1) * 3,
     // marginLeft: theme.spacing(1) * 30,
     overflowX: "auto",
-    alignItems: "center"
+    alignItems: "center",
   },
   appBar: {
     position: "relative",
-    backgroundColor: Cyan[800]
+    backgroundColor: Cyan[800],
   },
 
   table: {
     //minWidth: 1020,
   },
   tableWrapper: {
-    overflowX: "auto"
+    overflowX: "auto",
   },
   row: {
     "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.background.default
-    }
-  }
+      backgroundColor: theme.palette.background.default,
+    },
+  },
 });
 
 // Table Body
@@ -173,7 +160,7 @@ class EventsTable extends React.Component {
       page: 0,
       rowsPerPage: 5,
       selected: {},
-      allSelected: false
+      allSelected: false,
     };
   }
   static defaultProps = { TableSortLabel: "asc" };
@@ -183,14 +170,14 @@ class EventsTable extends React.Component {
       const { data: history } = await API.get("/clients/notehist");
       const noteData = history.data || [];
       noteData.reduce((total, note) => {
-        this.setState(state => {
+        this.setState((state) => {
           return {
-            selected: { ...state.selected, [note.id]: false }
+            selected: { ...state.selected, [note.id]: false },
           };
         });
       }, 0);
       this.setState({
-        noteData
+        noteData,
       });
       // console.log("here's the event data length: ", noteData.length);
       // console.log("Here's the data ", noteData);
@@ -229,7 +216,7 @@ class EventsTable extends React.Component {
     this.setState({ page });
   };
 
-  handleChangeRowsPerPage = event => {
+  handleChangeRowsPerPage = (event) => {
     this.setState({ rowsPerPage: event.target.value });
   };
 
@@ -240,18 +227,16 @@ class EventsTable extends React.Component {
   handleClickRedirect = (eventId = 0) => {
     this.setState({
       redirectDocs: true,
-      curEventId: eventId
+      curEventId: eventId,
     });
   };
 
-  getPDFData = async id => {
+  getPDFData = async (id) => {
     let pdfData = {
       clientData: [],
       therapistData: [],
       client: this.props.location.state.client,
-      sessionDate: moment(this.props.location.state.sessionDate).format(
-        "MM/DD/YYYY h:mm a"
-      ),
+      sessionDate: moment(this.props.location.state.sessionDate).format("MM/DD/YYYY h:mm a"),
       calID: this.props.location.state.calID,
       noteType: "Narrative",
       attendanceType: "Present ($)",
@@ -291,7 +276,7 @@ class EventsTable extends React.Component {
       selectedID: 2,
       note_date: "",
       initTemplate: 2,
-      customType: ""
+      customType: "",
     };
 
     const formsResp = await API.get("/templates/templates");
@@ -299,12 +284,12 @@ class EventsTable extends React.Component {
 
     pdfData = {
       ...pdfData,
-      noteTypes: formData.map(template => {
+      noteTypes: formData.map((template) => {
         return {
           value: template.id,
-          label: template.template_name
+          label: template.template_name,
         };
-      })
+      }),
     };
 
     const res = await API.get(`events/templates/${id}`);
@@ -327,7 +312,7 @@ class EventsTable extends React.Component {
         s_note: sections ? sections.s_note : "",
         o_note: sections ? sections.o_note : "",
         a_note: sections ? sections.a_note : "",
-        p_note: sections ? sections.p_note : ""
+        p_note: sections ? sections.p_note : "",
       };
     } else if (template[0].type_note === 2) {
       pdfData = {
@@ -335,7 +320,7 @@ class EventsTable extends React.Component {
         sections: sections,
         noteType: "Narrative",
         selectedID: 2,
-        narrativeNote: sections ? sections.narrativeNote : ""
+        narrativeNote: sections ? sections.narrativeNote : "",
       };
     } else if (template[0].type_note === 3) {
       pdfData = {
@@ -350,7 +335,7 @@ class EventsTable extends React.Component {
         ratingDesc2: sections ? sections.ratingDesc2 : 1,
         ratingDesc3: sections ? sections.ratingDesc3 : 1,
         addRating2: sections ? sections.addRating2 : 1,
-        addRating3: sections ? sections.addRating3 : 1
+        addRating3: sections ? sections.addRating3 : 1,
       };
     } else if (template[0].type_note === 4) {
       pdfData = {
@@ -365,27 +350,27 @@ class EventsTable extends React.Component {
         third: sections ? sections.third : "",
         scaleResult3: sections ? sections.scaleResult3 : "",
         addScale2: sections ? sections.addScale2 : false,
-        addScale3: sections ? sections.addScale3 : false
+        addScale3: sections ? sections.addScale3 : false,
       };
     } else if (template[0].type_note > 4) {
       pdfData = {
         ...pdfData,
         selectedID: template[0].type_note,
-        sections: sections
+        sections: sections,
       };
     }
 
     pdfData = {
       ...pdfData,
-      initTemplate: template[0].type_note
+      initTemplate: template[0].type_note,
     };
 
     return pdfData;
   };
 
-  handleDownload = async ids => {
+  handleDownload = async (ids) => {
     try {
-      let promises = await ids.map(async id => {
+      let promises = await ids.map(async (id) => {
         const data = await this.getPDFData(id);
         return data;
       });
@@ -399,9 +384,9 @@ class EventsTable extends React.Component {
   };
 
   handleToggleAllSelected = () => {
-    this.setState(state => {
+    this.setState((state) => {
       let newSelected = { ...state.selected };
-      Object.keys(newSelected).forEach(k => {
+      Object.keys(newSelected).forEach((k) => {
         newSelected[k] = !state.allSelected;
       });
       return { allSelected: !state.allSelected, selected: newSelected };
@@ -413,8 +398,7 @@ class EventsTable extends React.Component {
   render() {
     const { classes } = this.props;
     const { noteData, order, orderBy, rowsPerPage, page } = this.state;
-    const emptyRows =
-      rowsPerPage - Math.min(rowsPerPage, noteData.length - page * rowsPerPage);
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, noteData.length - page * rowsPerPage);
 
     return (
       <Container maxWidth="md">
@@ -423,7 +407,7 @@ class EventsTable extends React.Component {
           className={classes.colorButton}
           onClick={() => {
             const ids = [];
-            Object.keys(this.state.selected).forEach(key => {
+            Object.keys(this.state.selected).forEach((key) => {
               if (this.state.selected[key]) ids.push(key);
             });
             this.handleDownload(ids);
@@ -438,7 +422,7 @@ class EventsTable extends React.Component {
           <Redirect
             to={{
               pathname: "/dochist",
-              state: { calID: this.state.curEventId }
+              state: { calID: this.state.curEventId },
             }}
           />
         ) : null}
@@ -458,38 +442,26 @@ class EventsTable extends React.Component {
                 <TableBody>
                   {stableSort(noteData, getSorting(order, orderBy))
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map(n => {
+                    .map((n) => {
                       // const isSelected = this.isSelected(n.id);
                       return (
-                        <TableRow
-                          hover
-                          className={classes.row}
-                          tabIndex={-1}
-                          key={n.id}
-                          onClick={() => this.handleClickRedirect(n.id)}
-                        >
+                        <TableRow hover className={classes.row} tabIndex={-1} key={n.id} onClick={() => this.handleClickRedirect(n.id)}>
                           <TableCell align="center">
                             <IconButton
                               color="inherit"
-                              onClick={e => {
+                              onClick={(e) => {
                                 e.stopPropagation();
-                                this.setState(state => {
+                                this.setState((state) => {
                                   return {
                                     selected: {
                                       ...state.selected,
-                                      [n.id]: !state.selected[n.id]
-                                    }
+                                      [n.id]: !state.selected[n.id],
+                                    },
                                   };
                                 });
                               }}
                             >
-                              <Badge color="inherit">
-                                {this.state.selected[n.id] ? (
-                                  <CheckBoxIcon />
-                                ) : (
-                                  <CheckBoxOutlineBlankIcon />
-                                )}
-                              </Badge>
+                              <Badge color="inherit">{this.state.selected[n.id] ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}</Badge>
                             </IconButton>
                           </TableCell>
                           {/*            <TableCell align="center">
@@ -515,7 +487,7 @@ class EventsTable extends React.Component {
                   {emptyRows > 0 && (
                     <TableRow
                       style={{
-                        height: 49 * emptyRows
+                        height: 49 * emptyRows,
                       }}
                     >
                       <TableCell colSpan={6} />
@@ -531,10 +503,10 @@ class EventsTable extends React.Component {
               rowsPerPage={rowsPerPage}
               page={page}
               backIconButtonProps={{
-                "aria-label": "Previous Page"
+                "aria-label": "Previous Page",
               }}
               nextIconButtonProps={{
-                "aria-label": "Next Page"
+                "aria-label": "Next Page",
               }}
               onChangePage={this.handleChangePage}
               onChangeRowsPerPage={this.handleChangeRowsPerPage}
@@ -549,7 +521,7 @@ class EventsTable extends React.Component {
 }
 
 EventsTable.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withRouter(withStyles(styles)(EventsTable));

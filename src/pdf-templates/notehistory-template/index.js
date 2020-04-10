@@ -1,18 +1,18 @@
 import React from "react";
 import { Page, Text, Document, View, Image, Font } from "@react-pdf/renderer";
-import Section from "./Section";
-import Rating from "./Rating";
-import { styles } from "./NoteHistoryStyles";
-import { checkboxChecked, checkboxUnchecked } from "./constants";
+import Section from "./section";
+import Rating from "./rating";
+import { styles } from "./styles";
+import { checkboxChecked, checkboxUnchecked } from "../constants";
 
 Font.register({
   family: "Roboto-Regular",
-  src: "https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxP.ttf"
+  src: "https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxP.ttf",
 });
 
-const NoteHistoryTemplate = props => {
+const NoteHistoryTemplate = (props) => {
   const { pdfs } = props;
-  // console.log(data);
+
   return (
     <Document>
       <Page size="LETTER" style={styles.page}>
@@ -36,14 +36,14 @@ const NoteHistoryTemplate = props => {
                 <View style={{ display: "flex", width: "16%" }}>
                   <Text style={styles.label}>Note Type: </Text>
                   <Text style={styles.content}>
-                    {data.selectedID > 4 ? data.noteTypes.filter(n => n.value === data.selectedID)[0].label : data.noteTypes[data.selectedID - 1].label || ""}
+                    {data.selectedID > 4 ? data.noteTypes.filter((n) => n.value === data.selectedID)[0].label : data.noteTypes[data.selectedID - 1].label || ""}
                   </Text>
                 </View>
               </View>
               <View style={{ marginLeft: 24 }}>
                 {data.sections && data.selectedID > 4 && (
                   <View style={styles.sections}>
-                    {data.sections.map(section => {
+                    {data.sections.map((section) => {
                       return <Section section={section} />;
                     })}
                   </View>
@@ -110,7 +110,7 @@ const NoteHistoryTemplate = props => {
                 style={{
                   display: "flex",
                   flexDirection: "row",
-                  marginTop: 20
+                  marginTop: 20,
                 }}
               >
                 <View style={styles.checkbox}>

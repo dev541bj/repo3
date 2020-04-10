@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, View } from "@react-pdf/renderer";
-import { green, styles } from "./NoteHistoryStyles";
+import { green, styles } from "./styles";
 
 const Rating = ({ rating }) => {
   return (
@@ -8,7 +8,7 @@ const Rating = ({ rating }) => {
       <View
         style={{
           display: "flex",
-          flexDirection: "row"
+          flexDirection: "row",
         }}
       >
         <View style={rating > 1 ? styles.sliderLine : styles.sliderLineLight}>
@@ -58,7 +58,7 @@ const Rating = ({ rating }) => {
                 width: 8,
                 height: 8,
                 borderRadius: 5,
-                backgroundColor: green
+                backgroundColor: green,
               }}
             />
           )}
