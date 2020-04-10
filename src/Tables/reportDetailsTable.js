@@ -1,5 +1,8 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
+import { saveAs } from "file-saver";
+import { pdf } from "@react-pdf/renderer";
+import moment from "moment";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
@@ -16,7 +19,7 @@ import Container from "@material-ui/core/Container";
 import Button from "@material-ui/core/Button";
 import classNames from "classnames";
 import Add from "@material-ui/icons/Add";
-import moment from "moment";
+import ReportTemplate from "../pdf-templates/report-template";
 
 import API from "../utils/API";
 
@@ -222,21 +225,33 @@ class ReportDetailsTable extends React.Component {
     this.setState({ open: false });
   };
 
+  handleDownload = async (data) => {
+    try {
+      const blob = await pdf(
+        <ReportTemplate data={data} reportType={this.state.reportType} startDate={this.state.startDate} endDate={this.state.endDate} />
+      ).toBlob();
+      saveAs(blob, "Report.pdf");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   render() {
     const { classes } = this.props;
-    const {
-      newReportData,
-      order,
-      orderBy,
-      rowsPerPage,
-
-      page,
-    } = this.state;
+    const { newReportData, order, orderBy, rowsPerPage, page } = this.state;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, newReportData.length - page * rowsPerPage);
+    const data = stableSort(newReportData, getSorting(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
       <Container maxWidth="md">
-        <Button variant="contained" className={classes.button}>
+        <Button
+          variant="contained"
+          className={classes.button}
+          onClick={(e) => {
+            e.preventDefault();
+            this.handleDownload(data);
+          }}
+        >
           <Add className={classNames(classes.leftIcon, classes.iconSmall)} />
           Download Report
         </Button>
@@ -247,25 +262,23 @@ class ReportDetailsTable extends React.Component {
               <Table className={classes.table} aria-labelledby="tableTitle">
                 <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={this.handleRequestSort} rowCount={newReportData.length} />
                 <TableBody>
-                  {stableSort(newReportData, getSorting(order, orderBy))
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((n) => {
-                      return (
-                        <TableRow hover className={classes.row} tabIndex={-1} key={n.id}>
-                          {/* If reportType = "Hours By Category", then have a table with the following cells below */}
+                  {data.map((n) => {
+                    return (
+                      <TableRow hover className={classes.row} tabIndex={-1} key={n.id}>
+                        {/* If reportType = "Hours By Category", then have a table with the following cells below */}
 
-                          {/*     <TableCell align="center">{n.category}</TableCell>
+                        {/*     <TableCell align="center">{n.category}</TableCell>
                           <TableCell align="center">
                             {n.hours_by_category}
                           </TableCell> */}
 
-                          {/* If reportType = "Billable Hours", then have a table with the following cells below */}
+                        {/* If reportType = "Billable Hours", then have a table with the following cells below */}
 
-                          <TableCell align="center">{n.therapists}</TableCell>
-                          <TableCell align="center">{n.billable_hours}</TableCell>
-                        </TableRow>
-                      );
-                    })}
+                        <TableCell align="center">{n.therapists}</TableCell>
+                        <TableCell align="center">{n.billable_hours}</TableCell>
+                      </TableRow>
+                    );
+                  })}
                   {emptyRows > 0 && (
                     <TableRow
                       style={{
