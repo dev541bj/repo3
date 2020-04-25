@@ -1,0 +1,18 @@
+[
+  {
+    "therapists": "Harry Potter",
+    "billable_hours": 9
+  },
+  {
+    "therapists": "Hermione Grainger",
+    "billable_hours": 2.5
+  },
+  {
+    "therapists": "Joe Bob,Lisa Simpson,Harry Potter",
+    "billable_hours": 25
+  },
+  {
+    "therapists": "Joe Bob",
+    "billable_hours": 2
+  }
+]
