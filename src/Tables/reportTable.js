@@ -19,6 +19,7 @@ import Cyan from "@material-ui/core/colors/cyan";
 import Container from "@material-ui/core/Container";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
+import DownloadIcon from "@material-ui/icons/GetApp";
 
 import API from "../utils/API";
 
@@ -86,16 +87,7 @@ class EnhancedTableHead extends React.Component {
     return (
       <TableHead>
         <TableRow>
-          <CustomTableCell padding="checkbox">
-            <MuiThemeProvider theme={theme}>
-              <Checkbox
-                indeterminate={numSelected > 0 && numSelected < rowCount}
-                checked={numSelected === rowCount}
-                onChange={onSelectAllClick}
-                color="primary"
-              />
-            </MuiThemeProvider>
-          </CustomTableCell>
+          <CustomTableCell></CustomTableCell>
           {rows.map(
             (row) => (
               <CustomTableCell
@@ -207,7 +199,7 @@ class ReportsTable extends React.Component {
     }
     this.setState({ selected: [] });
   };
-
+  /* 
   handleClick = (event, id) => {
     const { selected } = this.state;
     const selectedIndex = selected.indexOf(id);
@@ -227,7 +219,7 @@ class ReportsTable extends React.Component {
     }
 
     this.setState({ selected: newSelected });
-  };
+  }; */
 
   handleRequestSort = (report, property) => {
     const orderBy = property;
@@ -285,22 +277,7 @@ class ReportsTable extends React.Component {
             }}
           />
         ) : null}
-        <Button
-          variant="contained"
-          className={classes.colorButton}
-          /*   onClick={() => {
-            const ids = [];
-            Object.keys(this.state.selected).forEach((key) => {
-              if (this.state.selected[key]) ids.push(key);
-            });
-            this.handleDownload(ids);
-          }} */
-        >
-          <AddIcon
-          // className={classNames(classes.leftIcon, classes.iconSmall)}
-          />
-          Download selected
-        </Button>
+
         {reportData.length > 0 ? (
           <Paper className={classes.root}>
             <div className={classes.tableWrapper}>
@@ -326,14 +303,12 @@ class ReportsTable extends React.Component {
                           key={n.id}
                           selected={isSelected}
                         >
-                          <TableCell padding="checkbox">
+                          <TableCell>
                             <MuiThemeProvider theme={theme}>
-                              <Checkbox
-                                onClick={(event) =>
-                                  this.handleClick(event, n.id)
-                                }
-                                color="primary"
-                                checked={isSelected}
+                              <DownloadIcon
+                              /*  onClick={(event) =>
+                                  this.handleClick2(event, n.id)
+                                } */
                               />
                             </MuiThemeProvider>
                           </TableCell>
