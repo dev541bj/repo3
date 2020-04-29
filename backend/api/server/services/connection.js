@@ -6,14 +6,14 @@ var util = require("util");
 
 const conn = mysql.createConnection({
   host: "localhost",
-  user: "root", // replace with your mysql user info
+  user: "silverbullet", // replace with your mysql user info
   // password: "Artm@y08", // replace with your mysql password
   password: "12345678", // replace with your mysql password
-  database: "nodemysql"
+  database: "nodemysql",
 });
 
 // connect to database
-conn.connect(err => {
+conn.connect((err) => {
   if (err) {
     console.log("Error connecting to Db:" + err);
     return;
