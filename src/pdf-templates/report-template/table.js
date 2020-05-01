@@ -2,25 +2,27 @@ import React from "react";
 import { Text, View } from "@react-pdf/renderer";
 import { styles } from "./styles";
 
-const Table = ({ data }) => {
+const Table = ({data, reportType}) => {
   return (
     <View style={styles.tableWrapper}>
       <View style={styles.table}>
         <View style={styles.tableRow}>
           <View style={styles.tableColHeader}>
-            <Text style={styles.tableCellHeader}>Therapist</Text>
+            <Text style={styles.tableCellHeader}>{reportType === "Hours By Category" ? "Category" : "Therapist"}</Text>
           </View>
           <View style={styles.tableColHeader}>
-            <Text style={styles.tableCellHeader}>Billable Hours</Text>
+            <Text
+              style={styles.tableCellHeader}>{reportType === "Hours By Category" ? "Hours" : "Billable Hours"}</Text>
           </View>
         </View>
         {data.map((d) => (
           <View style={styles.tableRow}>
             <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>{d.therapists}</Text>
+              <Text style={styles.tableCell}>{reportType === "Hours By Category" ? d.category : d.therapists}</Text>
             </View>
             <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>{d.billable_hours}</Text>
+              <Text
+                style={styles.tableCell}>{reportType === "Hours By Category" ? d.hours_by_category : d.billable_hours}</Text>
             </View>
           </View>
         ))}

@@ -1,7 +1,7 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
-import { saveAs } from "file-saver";
 import { pdf } from "@react-pdf/renderer";
+import { saveAs } from "file-saver";
 import moment from "moment";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
@@ -22,6 +22,7 @@ import Add from "@material-ui/icons/Add";
 import ReportTemplate from "../pdf-templates/report-template";
 
 import API from "../utils/API";
+import maxBy from "lodash/maxBy";
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -48,13 +49,13 @@ function getSorting(order, orderBy) {
 }
 
 const categoryRows = [
-  { id: "category", label: "Category" },
-  { id: "hours_by_category", label: "Hours" },
+  {id: "category", label: "Category"},
+  {id: "hours_by_category", label: "Hours"},
 ];
 
 const billableRows = [
-  { id: "therapists", label: "Therapist" },
-  { id: "billable_hours", label: "Billable Hours" },
+  {id: "therapists", label: "Therapist"},
+  {id: "billable_hours", label: "Billable Hours"},
 ];
 
 const CustomTableCell = withStyles((theme) => ({
@@ -71,18 +72,19 @@ const CustomTableCell = withStyles((theme) => ({
 // Table Header
 
 class EnhancedTableHead extends React.Component {
-  static defaultProps = { order: "asc" };
+  static defaultProps = {order: "asc"};
   createSortHandler = (property) => (report) => {
     this.props.onRequestSort(report, property);
   };
 
   render() {
-    const { order, orderBy } = this.props;
+    const {order, orderBy, reportType} = this.props;
+    const rows = reportType === "Hours By Category" ? categoryRows : billableRows;
 
     return (
       <TableHead>
         <TableRow>
-          {billableRows /* billableRows (if reportType = "Billable Hours"; categoryRows (if reportType = "Hours By Category" */
+          {rows
             .map(
               (row) => (
                 <CustomTableCell
@@ -91,12 +93,13 @@ class EnhancedTableHead extends React.Component {
                   align="center"
                   sortDirection={orderBy === row.id ? order : false}
                 >
-                  <TableSortLabel active={orderBy === row.id} direction={order} onClick={this.createSortHandler(row.id)}>
+                  <TableSortLabel active={orderBy === row.id} direction={order}
+                                  onClick={this.createSortHandler(row.id)}>
                     {row.label}
                   </TableSortLabel>
                 </CustomTableCell>
               ),
-              this
+              this,
             )}
         </TableRow>
       </TableHead>
@@ -108,6 +111,7 @@ EnhancedTableHead.propTypes = {
   onRequestSort: PropTypes.func.isRequired,
   order: PropTypes.string.isRequired,
   orderBy: PropTypes.string.isRequired,
+  reportType: PropTypes.string.isRequired,
 };
 
 const styles = (theme) => ({
@@ -130,10 +134,80 @@ const styles = (theme) => ({
       backgroundColor: theme.palette.background.default,
     },
   },
+  chartWrapper: {
+    position: "relative",
+    marginTop: "60px",
+    padding: "20px 20px 120px 54px",
+    height: "480px",
+    width: "100%",
+  },
+  chart: {
+    position: "relative",
+    width: "100%",
+    height: "100%",
+  },
+  chartBarArea: {
+    position: "absolute",
+    width: "100%",
+    height: "340px",
+    display: "flex",
+    flexDirection: "row",
+  },
+  chartBar: {
+    position: "relative",
+    height: "100%",
+    flexGrow: "1",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-end",
+  },
+  chartBarLine: {
+    width: "30px",
+    backgroundColor: "#4472c4",
+  },
+  chartBarLabel: {
+    position: "absolute",
+    height: "40px",
+    bottom: "-46px",
+    fontSize: "12px",
+    color: "#52524f",
+    padding: "0px 2px",
+  },
+  chartAxisArea: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    borderBottom: "2px solid #52524f",
+  },
+  chartAxisSection: {
+    position: "relative",
+    flexGrow: "1",
+    borderTop: "2px solid #52524f",
+  },
+  chartAxisLabel: {
+    position: "absolute",
+    top: "-8px",
+    left: "-40px",
+    marginRight: "10px",
+    textAlign: "right",
+    fontSize: "12px",
+    color: "#52524f",
+  },
+  chartAxisOriginLabel: {
+    position: "absolute",
+    top: "332px",
+    left: "-100%",
+    marginRight: "10px",
+    textAlign: "right",
+    fontSize: "12px",
+    color: "#52524f",
+  },
 });
 
 class ReportDetailsTable extends React.Component {
-  static defaultProps = { TableSortLabel: "asc" };
+  static defaultProps = {TableSortLabel: "asc"};
   state = {
     order: "asc",
     open: false,
@@ -152,32 +226,30 @@ class ReportDetailsTable extends React.Component {
 
   async componentDidMount() {
     try {
-      const { data: reports } = await API.get("/members/getreports");
+      const {data: reports} = await API.get("/members/getreports");
       const reportData = reports.data || [];
       this.setState({
         reportData,
       });
 
-      this.setState({ report: this.props.location.state.curReportId }, () => {
+      this.setState({report: this.props.location.state.curReportId}, () => {
         this.changeContentWithReportID();
       });
 
-      const { startDate, endDate } = this.state;
-      // *** If reportType = "Hours By Category", then pull the "/members/catreport" route ***
-      /*  const { data: newReports } = await API.get("/members/catreport", {
-        params: { startDate, endDate }
-      });
-      console.log("here is the category report information ", newReports);
-      const newReportData = newReports.data || [];
-      this.setState({
-        newReportData
-      }); */
-      // *** If reportType = "Billable Hours", then pull the "/members/billreport" route (query needed below) ***
-      const { data: newReports } = await API.get("/members/billreport", {
-        params: { startDate, endDate },
-      });
-      console.log("here is the billable hours report information ", newReports);
-      const newReportData = newReports.data || [];
+      const {startDate, endDate, reportType} = this.state;
+
+      let response;
+      if (reportType === "Hours By Category") {
+        response = await API.get("/members/catreport", {
+          params: {startDate, endDate},
+        });
+      } else {
+        response = await API.get("/members/billreport", {
+          params: {startDate, endDate},
+        });
+      }
+
+      const newReportData = response.data.data || [];
       this.setState({
         newReportData,
       });
@@ -186,19 +258,18 @@ class ReportDetailsTable extends React.Component {
     }
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() {
+  }
 
   changeContentWithReportID() {
-    const report = this.state.reportData.find(({ id }) => id === this.state.report);
+    const report = this.state.reportData.find(({id}) => id === this.state.report);
     if (report) {
-      const { id, report_type, start_date, end_date } = report;
+      const {id, report_type, start_date, end_date} = report;
       this.setState({
         reportType: report_type,
         startDate: moment(start_date).format("YYYY-MM-DD"),
         endDate: moment(end_date).format("YYYY-MM-DD"),
       });
-      console.log("here is the report data pulled: ", report);
-      console.log("here is the report type pulled: ", this.state.reportType);
     }
   }
 
@@ -210,25 +281,26 @@ class ReportDetailsTable extends React.Component {
       order = "asc";
     }
 
-    this.setState({ order, orderBy });
+    this.setState({order, orderBy});
   };
 
   handleChangePage = (report, page) => {
-    this.setState({ page });
+    this.setState({page});
   };
 
   handleChangeRowsPerPage = (report) => {
-    this.setState({ rowsPerPage: report.target.value });
+    this.setState({rowsPerPage: report.target.value});
   };
 
   handleClose = () => {
-    this.setState({ open: false });
+    this.setState({open: false});
   };
 
   handleDownload = async (data) => {
     try {
       const blob = await pdf(
-        <ReportTemplate data={data} reportType={this.state.reportType} startDate={this.state.startDate} endDate={this.state.endDate} />
+        <ReportTemplate data={data} reportType={this.state.reportType} startDate={this.state.startDate}
+                        endDate={this.state.endDate}/>,
       ).toBlob();
       saveAs(blob, "Report.pdf");
     } catch (error) {
@@ -237,10 +309,29 @@ class ReportDetailsTable extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
-    const { newReportData, order, orderBy, rowsPerPage, page } = this.state;
+    const {classes} = this.props;
+    const {newReportData, order, orderBy, rowsPerPage, page, reportType} = this.state;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, newReportData.length - page * rowsPerPage);
     const data = stableSort(newReportData, getSorting(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+    const chartHeight = 340;
+    let maxHour;
+    let range = 5;
+    let step = 0.5;
+    if (data && data.length > 0) {
+      maxHour = data && data.length > 0 ?
+        reportType === "Hours By Category" ?
+          maxBy(data, "hours_by_category").hours_by_category :
+          maxBy(data, "billable_hours").billable_hours :
+        0;
+      range = maxHour <= 5 ? 5 : maxHour <= 10 ? 10 : maxHour <= 25 ? 25 : maxHour <= 50 ? 50
+        : maxHour <= 100 ? 100 : maxHour <= 500 ? 500 : maxHour <= 1000 ? 1000 : 10000;
+      step = range / 10;
+    }
+    let steps = [];
+    for (var i = step; i <= range; i += step) {
+      steps.push(i.toFixed(2).toString());
+    }
 
     return (
       <Container maxWidth="md">
@@ -252,61 +343,87 @@ class ReportDetailsTable extends React.Component {
             this.handleDownload(data);
           }}
         >
-          <Add className={classNames(classes.leftIcon, classes.iconSmall)} />
+          <Add className={classNames(classes.leftIcon, classes.iconSmall)}/>
           Download Report
         </Button>
 
         {newReportData.length > 0 ? (
-          <Paper className={classes.root}>
-            <div className={classes.tableWrapper}>
-              <Table className={classes.table} aria-labelledby="tableTitle">
-                <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={this.handleRequestSort} rowCount={newReportData.length} />
-                <TableBody>
-                  {data.map((n) => {
-                    return (
-                      <TableRow hover className={classes.row} tabIndex={-1} key={n.id}>
-                        {/* If reportType = "Hours By Category", then have a table with the following cells below */}
-
-                        {/*     <TableCell align="center">{n.category}</TableCell>
-                          <TableCell align="center">
-                            {n.hours_by_category}
-                          </TableCell> */}
-
-                        {/* If reportType = "Billable Hours", then have a table with the following cells below */}
-
-                        <TableCell align="center">{n.therapists}</TableCell>
-                        <TableCell align="center">{n.billable_hours}</TableCell>
+          <>
+            <Paper className={classes.root}>
+              <div className={classes.tableWrapper}>
+                <Table className={classes.table} aria-labelledby="tableTitle">
+                  <EnhancedTableHead order={order} orderBy={orderBy}
+                                     onRequestSort={this.handleRequestSort}
+                                     rowCount={newReportData.length}
+                                     reportType={reportType}
+                  />
+                  <TableBody>
+                    {data.map((n) => {
+                      return (
+                        <TableRow hover className={classes.row} tabIndex={-1} key={n.id}>
+                          <TableCell
+                            align="center">{reportType === "Hours By Category" ? n.category : n.therapists}</TableCell>
+                          <TableCell
+                            align="center">{reportType === "Hours By Category" ? n.hours_by_category : n.billable_hours}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                    {emptyRows > 0 && (
+                      <TableRow
+                        style={{
+                          height: 49 * emptyRows,
+                        }}
+                      >
+                        <TableCell colSpan={6}/>
                       </TableRow>
-                    );
-                  })}
-                  {emptyRows > 0 && (
-                    <TableRow
-                      style={{
-                        height: 49 * emptyRows,
-                      }}
-                    >
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 20]}
-              component="div"
-              count={newReportData.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              backIconButtonProps={{
-                "aria-label": "Previous Page",
-              }}
-              nextIconButtonProps={{
-                "aria-label": "Next Page",
-              }}
-              onChangePage={this.handleChangePage}
-              onChangerowsPerPage={this.handleChangeRowsPerPage}
-            />
-          </Paper>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 20]}
+                component="div"
+                count={newReportData.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                backIconButtonProps={{
+                  "aria-label": "Previous Page",
+                }}
+                nextIconButtonProps={{
+                  "aria-label": "Next Page",
+                }}
+                onChangePage={this.handleChangePage}
+                onChangerowsPerPage={this.handleChangeRowsPerPage}
+              />
+            </Paper>
+            <Paper style={{height: "420px"}}>
+              <div className={classes.chartWrapper}>
+                <div className={classes.chart}>
+                  <div className={classes.chartAxisArea}>
+                    {steps.reverse().map(step => (
+                      <div className={classes.chartAxisSection}>
+                        <div className={classes.chartAxisLabel}>{step}</div>
+                      </div>
+                    ))}
+                    <div className={classes.chartAxisOriginLabel}>0.00</div>
+                  </div>
+                  <div className={classes.chartBarArea}>
+                    {data.map(d => (
+                      <div className={classes.chartBar}>
+                        <div className={classes.chartBarLine}
+                             style={{
+                               height: `${(reportType === "Hours By Category" ?
+                                 d.hours_by_category : d.billable_hours) * chartHeight / range}px`,
+                             }}/>
+                        <div className={classes.chartBarLabel}>{
+                          reportType === "Hours By Category" ? d.category : d.therapists}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </Paper>
+          </>
         ) : (
           "this report does not show anything!"
         )}

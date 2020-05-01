@@ -22,6 +22,10 @@ import AddIcon from "@material-ui/icons/Add";
 import DownloadIcon from "@material-ui/icons/GetApp";
 
 import API from "../utils/API";
+import { pdf } from "@react-pdf/renderer";
+import ReportTemplate from "../pdf-templates/report-template";
+import { saveAs } from "file-saver";
+import moment from "moment";
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -50,10 +54,10 @@ function getSorting(order, orderBy) {
 }
 
 const rows = [
-  { id: "report_type", disablePadding: true, label: "Report Type" },
-  { id: "start_date", label: "Start" },
-  { id: "end_date", label: "End" },
-  { id: "create_date", label: "Created" },
+  {id: "report_type", disablePadding: true, label: "Report Type"},
+  {id: "start_date", label: "Start"},
+  {id: "end_date", label: "End"},
+  {id: "create_date", label: "Created"},
 ];
 
 const CustomTableCell = withStyles((theme) => ({
@@ -70,7 +74,7 @@ const CustomTableCell = withStyles((theme) => ({
 // Table Header
 
 class EnhancedTableHead extends React.Component {
-  static defaultProps = { order: "asc" };
+  static defaultProps = {order: "asc"};
   createSortHandler = (property) => (report) => {
     this.props.onRequestSort(report, property);
   };
@@ -104,7 +108,7 @@ class EnhancedTableHead extends React.Component {
                 </TableSortLabel>
               </CustomTableCell>
             ),
-            this
+            this,
           )}
         </TableRow>
       </TableHead>
@@ -150,14 +154,14 @@ const styles = (theme) => ({
 
 const theme = createMuiTheme({
   palette: {
-    primary: { main: "#b2dfdb" },
+    primary: {main: "#b2dfdb"},
   },
 });
 
 // Table Body
 
 class ReportsTable extends React.Component {
-  static defaultProps = { TableSortLabel: "asc" };
+  static defaultProps = {TableSortLabel: "asc"};
   state = {
     order: "asc",
     open: false,
@@ -172,14 +176,14 @@ class ReportsTable extends React.Component {
 
   async componentDidMount() {
     try {
-      const { data: reports } = await API.get("/members/getreports");
+      const {data: reports} = await API.get("/members/getreports");
       const reportData = reports.data || [];
       this.setState({
         reportData,
       });
       console.log(
         "here's the data length from the main report page: ",
-        reportData.length
+        reportData.length,
       );
     } catch (error) {
       const reportData = this.state.reportData;
@@ -188,7 +192,8 @@ class ReportsTable extends React.Component {
     }
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() {
+  }
 
   handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -197,7 +202,7 @@ class ReportsTable extends React.Component {
       }));
       return;
     }
-    this.setState({ selected: [] });
+    this.setState({selected: []});
   };
   /* 
   handleClick = (event, id) => {
@@ -229,19 +234,19 @@ class ReportsTable extends React.Component {
       order = "asc";
     }
 
-    this.setState({ order, orderBy });
+    this.setState({order, orderBy});
   };
 
   handleChangePage = (report, page) => {
-    this.setState({ page });
+    this.setState({page});
   };
 
   handleChangeRowsPerPage = (report) => {
-    this.setState({ rowsPerPage: report.target.value });
+    this.setState({rowsPerPage: report.target.value});
   };
 
   handleClose = () => {
-    this.setState({ open: false });
+    this.setState({open: false});
   };
 
   handleClickRedirect = (reportId = 0) => {
@@ -251,10 +256,39 @@ class ReportsTable extends React.Component {
     });
   };
 
+  handleDownload = async (report) => {
+    try {
+      const {report_type, start_date, end_date} = report;
+      const startDate = moment(start_date).format("YYYY-MM-DD");
+      const endDate = moment(end_date).format("YYYY-MM-DD");
+      let response;
+      if (report_type === "Hours By Category") {
+        response = await API.get("/members/catreport", {
+          params: {startDate, endDate},
+        });
+      } else {
+        response = await API.get("/members/billreport", {
+          params: {startDate, endDate},
+        });
+      }
+
+      const data = response.data.data || [];
+
+      const blob = await pdf(
+        <ReportTemplate data={data} reportType={report_type} startDate={startDate}
+                        endDate={endDate}/>,
+      ).toBlob();
+      saveAs(blob, "Report.pdf");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
   isSelected = (id) => this.state.selected.indexOf(id) !== -1;
 
   render() {
-    const { classes } = this.props;
+    const {classes} = this.props;
     const {
       reportData,
       order,
@@ -273,7 +307,7 @@ class ReportsTable extends React.Component {
           <Redirect
             to={{
               pathname: `/reports/view/${this.state.curReportId}`,
-              state: { curReportId: this.state.curReportId },
+              state: {curReportId: this.state.curReportId},
             }}
           />
         ) : null}
@@ -306,9 +340,11 @@ class ReportsTable extends React.Component {
                           <TableCell>
                             <MuiThemeProvider theme={theme}>
                               <DownloadIcon
-                              /*  onClick={(event) =>
-                                  this.handleClick2(event, n.id)
-                                } */
+                                style={{cursor: "pointer"}}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  this.handleDownload(n);
+                                }}
                               />
                             </MuiThemeProvider>
                           </TableCell>
@@ -330,7 +366,7 @@ class ReportsTable extends React.Component {
                         height: 49 * emptyRows,
                       }}
                     >
-                      <TableCell colSpan={6} />
+                      <TableCell colSpan={6}/>
                     </TableRow>
                   )}
                 </TableBody>

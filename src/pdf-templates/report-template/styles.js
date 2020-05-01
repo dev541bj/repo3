@@ -2,6 +2,7 @@ import { StyleSheet } from "@react-pdf/renderer";
 
 export const regularFont = "Roboto-Regular";
 export const boldFont = "Roboto-Bold";
+const mainColor = "#02838f";
 
 export const styles = StyleSheet.create({
 	page: {
@@ -24,14 +25,14 @@ export const styles = StyleSheet.create({
 		right: "0",
 		fontSize: "28",
 		fontFamily: boldFont,
-		color: "#0c909f"
+		color: mainColor
 	},
 	headerDate: {
 		position: "absolute",
 		right: "0",
 		top: "40",
 		fontFamily: boldFont,
-		color: "#0c909f"
+		color: mainColor
 	},
 	footer: {
 		position: "absolute",
@@ -39,7 +40,7 @@ export const styles = StyleSheet.create({
 		left: "30",
 		width: "552",
 		height: "32",
-		backgroundColor: "#0c909f"
+		backgroundColor: mainColor
 	},
 	companyTitle: {
 		position: "absolute",
@@ -61,11 +62,6 @@ export const styles = StyleSheet.create({
 	table: {
 		display: "table",
 		width: "auto",
-		borderStyle: "solid",
-		borderColor: "#bfbfbf",
-		borderWidth: 1,
-		borderRightWidth: 0,
-		borderBottomWidth: 0
 	},
 	tableRow: {
 		margin: "auto",
@@ -73,20 +69,16 @@ export const styles = StyleSheet.create({
 	},
 	tableColHeader: {
 		width: "50%",
-		borderStyle: "solid",
-		borderColor: "#bfbfbf",
-		borderBottomColor: "#000",
-		borderWidth: 1,
-		borderLeftWidth: 0,
-		borderTopWidth: 0
+		height: "40",
+		backgroundColor: mainColor,
+		color: "#ffffff",
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center"
 	},
 	tableCol: {
 		width: "50%",
-		borderStyle: "solid",
-		borderColor: "#bfbfbf",
-		borderWidth: 1,
-		borderLeftWidth: 0,
-		borderTopWidth: 0
+		textAlign: "center"
 	},
 	tableCellHeader: {
 		margin: 5,
