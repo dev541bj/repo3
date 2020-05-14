@@ -42,7 +42,6 @@ UNLOCK TABLES;
 --
 -- Table structure for table `clients`
 --
-
 DROP TABLE IF EXISTS `clients`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
@@ -180,7 +179,7 @@ CREATE TABLE `clients` (
   `obj10_2_desc` varchar(45) DEFAULT NULL,
   `obj10_3_desc` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -191,37 +190,6 @@ LOCK TABLES `clients` WRITE;
 /*!40000 ALTER TABLE `clients` DISABLE KEYS */;
 INSERT INTO `clients` VALUES (1,1,'Hogwarts','Mr.','Billy Joe','Billy','Joe','BJ','Individual','123-444-5555','Plano','75023','123 Fake Street','bjoe@mail.com','Harry Potter',NULL,'Therapy','40',60,'7/3/03','He is shy at first but will eventually open up0','TX','Mr.','Bob','Joe','123 Apple Street','Plano','TX','75023','bobjoe@mail.com',0,'123-222-2222',NULL,0,'Bob','Joe','Bob Joe','Card','Visa','11111111111','10/25','123','123 Fake Street','Bob Joe','Plano','TX','bjoe@mail.com','123-123-123','75023',1,'Mrs.','Rachel','Joe','123 Orange Street','Plano','TX','75023','rjoe@mail.com',NULL,'555-444-3333',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,1,NULL,NULL,NULL,NULL,0,0,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL),(2,1,'Hogwarts','Miss','Sarah Silver','Sarah','Silver','SS','Facility','123-222-3333','Allen','75002','444 Clark Drive','ssilver@mail.com','Lisa Simpson','Clark High School','Therapy','20',60,'6/3/00',NULL,'TX','Ms.','Sarah','Silver','432 Rose Road','Allen','TX','75002','ssilver@mail.com',NULL,'555-555-5555',NULL,NULL,'Sarah','Silver','Sarah Silver','Check',NULL,NULL,NULL,NULL,'432 Rose Road',NULL,'Allen','TX','ssilver@mail.com','111-111-1111','34342',NULL,'Mr.','Sam','Silver','432 Rose Road','Allen','TX','75002','samsilver@mail.com',NULL,'444-555-4444',NULL,NULL,'Mx.','Alex','Silver','200 Golden Avenue','Highland Park','TX','75209','asilver@mail.com','300-222-2222',NULL,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(3,1,'Hogwarts','Mr.','Jaren Jones','Jaren','Jones','JJ','Individual','123-111-2232','Dallas','75019','234 Tree Street','jjones@mail.com','Harry Potter',NULL,'Therapy','20',60,'5/7/05',NULL,'TX','Mrs.','Peter','Jones','1111 Ivy Lane','Dallas','TX','75019','nname@mail.com',NULL,'777-777-7777','888-888-8888',NULL,'Ned','Jones','Ned Jones','Card','Discover','3333333333','2/23','432','1111 Lane','Ned E. Jones','Dallas','TX','ned@mail.com','222-222-2222','22424',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(4,1,'Oz','Mr.','Ian Stark','Ian','Stark','IS','Individual','122-232-4444','Dallas','75032','645 Elm Ave','istark@mail.com','Jake Jakerson',NULL,'Therapy','20',60,'8/2/01',NULL,'TX','Mr.','Bill','Jakerson','3214 Elm Court','Smithtown','TX','75032','ffake@mail.com',NULL,'234-334-3444','121-112-2222',NULL,'Fred','Jakerson','Fred Jakerson','Check',NULL,NULL,NULL,NULL,'2343 Ave',NULL,'Plano','TX','money@mail.com','444-444-4444','12345',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(5,1,'Oz','Mr.','Johnny Jackson','Johnny','Jackson','JJ','Facility','122-222-1111','Frisco','75068','789 Tom Lane','johnjack@mail.com','Hermione Grainger','Thomas Elementary','Lessons','20',60,'9/6/12',NULL,'TX','Mrs.','Tony','Stark','4352 Imagine Lane','Austin','TX','75068','jjackson@mail.com',NULL,'111-111-1111',NULL,NULL,'Jill','Jackson','Jill Jackson','Cash',NULL,NULL,NULL,NULL,'5555 Lane',NULL,'Frisco','TX','jilljackson@mail.com','555-555-5544','54321',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(70,1,'Oz','Mr.','Joe Jackson','Joe','Jackson','JJ','Facility','122-222-1111','Frisco','75068','789 Tom Lane','joejack@mail.com','Hermione Grainger','Thomas Elementary','Lessons','20',60,'10/4/13',NULL,'TX','Mrs.','Jill','Jackson','4352 Imagine Lane','Austin','TX','75068','jjackson@mail.com',NULL,'111-111-1111',NULL,NULL,'Jill','Jackson','Jill Jackson','Cash',NULL,NULL,NULL,NULL,'5555 Lanr',NULL,'Frisco','TX','jilljackson@mail.com','555-555-5544','54321',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(71,1,'Oz','Miss','Joan Jackson','Joan','Jackson','JJ','Facility','122-222-1111','Frisco','75068','789 Tom Lane','joanjack@mail.com','Hermione Grainger','Thomas Elementary','Lessons','20',60,'1/4/15',NULL,'TX','Mrs.','Jill','Jackson','4352 Imagine Lane','Austin','TX','75068','jjackson@mail.com',NULL,'111-111-1111',NULL,NULL,'Jill','Jackson','Jill Jackson','Cash',NULL,NULL,NULL,NULL,NULL,NULL,'Frisco',NULL,'jilljackson@mail.com','555-555-5544',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `clients` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `invoices`
---
-
-DROP TABLE IF EXISTS `invoices`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
-CREATE TABLE `invoices` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `status` varchar(45) DEFAULT NULL,
-  `inv_date` date DEFAULT NULL,
-  `payor` varchar(45) DEFAULT NULL,
-  `payor_first` varchar(45) DEFAULT NULL,
-  `payor_last` varchar(45) DEFAULT NULL,
-  `start_date` date DEFAULT NULL,
-  `end_date` date DEFAULT NULL,
-  `amount` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `invoices`
---
-
-LOCK TABLES `invoices` WRITE;
-/*!40000 ALTER TABLE `invoices` DISABLE KEYS */;
-INSERT INTO `invoices` VALUES (1,'Paid','2019-09-10','JIll Jackson','Mary','Smith','2019-08-10','2019-09-09','120'),(2,'Paid','2019-10-10','Bob Joe','Jim','Adams','2019-09-10','2019-10-10','80'),(3,'Paid','2019-10-11','Sarah Silver',NULL,NULL,'2019-10-11','2019-10-11','40'),(4,'Paid','2019-10-11','Ned Jones',NULL,NULL,'2019-10-01','2019-10-31','100'),(5,NULL,'2019-10-11','Jiil Jackson',NULL,NULL,'2019-10-11','2019-10-11','200'),(7,NULL,'2019-10-11','Fred Jakerson',NULL,NULL,'2019-10-11','2019-10-11','100'),(8,NULL,'2019-10-22','Sarah Silver',NULL,NULL,'2019-09-22','2019-10-22','40'),(9,NULL,'2019-11-19','Sarah Silver',NULL,NULL,'2019-10-19','2019-11-19','40'),(10,NULL,'2019-11-19','Bob Joe',NULL,NULL,'2019-10-01','2019-11-09','80'),(11,NULL,'2019-11-19','Fred Jakerson',NULL,NULL,'2019-10-01','2019-11-09','100');
-/*!40000 ALTER TABLE `invoices` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -268,8 +236,18 @@ CREATE TABLE `members` (
   `view_create_rep` tinyint(5) DEFAULT NULL,
   `view_own_cal` tinyint(5) DEFAULT NULL,
   `view_own_clients` tinyint(5) DEFAULT NULL,
+ `subscription_id` varchar(30) DEFAULT NULL,
+  `customer_id` varchar(30) DEFAULT NULL,
+  `payment_method_id` varchar(45) DEFAULT NULL,
+  `expMonth` varchar(45) DEFAULT NULL,
+  `expYear` varchar(45) DEFAULT NULL,
+  `lastFour` varchar(45) DEFAULT NULL,
+  `brand` varchar(45) DEFAULT NULL,
+  `card_id` varchar(45) DEFAULT NULL,
+  `stripe_user_id` varchar(45) DEFAULT NULL,
+  `take_pay_type` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -278,10 +256,41 @@ CREATE TABLE `members` (
 
 LOCK TABLES `members` WRITE;
 /*!40000 ALTER TABLE `members` DISABLE KEYS */;
-INSERT INTO `members` VALUES (1,1,'Administrator','Hogwarts','6-9 Users',9,'Dr.','Harry Potter','Harry','Potter','HP','hpotter@mail.com','123-456-1111','713 Hogwarts Lane','London','TX','77777','Diagon Alley','2,4','01/1/1999','6764876543','',1,1,1,1,1,1,1,1,1,1,1,1,1,1),(2,1,'Intern','Hogwarts','6-9 Users',9,'Ms.','Hermione Grainger','Hermione','Grainger','HG','email@mail.com','123-333-3333','123 Fake Street','Plano',NULL,'75023','Wherever','Billy Joe,Jaren Jones,Johnny Jackson,Joe Jackson','02/1/2002','1242658633',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(3,1,'Therapist','Hogwarts','6-9 Users',9,'Mr.','Joe Bob','Joe','Bob','JB','job@test123.com','222-223-3333','123 Street Lane','Frisco',NULL,'12345','Nowhere','Sarah Silver,Jaren Jones','03/1/1999','4356787654',NULL,0,0,0,0,0,0,0,1,1,1,1,0,1,1),(4,1,'Administrator','Oz',NULL,NULL,'Mr.','John Robinson','John','Robinson','JR','jrob@mail.com','122-222-2222','222 Nowhere','Allen',NULL,'12333','Somewhere',NULL,'04/1/2005','1232456754',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(5,1,'Therapist','Oz',NULL,NULL,'Dr','Lisa Simpson','Lisa','Simpson','LS','lsimpson@mail.com','111-222-2222','222 Evergreen Terrace','Springfield',NULL,'22244','Everywhere','Billy Joe,Jaren Jones','05/1/2001','8675674321',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(38,1,'Intern','Oz',NULL,NULL,'Mr.','Jake Jakerson','Jake','Jakerson','JJ','jake@mail.com','233-333-3333','123 Jake Street','Jaketopia',NULL,'33333','Main Building',NULL,'05/12/1999','6587776655','Jake has notes',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(45,NULL,'Owner','Oz',NULL,NULL,NULL,'Mary Jane','Mary','Jane',NULL,'mary@test123.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,1,1,1,1,1,1,1,1,1,1,1,1,1),(46,NULL,'Owner','Hogwarts','6-9 Users',9,NULL,'Bill Johnson','Bill','Johnson',NULL,'bill@test123.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,1,1,1,1,1,1,1,1,1,1,1,1,1),(48,0,'Therapist','Hogwarts','6-9 Users',9,'','Test  Hogwarts','Test ','Hogwarts',NULL,'test@test.com','','','',NULL,'','',NULL,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `members` VALUES (1,1,'Administrator','Hogwarts','3-5 Users',NULL,0,'Dr.','Harry Potter','Harry','Potter','HP','hpotter@mail.com','123-456-1111','713 Hogwarts Lane','London','TX','77777','Diagon Alley','Sarah Silver','01/1/1999','6764876543','',1,1,1,1,1,1,1,1,1,1,1,1,1,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(2,1,'Intern','Hogwarts','3-5 Users',NULL,0,'Ms.','Hermione Grainger','Hermione','Grainger','HG','email@mail.com','123-333-3333','123 Fake Street','Plano',NULL,'75023','Wherever','Billy Joe,Jaren Jones,Johnny Jackson,Joe Jackson,Joan Jackson','02/1/2002','1242658633',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(3,1,'Therapist','Hogwarts','3-5 Users',NULL,0,'Mr.','Joe Bob','Joe','Bob','JB','job@test123.com','222-223-3333','123 Street Lane','Frisco',NULL,'12345','Nowhere','Sarah Silver,Jaren Jones','03/1/1999','4356787654',NULL,0,0,0,0,0,0,0,1,1,1,1,0,1,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(4,1,'Administrator','Oz','1-2 Users',NULL,0,'Mr.','John Robinson','John','Robinson','JR','jrob@mail.com','122-222-2222','222 Nowhere','Allen',NULL,'12333','Somewhere',NULL,'04/1/2005','1232456754',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(5,1,'Therapist','Oz','1-2 Users',NULL,0,'Dr','Lisa Simpson','Lisa','Simpson','LS','lsimpson@mail.com','111-222-2222','222 Evergreen Terrace','Springfield',NULL,'22244','Everywhere','Billy Joe,Jaren Jones','05/1/2001','8675674321',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(38,1,'Intern','Oz','1-2 Users',NULL,0,'Mr.','Jake Jakerson','Jake','Jakerson','JJ','jake@mail.com','233-333-3333','123 Jake Street','Jaketopia',NULL,'33333','Main Building',NULL,'05/12/1999','6587776655','Jake has notes',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(45,NULL,'Owner','Oz','1-2 Users',NULL,0,NULL,'Mary Jane','Mary','Jane',NULL,'mary@test123.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,1,1,1,1,1,1,1,1,1,1,1,1,1,'sub_HAdtNiud7nTcH4','cus_HAdtpqDNjkUGOV','pm_1GcIbQG24DT0vj3XRdlz1UZj',NULL,NULL,NULL,NULL,NULL,NULL,NULL),(46,NULL,'Owner','Hogwarts','3-5 Users',NULL,0,NULL,'Bill Johnson','Bill','Johnson',NULL,'bill@test123.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,1,1,1,1,1,1,1,1,1,1,1,1,1,'sub_HE2wpZeJvLlNw7','cus_HE2w1PD2HiKbxW','pm_1GfaqbG24DT0vj3Xt5r7IZQt','2','2025','4242','Visa','src_1GfaqbG24DT0vj3XeKrnkqow','10',NULL),(48,0,'Therapist','Hogwarts','3-5 Users',NULL,0,'','Test  Hogwarts','Test ','Hogwarts',NULL,'test@test.com','','','',NULL,'','',NULL,'','','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(51,NULL,'Owner','nothing',NULL,NULL,NULL,NULL,'Harry Potter','Harry','Potter',NULL,'hpot@mail.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `members` ENABLE KEYS */;
 UNLOCK TABLES;
+--
+-- Table structure for table `invoices`
+--
 
+DROP TABLE IF EXISTS `invoices`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `invoices` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `status` varchar(45) DEFAULT NULL,
+  `inv_date` date DEFAULT NULL,
+  `payor` varchar(45) DEFAULT NULL,
+  `payor_first` varchar(45) DEFAULT NULL,
+  `payor_last` varchar(45) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `amount` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `invoices`
+--
+
+LOCK TABLES `invoices` WRITE;
+/*!40000 ALTER TABLE `invoices` DISABLE KEYS */;
+INSERT INTO `invoices` VALUES (1,'Paid','2019-09-10','JIll Jackson','Mary','Smith','2019-08-10','2019-09-09','120'),(2,'Paid','2019-10-10','Bob Joe','Jim','Adams','2019-09-10','2019-10-10','80'),(3,'Paid','2019-10-11','Sarah Silver',NULL,NULL,'2019-10-11','2019-10-11','40'),(4,'Paid','2019-10-11','Ned Jones',NULL,NULL,'2019-10-01','2019-10-31','100'),(5,NULL,'2019-10-11','Jiil Jackson',NULL,NULL,'2019-10-11','2019-10-11','200'),(7,NULL,'2019-10-11','Fred Jakerson',NULL,NULL,'2019-10-11','2019-10-11','100'),(8,NULL,'2019-10-22','Sarah Silver',NULL,NULL,'2019-09-22','2019-10-22','40'),(9,NULL,'2019-11-19','Sarah Silver',NULL,NULL,'2019-10-19','2019-11-19','40'),(10,NULL,'2019-11-19','Bob Joe',NULL,NULL,'2019-10-01','2019-11-09','80'),(11,NULL,'2019-11-19','Fred Jakerson',NULL,NULL,'2019-10-01','2019-11-09','100');
+/*!40000 ALTER TABLE `invoices` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 --
 -- Table structure for table `reports`
 --
