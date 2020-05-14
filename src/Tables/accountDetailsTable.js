@@ -32,7 +32,7 @@ function stableSort(array, cmp) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  return stabilizedThis.map(el => el[0]);
+  return stabilizedThis.map((el) => el[0]);
 }
 
 function getSorting(order, orderBy) {
@@ -47,22 +47,22 @@ const rows = [
   { id: "description", disablePadding: true, label: "Description" },
   { id: "session_cost", disablePadding: true, label: "Session Cost" },
   { id: "amount", disablePadding: true, label: "Payment" },
-  { id: "balance", label: "Balance" }
+  { id: "balance", label: "Balance" },
 ];
 
-const CustomTableCell = withStyles(theme => ({
+const CustomTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: Cyan[800],
     color: theme.palette.common.white,
-    fontSize: 18
+    fontSize: 18,
   },
   body: {
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 }))(TableCell);
 
 class EnhancedTableHead extends React.Component {
-  createSortHandler = property => event => {
+  createSortHandler = (property) => (event) => {
     this.props.onRequestSort(event, property);
   };
 
@@ -73,7 +73,7 @@ class EnhancedTableHead extends React.Component {
       <TableHead>
         <TableRow>
           {rows.map(
-            row => (
+            (row) => (
               <CustomTableCell
                 key={row.id}
                 align="center"
@@ -100,35 +100,35 @@ class EnhancedTableHead extends React.Component {
 EnhancedTableHead.propTypes = {
   onRequestSort: PropTypes.func.isRequired,
   order: PropTypes.string.isRequired,
-  orderBy: PropTypes.string.isRequired
+  orderBy: PropTypes.string.isRequired,
   //rowCount: PropTypes.number.isRequired,
 };
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     //width: "60%",
     marginTop: theme.spacing(1) * 3,
     // marginLeft: theme.spacing(1) * 30,
-    overflowX: "auto"
+    overflowX: "auto",
   },
   table: {
     //minWidth: 1020,
   },
   tableWrapper: {
-    overflowX: "auto"
+    overflowX: "auto",
   },
   row: {
     "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.background.default
-    }
+      backgroundColor: theme.palette.background.default,
+    },
   },
   appBar: {
     position: "relative",
-    backgroundColor: Cyan[800]
+    backgroundColor: Cyan[800],
   },
   flex: {
-    flex: 1
-  }
+    flex: 1,
+  },
 });
 
 class AccountDetailsTable extends React.Component {
@@ -145,7 +145,9 @@ class AccountDetailsTable extends React.Component {
       redirect: false,
       curClientId: 0,
       account: "",
-      curBillEmail: localStorage.getItem("BillEmail")
+      curBillEmail: localStorage.getItem("BillEmail"),
+      curStartDate: localStorage.getItem("StartDate"),
+      curEndDate: localStorage.getItem("EndDate"),
     };
   }
 
@@ -153,12 +155,13 @@ class AccountDetailsTable extends React.Component {
     try {
       const obj = {
         bEmail: localStorage.getItem("BillEmail"),
-        startDate: localStorage.getItem("startDate"),
-        endDate: localStorage.getItem("endDate")
+        startDate: localStorage.getItem("StartDate"),
+        endDate: localStorage.getItem("EndDate"),
       };
-      API.post("/accounts/accountdetailsbe", obj).then(async res => {
+      console.log(obj);
+      API.post("/accounts/accountdetailsbe", obj).then(async (res) => {
         this.setState({
-          accountDetailData: res.data.data
+          accountDetailData: res.data.data,
         });
       });
     } catch (error) {
@@ -183,7 +186,7 @@ class AccountDetailsTable extends React.Component {
     this.setState({ page });
   };
 
-  handleChangeRowsPerPage = event => {
+  handleChangeRowsPerPage = (event) => {
     this.setState({ rowsPerPage: event.target.value });
   };
 
@@ -215,7 +218,7 @@ class AccountDetailsTable extends React.Component {
               <TableBody>
                 {stableSort(accountDetailData, getSorting(order, orderBy))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map(n => {
+                  .map((n) => {
                     // const isSelected = this.isSelected(n.id);
                     return (
                       <TableRow
@@ -228,24 +231,26 @@ class AccountDetailsTable extends React.Component {
                           {n.date}
                         </TableCell>
                         <TableCell align="center" key="client">
-                          {n.clients}
+                          {n.clients || n.payor}
                         </TableCell>
                         <TableCell align="center" key="description">
                           {n.description}
                         </TableCell>
                         <TableCell align="center" key="session_cost">
-                          {n.session_cost}
+                          {n.session_costs || n.session_cost || 0}
                         </TableCell>
                         <TableCell align="center" key="amount">
-                          {n.amount}
+                          {n.amount || 0}
                         </TableCell>
-                        {n.balance <= "0" ? (
+                        {n.balance >= "0" ? (
                           <TableCell style={{ color: "green" }} align="center">
-                            {n.balance}
+                            {"-$"}
+                            {Math.abs(n.balance)}
                           </TableCell>
                         ) : (
                           <TableCell style={{ color: "red" }} align="center">
-                            {n.balance}{" "}
+                            {"$"}
+                            {Math.abs(n.balance)}
                           </TableCell>
                         )}
                       </TableRow>
@@ -266,10 +271,10 @@ class AccountDetailsTable extends React.Component {
             rowsPerPage={rowsPerPage}
             page={page}
             backIconButtonProps={{
-              "aria-label": "Previous Page"
+              "aria-label": "Previous Page",
             }}
             nextIconButtonProps={{
-              "aria-label": "Next Page"
+              "aria-label": "Next Page",
             }}
             onChangePage={this.handleChangePage}
             onChangeRowsPerPage={this.handleChangeRowsPerPage}
@@ -281,7 +286,7 @@ class AccountDetailsTable extends React.Component {
 }
 
 AccountDetailsTable.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(AccountDetailsTable);

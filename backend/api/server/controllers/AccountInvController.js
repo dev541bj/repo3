@@ -2,6 +2,7 @@
 var AccountInvService = require("../services/AccountInvService");
 var Util = require("../utils/Utils");
 //import Util from "../utils/Utils";
+var moment = require("moment");
 
 const util = new Util();
 
@@ -134,9 +135,45 @@ class AccountInvController {
   // Accounts Table
   static async getAllAccountsParam(req, res) {
     try {
+      const { startDate, endDate, keyword } = req.body;
       const allAccounts = await AccountInvService.getAccountsParam(req.body);
-      if (allAccounts.length > 0) {
-        util.setSuccess(200, "Accounts retrieved", allAccounts);
+      const resultAccounts = [];
+      for (let account of allAccounts) {
+        const allSessions = await AccountInvController.getDetailAccountsLocal({
+          bEmail: account.billing_email,
+          startDate: startDate,
+          endDate: endDate,
+        });
+        const injected = AccountInvController.injectBalances(
+          allSessions,
+          account.billing_email
+        );
+        const filtered = injected.filter((item) => {
+          return (
+            (moment(new Date(item.date)).isSameOrAfter(startDate) &&
+              moment(new Date(item.date)).isSameOrBefore(endDate)) ||
+            item.transType == "Payment"
+          );
+        });
+        const finalBalance = (filtered[filtered.length - 1] || { balance: 0 })
+          .balance;
+        let lastPayDate = null;
+        for (let item of injected.reverse()) {
+          if (item.amount != 0 && item.amount != null) {
+            lastPayDate = item.date;
+          }
+        }
+
+        account.balance = finalBalance;
+        account.last_pay_date = lastPayDate;
+
+        if (filtered.length > 0) {
+          resultAccounts.push(account);
+        }
+      }
+
+      if (resultAccounts.length > 0) {
+        util.setSuccess(200, "Accounts retrieved", resultAccounts);
       } else {
         util.setSuccess(200, "No Accounts found", []);
       }
@@ -147,13 +184,88 @@ class AccountInvController {
     }
   }
 
+  static injectBalances(accounts, email) {
+    const newList = [...accounts];
+    let balance = 0;
+    for (let account of newList) {
+      balance += parseInt(account.amount || 0);
+      if (account.session_costs != null) {
+        balance -=
+          account.session_costs.split(",").length == 1
+            ? parseInt(account.session_costs)
+            : parseInt(
+                account.session_costs.split(",")[
+                  account.billing_email.split(",").indexOf(email)
+                ]
+              );
+      } else {
+        balance -= parseInt(account.session_cost) || 0;
+      }
+
+      account.balance = balance;
+    }
+
+    return newList;
+  }
+
+  static splitClients(accounts, email) {
+    const newList = [];
+    for (let account of accounts) {
+      if (account.clients == null) {
+        newList.push(account);
+      } else if (account.clients.split(",").length > 1) {
+        for (let i = 0; i < account.clients.split(",").length; i++) {
+          let newAccount = Object.assign({}, account);
+          newAccount.clients = account.clients.split(",")[i];
+          newAccount.session_costs = null;
+          newAccount.session_cost =
+            (account.session_costs || "").split(",")[i] || 0;
+          newAccount.amount = parseInt(
+            ("" + (account.amount || "")).split(",")[i] || 0
+          );
+          if (account.billing_email.split(",").length > 1) {
+            if (account.billing_email.split(",")[i] == email) {
+              newList.push(newAccount);
+            }
+          } else {
+            newList.push(newAccount);
+          }
+        }
+      } else {
+        newList.push(account);
+      }
+    }
+
+    return newList;
+  }
+
   // Account Details  Table
   static async getDetailAccountsBE(req, res) {
     const data = req.body;
+    const { startDate, endDate, bEmail } = data;
     try {
       const detailAccounts = await AccountInvService.getAccountDetailByBE(data);
+      const splitAccounts = AccountInvController.splitClients(
+        detailAccounts,
+        bEmail
+      );
+      const filtered = splitAccounts.filter((item) => {
+        return (
+          (moment(new Date(item.date)).isSameOrAfter(startDate) &&
+            moment(new Date(item.date)).isSameOrBefore(endDate)) ||
+          item.transType == "Payment"
+        );
+      });
+
       if (detailAccounts.length > 0) {
-        util.setSuccess(200, "Account details retrieved", detailAccounts);
+        util.setSuccess(
+          200,
+          "Account details retrieved",
+          AccountInvController.injectBalances(
+            filtered.reverse(),
+            bEmail
+          ).reverse()
+        );
       } else {
         util.setSuccess(200, "No Account details found", []);
       }
@@ -161,6 +273,32 @@ class AccountInvController {
     } catch (error) {
       util.setError(400, error);
       return util.send(res);
+    }
+  }
+
+  static async getDetailAccountsLocal(data) {
+    const { startDate, endDate, bEmail } = data;
+    try {
+      const detailAccounts = await AccountInvService.getAccountDetailByBE(data);
+      const splitAccounts = AccountInvController.splitClients(
+        detailAccounts,
+        bEmail
+      );
+      const filtered = splitAccounts.filter((item) => {
+        return (
+          (moment(new Date(item.date)).isSameOrAfter(startDate) &&
+            moment(new Date(item.date)).isSameOrBefore(endDate)) ||
+          item.transType == "Payment"
+        );
+      });
+
+      if (filtered.length > 0) {
+        return filtered;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      return [];
     }
   }
 }

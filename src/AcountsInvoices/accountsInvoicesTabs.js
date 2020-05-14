@@ -4,10 +4,9 @@ import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import AccountsActionsNew from "../Actions/accountsActionsNew";
 import Container from "@material-ui/core/Container";
 import Cyan from "@material-ui/core/colors/cyan";
-import AccountsTableNew from "../Tables/accountsTableNew";
+import AccountsTable from "../Tables/accountsTable";
 import TransactionsActions from "../Actions/transactionsActions";
 import InvoiceActions from "../Actions/invoiceActions";
 import InvoicesTable from "../Tables/invoicesTable";
@@ -16,14 +15,24 @@ import TransactionsTable from "../Tables/transactionsTable";
 import API from "../utils/API";
 import { isNull } from "util";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     width: "100%",
     borderRadius: theme.shape.borderRadius,
     marginTop: theme.spacing(5),
-    backgroundColor: Cyan[800]
-    //fontSize: "17"
-  }
+    tabsIndicator: {
+      backgroundColor: "#ffffff",
+    },
+    backgroundColor: Cyan[800],
+  },
+
+  tabRoot: {
+    // paddingRight: theme.spacing(2),
+    //paddingLeft: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+    borderRadius: 4,
+  },
 });
 class AccountsInvoicesTabs extends React.Component {
   constructor(props) {
@@ -39,10 +48,10 @@ class AccountsInvoicesTabs extends React.Component {
       selectedInvoiceIds: [],
       startDate: null,
       endDate: null,
-      keyword: ""
+      keyword: "",
     };
 
-    if (isNull(localStorage.getItem("startDate"))) {
+    /*   if (isNull(localStorage.getItem("startDate"))) {
       localStorage.setItem("startDate", "");
     }
     if (isNull(localStorage.getItem("endDate"))) {
@@ -50,37 +59,37 @@ class AccountsInvoicesTabs extends React.Component {
     }
     if (isNull(localStorage.getItem("keyword"))) {
       localStorage.setItem("keyword", "");
-    }
+    } */
   }
 
-  componentWillUnmount() {
+  /*  componentWillUnmount() {
     localStorage.setItem("startDate", "");
     localStorage.setItem("endDate", "");
     localStorage.setItem("keyword", "");
-  }
+  } */
 
   handleChangeTab = (event, value) => {
     this.setState({ value });
   };
 
   updateAccountsTable = (start, end, keyword) => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       toggleAccountsTableUpdated: !prevState.toggleAccountsTableUpdated,
       startDate: start,
       endDate: end,
-      keyword: keyword
+      keyword: keyword,
     }));
   };
 
   updateTransactionsTable = () => {
-    this.setState(prevState => ({
-      toggleTransactionsTableUpdated: !prevState.toggleTransactionsTableUpdated
+    this.setState((prevState) => ({
+      toggleTransactionsTableUpdated: !prevState.toggleTransactionsTableUpdated,
     }));
   };
 
   updateInvoicesTable = () => {
-    this.setState(prevState => ({
-      toggleInvoicesTableUpdated: !prevState.toggleInvoicesTableUpdated
+    this.setState((prevState) => ({
+      toggleInvoicesTableUpdated: !prevState.toggleInvoicesTableUpdated,
     }));
   };
 
@@ -89,23 +98,23 @@ class AccountsInvoicesTabs extends React.Component {
       "/accounts/transactions/deleteMany",
       this.state.selectedTransactionIds
     )
-      .then(resp => {
+      .then((resp) => {
         this.updateTransactionsTable();
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("Error ocurred while deleting transactions: ", error);
       });
   };
 
-  handleAccountsSelected = ids => {
+  handleAccountsSelected = (ids) => {
     this.setState({ selectedAccountIds: [...ids] });
   };
 
-  handleTransactionsSelected = ids => {
+  handleTransactionsSelected = (ids) => {
     this.setState({ selectedTransactionIds: [...ids] });
   };
 
-  handleInvoicesSelected = ids => {
+  handleInvoicesSelected = (ids) => {
     this.setState({ selectedInvoiceIds: [...ids] });
   };
 
@@ -130,21 +139,7 @@ class AccountsInvoicesTabs extends React.Component {
           </AppBar>
         </Container>
 
-        {value === 0 && (
-          <AccountsActionsNew
-            onUpdated={this.updateAccountsTable}
-            keyword={this.state.keyword}
-          />
-        )}
-        {value === 0 && (
-          <AccountsTableNew
-            toggleUpdated={this.state.toggleAccountsTableUpdated}
-            onSelectedUpdated={this.handleTransactionsSelected}
-            startDate={this.state.startDate}
-            endDate={this.state.endDate}
-            keyword={this.state.keyword}
-          />
-        )}
+        {value === 0 && <AccountsTable />}
         {value === 1 && (
           <TransactionsActions
             onUpdated={this.updateTransactionsTable}
@@ -170,7 +165,7 @@ class AccountsInvoicesTabs extends React.Component {
 }
 
 AccountsInvoicesTabs.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(AccountsInvoicesTabs);

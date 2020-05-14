@@ -84,7 +84,7 @@ import TeamMembersTable from "./Tables/teamMembersTable";
 import TeamMembersTableActive from "./Tables/teamMembersTableActive";
 import ClientsTable from "./Tables/clientsTable";
 import ClientsTableActive from "./Tables/clientsActiveTable";
-import AccountDetailsTableNew from "./Tables/accountDetailsTableNew";
+import AccountDetailsTable from "./Tables/accountDetailsTable";
 import ReportTable from "./Tables/reportTable";
 import ReportDetailsTable from "./Tables/reportDetailsTable";
 // Clients
@@ -98,7 +98,7 @@ import NewTeamMemberHideInac from "./teamMember/newTeamMemberHideInac";
 // Calendar
 import ReactCalendarBase from "./Calendar/ReactCalendarBase";
 // Accounts and Invoices
-import AccountsInvoicesTabsNew from "./AcountsInvoices/accountsInvoicesTabsNew";
+import AccountsInvoicesTabsNew from "./AcountsInvoices/accountsInvoicesTabs";
 // Documentation
 import Documentation from "./Calendar/documentation";
 import Documentation2 from "./Calendar/doc2";
@@ -116,76 +116,76 @@ import Builder from "./noteTemplates/Builder";
 //width of drawer
 const drawerWidth = 240;
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
-    display: "flex"
+    display: "flex",
   },
   appBar: {
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
+      duration: theme.transitions.duration.leavingScreen,
     }),
-    backgroundColor: Cyan[800]
+    backgroundColor: Cyan[800],
   },
   appBarShift: {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    })
+      duration: theme.transitions.duration.enteringScreen,
+    }),
   },
   menuButton: {
     marginLeft: 12,
-    marginRight: 20
+    marginRight: 20,
   },
   hide: {
-    display: "none"
+    display: "none",
   },
   drawer: {
     width: drawerWidth,
-    flexShrink: 0
+    flexShrink: 0,
   },
   drawerPaper: {
-    width: drawerWidth
+    width: drawerWidth,
   },
   drawerHeader: {
     display: "flex",
     alignItems: "center",
     padding: "0 8px",
     ...theme.mixins.toolbar,
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
   },
   content: {
     flexGrow: 1,
     padding: theme.spacing.unit * 3,
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
+      duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: -drawerWidth
+    marginLeft: -drawerWidth,
   },
   contentShift: {
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
+      duration: theme.transitions.duration.enteringScreen,
     }),
-    marginLeft: 0
+    marginLeft: 0,
   },
 
   rightToolbar: {
     marginLeft: "auto",
-    marginRight: -12
-  }
+    marginRight: -12,
+  },
 });
 
 const navStyle = {
   color: "black",
-  textDecoration: "none"
+  textDecoration: "none",
 };
 const navStyle2 = {
   color: "white",
-  textDecoration: "none"
+  textDecoration: "none",
 };
 
 const Page404 = () => {
@@ -195,7 +195,7 @@ const Page404 = () => {
 class MainApp extends React.Component {
   state = {
     open: false,
-    anchorEl: null
+    anchorEl: null,
   };
 
   handleDrawerOpen = () => {
@@ -213,7 +213,7 @@ class MainApp extends React.Component {
   }
   */
 
-  handleProfileMenuOpen = event => {
+  handleProfileMenuOpen = (event) => {
     this.setState({ anchorEl: event.currentTarget });
   };
 
@@ -256,7 +256,7 @@ class MainApp extends React.Component {
           elevation={1}
           /* makes sure the apps shifts when the drawer is open */
           className={classNames(classes.appBar, {
-            [classes.appBarShift]: open
+            [classes.appBarShift]: open,
           })}
         >
           {/* makes sure gutters are disabled when the drawer is not open */}
@@ -338,7 +338,7 @@ class MainApp extends React.Component {
           anchor="left"
           open={open}
           classes={{
-            paper: classes.drawerPaper
+            paper: classes.drawerPaper,
           }}
         >
           <div className={classes.drawerHeader}>
@@ -438,7 +438,7 @@ class MainApp extends React.Component {
 
         <main
           className={classNames(classes.content, {
-            [classes.contentShift]: open
+            [classes.contentShift]: open,
           })}
         >
           {/* creates header space in between the body text and the top nav*/}
@@ -699,7 +699,7 @@ class MainApp extends React.Component {
               render={() => (
                 <div>
                   <TitleBarAccountDetails />
-                  <AccountDetailsTableNew />
+                  <AccountDetailsTable />
                 </div>
               )}
             />
@@ -814,7 +814,7 @@ class MainApp extends React.Component {
 /* no visible changes */
 MainApp.propTypes = {
   classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired
+  theme: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles, { withTheme: true })(MainApp);

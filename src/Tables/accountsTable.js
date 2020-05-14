@@ -4,8 +4,9 @@ import PropTypes from "prop-types";
 import {
   withStyles,
   createMuiTheme,
-  MuiThemeProvider
+  MuiThemeProvider,
 } from "@material-ui/core/styles";
+import moment from "moment";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -20,6 +21,10 @@ import Container from "@material-ui/core/Container";
 import { Redirect } from "react-router-dom";
 
 import API from "../utils/API";
+import AccountsActions from "../Actions/accountsActions";
+
+moment().toDate();
+
 /*
 let counter = 0;
 function createData(name, role, email, phone, clients) {
@@ -27,34 +32,6 @@ function createData(name, role, email, phone, clients) {
   return { id: counter, name, role, email, phone, clients };
 }
 */
-
-// Warn if overriding existing method
-if (Array.prototype.equals)
-  console.warn(
-    "Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code."
-  );
-// attach the .equals method to Array's prototype to call it on any array
-Array.prototype.equals = function(array) {
-  // if the other array is a falsy value, return
-  if (!array) return false;
-
-  // compare lengths - can save a lot of time
-  if (this.length != array.length) return false;
-
-  for (var i = 0, l = this.length; i < l; i++) {
-    // Check if we have nested arrays
-    if (this[i] instanceof Array && array[i] instanceof Array) {
-      // recurse into the nested arrays
-      if (!this[i].equals(array[i])) return false;
-    } else if (this[i] != array[i]) {
-      // Warning - two different object instances will never be equal: {x:20} != {x:20}
-      return false;
-    }
-  }
-  return true;
-};
-// Hide method from for-in loops
-Object.defineProperty(Array.prototype, "equals", { enumerable: false });
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -73,7 +50,7 @@ function stableSort(array, cmp) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  return stabilizedThis.map(el => el[0]);
+  return stabilizedThis.map((el) => el[0]);
 }
 
 function getSorting(order, orderBy) {
@@ -90,22 +67,22 @@ const rows = [
   { id: "billing_email", disablePadding: true, label: "Email" },
   { id: "payment_type", disablePadding: true, label: "Payment Method" },
   { id: "balance", disablePadding: true, label: "Balance" },
-  { id: "last_pay_date", label: "Last Payment Date" }
+  { id: "last_pay_date", label: "Last Payment Date" },
 ];
 
-const CustomTableCell = withStyles(theme => ({
+const CustomTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: Cyan[800],
     color: theme.palette.common.white,
-    fontSize: 17
+    fontSize: 17,
   },
   body: {
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 }))(TableCell);
 
 class TransactionsTableHead extends React.Component {
-  createSortHandler = property => event => {
+  createSortHandler = (property) => (event) => {
     this.props.onRequestSort(event, property);
   };
 
@@ -115,7 +92,7 @@ class TransactionsTableHead extends React.Component {
       order,
       orderBy,
       numSelected,
-      rowCount
+      rowCount,
     } = this.props;
 
     return (
@@ -132,7 +109,7 @@ class TransactionsTableHead extends React.Component {
             </MuiThemeProvider>
           </CustomTableCell>
           {rows.map(
-            row => (
+            (row) => (
               <CustomTableCell
                 key={row.id}
                 align="center"
@@ -162,40 +139,40 @@ TransactionsTableHead.propTypes = {
   // previous file
   onRequestSort: PropTypes.func.isRequired,
   order: PropTypes.string.isRequired,
-  orderBy: PropTypes.string.isRequired
+  orderBy: PropTypes.string.isRequired,
   //rowCount: PropTypes.number.isRequired,
 };
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     //width: "60%",
     marginTop: theme.spacing(1) * 3,
     // marginLeft: theme.spacing(1) * 30,
-    overflowX: "auto"
+    overflowX: "auto",
   },
   table: {
     //minWidth: 1020,
   },
   tableWrapper: {
-    overflowX: "auto"
+    overflowX: "auto",
   },
   row: {
     "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.background.default
-    }
-  }
+      backgroundColor: theme.palette.background.default,
+    },
+  },
 });
 
 const theme = createMuiTheme({
   palette: {
-    primary: { main: "#b2dfdb" }
-  }
+    primary: { main: "#b2dfdb" },
+  },
 });
 
 const theme2 = createMuiTheme({
   palette: {
-    primary: { main: "#00838f" }
-  }
+    primary: { main: "#00838f" },
+  },
 });
 
 class AccountsTable extends React.Component {
@@ -210,25 +187,30 @@ class AccountsTable extends React.Component {
       selected: [],
       open: false,
       redirect: false,
-      curBillEmail: ""
+      curBillEmail: "",
+      curEndDate: "",
+      curStartDate: "",
+      startDate: null,
+      endDate: null,
+      keyword: "",
     };
   }
 
   async componentDidMount() {
-    // const accountsResp = await API.get("/accounts/accounts2");
-    // this.setState({
-    //   accountData: accountsResp.data.data
-    // });
     try {
       const obj = {
-        startDate: localStorage.getItem("startDate"),
-        endDate: localStorage.getItem("endDate"),
-        keyword: this.props.keyword
+        // start date range of accounts table is today
+        startDate: moment().format("YYYY-MM-DD"),
+        // end date is a month from now
+        endDate: moment().add(1, "month").format("YYYY-MM-DD"),
+        // keyword being searched
+        keyword: this.state.keyword,
       };
-      API.post("/accounts/accountspr", obj).then(async res => {
+      API.post("/accounts/accountspr", obj).then(async (res) => {
         this.setState({
-          accountData: res.data.data
+          accountData: res.data.data,
         });
+        console.log(res.data.data);
       });
     } catch (error) {
       console.log("Account detail data fetching error: ", error);
@@ -252,34 +234,63 @@ class AccountsTable extends React.Component {
   */
   componentWillUnmount() {}
 
-  handleSelectAllClick = event => {
+  handleSelectAllClick = (event) => {
     if (event.target.checked) {
       this.setState(
-        state => ({ selected: state.accountData.map(n => n.billing_email) }),
-        () => this.props.onSelectedUpdated(this.state.selected)
+        (state) => ({
+          selected: state.accountData.map((n) => n.billing_email),
+        })
+        //() => this.props.onSelectedUpdated(this.state.selected)
       );
       return;
     }
-    this.setState({ selected: [] }, () =>
-      this.props.onSelectedUpdated(this.state.selected)
+    this.setState(
+      { selected: [] }
+      //  , () =>this.props.onSelectedUpdated(this.state.selected)
     );
   };
 
-  async componentDidUpdate(prevProps) {
+  updateAccountsTable = (start, end, keyword) => {
+    try {
+      const obj = {
+        startDate: start,
+        endDate: end,
+        keyword: keyword,
+      };
+
+      console.log("here is the start end keyword ", start, end, keyword);
+
+      API.post("/accounts/accountspr", obj).then(async (res) => {
+        this.setState({
+          accountData: res.data.data,
+        });
+      });
+      this.setState(() => ({
+        //toggleAccountsTableUpdated: !prevState.toggleAccountsTableUpdated,
+        startDate: start,
+        endDate: end,
+        keyword: keyword,
+      }));
+    } catch (error) {
+      console.log("Account detail data fetching error: ", error);
+    }
+  };
+
+  /*  async componentDidUpdate(prevState) {
     if (
-      prevProps.startDate != this.props.startDate ||
-      prevProps.startDate != this.props.startDate ||
-      prevProps.keyword != this.props.keyword
+      prevState.startDate != this.state.startDate ||
+      prevState.startDate != this.state.startDate ||
+      prevState.keyword != this.state.keyword
     ) {
       try {
         const obj = {
           startDate: this.props.startDate,
           endDate: this.props.endDate,
-          keyword: this.props.keyword
+          keyword: this.props.keyword,
         };
-        API.post("/accounts/accountspr", obj).then(async res => {
+        API.post("/accounts/accountspr2", obj).then(async (res) => {
           this.setState({
-            accountData: res.data.data
+            accountData: res.data.data,
           });
         });
       } catch (error) {
@@ -297,7 +308,7 @@ class AccountsTable extends React.Component {
     // if (selected.equals(prevSelected) === false)
     // this.props.onSelectedUpdated(selected)
     // console.log('selected', selected)
-  }
+  } */
 
   handleClick = (event, id) => {
     const { selected } = this.state;
@@ -315,7 +326,7 @@ class AccountsTable extends React.Component {
         selected.slice(selectedIndex + 1)
       );
     }
-    this.props.onSelectedUpdated(newSelected);
+    // this.props.onSelectedUpdated(newSelected);
 
     this.setState({ selected: newSelected });
   };
@@ -337,7 +348,7 @@ class AccountsTable extends React.Component {
     this.setState({ page });
   };
 
-  handleChangeRowsPerPage = event => {
+  handleChangeRowsPerPage = (event) => {
     this.setState({ rowsPerPage: event.target.value });
   };
 
@@ -352,15 +363,25 @@ class AccountsTable extends React.Component {
   //redirect to account details;
   handleClickRedirect = (accountBillEmail = "") => {
     localStorage.setItem("BillEmail", accountBillEmail);
-    localStorage.setItem("startDate", this.props.startDate);
-    localStorage.setItem("endDate", this.props.endDate);
+    localStorage.setItem(
+      "StartDate",
+      this.state.startDate || moment().format("YYYY-MM-DD")
+    );
+    localStorage.setItem(
+      "EndDate",
+      this.state.endDate || moment().add(1, "month").format("YYYY-MM-DD")
+    );
+
     this.setState({
       redirect: true,
-      curBillEmail: accountBillEmail
+      // curBillEmail: accountBillEmail,
+      //curStartDate: this.props.startDate || moment().format("YYYY-MM-DD"),
+      //curEndDate:
+      //this.props.endDate || moment().add(1, "month").format("YYYY-MM-DD"),
     });
   };
 
-  isSelected = id => this.state.selected.indexOf(id) !== -1;
+  isSelected = (id) => this.state.selected.indexOf(id) !== -1;
 
   render() {
     const { classes } = this.props;
@@ -370,7 +391,7 @@ class AccountsTable extends React.Component {
       orderBy,
       rowsPerPage,
       page,
-      selected
+      selected,
     } = this.state;
     const emptyRows =
       rowsPerPage -
@@ -383,11 +404,19 @@ class AccountsTable extends React.Component {
             to={{
               pathname: "/accountsandinv/accountdetails",
               state: {
-                curBillEmail: this.state.curBillEmail
-              }
+                curBillEmail: this.state.curBillEmail,
+                startDate: this.state.curStartDate,
+                endDate: this.state.curEndDate,
+              },
             }}
           />
         ) : null}
+        <div>
+          <AccountsActions
+            onUpdated={this.updateAccountsTable}
+            keyword={this.state.keyword}
+          />
+        </div>
 
         <Paper className={classes.root}>
           <div className={classes.tableWrapper}>
@@ -418,7 +447,7 @@ class AccountsTable extends React.Component {
                             <Checkbox
                               color="primary"
                               checked={isSelected}
-                              onClick={event =>
+                              onClick={(event) =>
                                 this.handleClick(event, n.billing_email)
                               }
                             />
@@ -439,13 +468,15 @@ class AccountsTable extends React.Component {
                         <TableCell align="center">{n.billing_email}</TableCell>
                         <TableCell align="center">{n.payment_type}</TableCell>
 
-                        {n.balance <= "0" ? (
+                        {n.balance >= "0" ? (
                           <TableCell style={{ color: "green" }} align="center">
-                            {"-$"}{Math.abs(n.balance)}
+                            {"-$"}
+                            {n.balance}
                           </TableCell>
                         ) : (
                           <TableCell style={{ color: "red" }} align="center">
-                            {"$"}{n.balance}{" "}
+                            {"$"}
+                            {Math.abs(n.balance)}
                           </TableCell>
                         )}
                         <TableCell align="center">{n.last_pay_date}</TableCell>
@@ -467,10 +498,10 @@ class AccountsTable extends React.Component {
             rowsPerPage={rowsPerPage}
             page={page}
             backIconButtonProps={{
-              "aria-label": "Previous Page"
+              "aria-label": "Previous Page",
             }}
             nextIconButtonProps={{
-              "aria-label": "Next Page"
+              "aria-label": "Next Page",
             }}
             onChangePage={this.handleChangePage}
             onChangeRowsPerPage={this.handleChangeRowsPerPage}
@@ -482,7 +513,7 @@ class AccountsTable extends React.Component {
 }
 
 AccountsTable.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(AccountsTable);

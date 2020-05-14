@@ -3,7 +3,7 @@ var query = require("./connection");
 
 class AccountInvService {
   static async getTransactions() {
-    var sql = `SELECT id, DATE_FORMAT(event_date, '%m/%d/%Y') as transDate, transType, payor, amount, method, description 
+    var sql = `SELECT id, DATE_FORMAT(trans_date, '%m/%d/%Y') as transDate, transType, payor, amount, method, description 
       from testevent 
       WHERE transType = 'Payment' OR transType = 'Discount' or transType = 'Refund' ORDER BY transDate DESC`;
 
@@ -26,36 +26,32 @@ class AccountInvService {
 
   // Accounts table
   static async getAccountsParam(param) {
-    const { startDate, endDate, keyword } = param;
+    const { keyword } = param;
     const sql = `SELECT 
-                DATE_FORMAT(max(x.trans_date), '%m/%d/%Y') as last_pay_date, 
-                SUM(x.session_cost)-SUM(x.amount) as balance, 
-                y.payor, 
-                y.billing_email, 
-                y.billing_full_name, 
-                y.client_type, 
-                y.billing_phone, 
-                y.payment_type, 
-                y.client 
-              FROM 
-                (SELECT 
-                  CONCAT_WS(', ', billing_last_name, billing_first_name) AS payor, 
-                  billing_email, 
-                  billing_full_name, 
-                  client_type, 
-                  billing_phone, 
-                  payment_type, 
-                  GROUP_CONCAT(client_full_name SEPARATOR ', ') AS client 
-                FROM 
-                  clients GROUP BY payor , 
-                  billing_email , 
-                  billing_full_name ,
-                  client_type , 
-                  client_type , 
-                  billing_phone , 
-                  payment_type) as y 
-              INNER JOIN 
-                testevent x ON x.billing_email = y.billing_email `;
+                    y.payor, 
+                    y.billing_email, 
+                    y.billing_full_name, 
+                    y.client_type, 
+                    y.billing_phone, 
+                    y.payment_type, 
+                    y.client 
+                  FROM 
+                    (SELECT 
+                      CONCAT_WS(', ', billing_last_name, billing_first_name) AS payor, 
+                      billing_email, 
+                      billing_full_name, 
+                      client_type, 
+                      billing_phone, 
+                      payment_type, 
+                      GROUP_CONCAT(client_full_name SEPARATOR ', ') AS client 
+                    FROM 
+                      nodemysql.clients GROUP BY payor , 
+                      billing_email , 
+                      billing_full_name ,
+                      client_type , 
+                      client_type , 
+                      billing_phone , 
+                      payment_type) as y `;
     const groupByClause = ` group by  
                             y.payor, 
                             y.billing_email, 
@@ -65,16 +61,6 @@ class AccountInvService {
                             y.payment_type, 
                             y.client`;
     let whereClasue = ``;
-    if (startDate.length > 0) {
-      whereClasue = ` WHERE '${startDate}' <= x.trans_date `;
-    }
-    if (endDate.length > 0) {
-      if (whereClasue.length > 0) {
-        whereClasue = whereClasue + ` AND x.trans_date <= '${endDate}' `;
-      } else {
-        whereClasue = ` WHERE x.trans_date <= '${endDate}' `;
-      }
-    }
     if (keyword.length > 0) {
       const keywordClause = ` y.payor LIKE '%${keyword}%' OR
                               y.billing_email LIKE '%${keyword}%' OR
@@ -100,24 +86,84 @@ class AccountInvService {
   static async getAccountDetailByBE(param) {
     const { bEmail } = param;
     let sql = `SELECT 
-                  DATE_FORMAT(x.event_date, '%m/%d/%Y') as date, x.description,  
+                  DATE_FORMAT(x.trans_date, '%m/%d/%Y') as date,
+                  x.description,  
                   x.clients, 
-                  x.session_cost, 
-                  x.amount,  
-                  SUM(y.bal) 
-                  balance 
+                  x.session_costs, 
+                  x.session_cost,
+                  x.amount,
+                  x.billing_email,
+                  x.payor
                 FROM 
-                  (SELECT *, session_cost-amount bal FROM testevent WHERE billing_email = '${bEmail}') x 
-                  JOIN (SELECT *, session_cost-amount bal FROM testevent WHERE billing_email = '${bEmail}') y 
-                ON 
-                  y.event_date <= x.event_date 
+                  (SELECT * FROM testevent WHERE billing_email LIKE '%${bEmail}%') x
+                WHERE 
+                  trans_date IS NOT NULL
                 GROUP BY 
                   x.id 
                 ORDER BY 
-                  x.event_date DESC`;
+                  x.trans_date DESC`;
 
     try {
-      return await query(sql);
+      let res = await query(sql);
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // New Invoices table
+  static async getInvParam(param) {
+    const { keyword } = param;
+    const sql = `SELECT 
+                    y.payor, 
+                    y.billing_email, 
+                    y.billing_full_name, 
+                    y.client_type, 
+                    y.billing_phone, 
+                    y.payment_type, 
+                    y.client 
+                  FROM 
+                    (SELECT 
+                      CONCAT_WS(', ', billing_last_name, billing_first_name) AS payor, 
+                      billing_email, 
+                      billing_full_name, 
+                      client_type, 
+                      billing_phone, 
+                      payment_type, 
+                      GROUP_CONCAT(client_full_name SEPARATOR ', ') AS client 
+                    FROM 
+                      nodemysql.clients GROUP BY payor , 
+                      billing_email , 
+                      billing_full_name ,
+                      client_type , 
+                      client_type , 
+                      billing_phone , 
+                      payment_type) as y `;
+    const groupByClause = ` group by  
+                            y.payor, 
+                            y.billing_email, 
+                            y.billing_full_name, 
+                            y.client_type, 
+                            y.billing_phone, 
+                            y.payment_type, 
+                            y.client`;
+    let whereClasue = ``;
+    if (keyword.length > 0) {
+      const keywordClause = ` y.payor LIKE '%${keyword}%' OR
+                              y.billing_email LIKE '%${keyword}%' OR
+                              y.billing_full_name LIKE '%${keyword}%' OR
+                              y.client_type LIKE '%${keyword}%' OR
+                              y.billing_phone LIKE '%${keyword}%' OR
+                              y.payment_type LIKE '%${keyword}%' OR
+                              y.client LIKE '%${keyword}%' `;
+      if (whereClasue.length > 0) {
+        whereClasue = whereClasue + ` AND ${keywordClause} `;
+      } else {
+        whereClasue = ` WHERE ${keywordClause} `;
+      }
+    }
+    try {
+      return await query(sql + whereClasue + groupByClause);
     } catch (error) {
       throw error;
     }
@@ -155,7 +201,7 @@ class AccountInvService {
       method,
       description,
       billingEmail,
-      transDate
+      transDate,
     } = newOne;
 
     try {
@@ -166,7 +212,7 @@ class AccountInvService {
         method,
         description,
         billingEmail,
-        transDate
+        transDate,
       ]);
     } catch (error) {
       console.log("exception: ", error);
@@ -186,7 +232,7 @@ class AccountInvService {
         startDate,
         endDate,
         //dueDate,
-        amount
+        amount,
       ]);
     } catch (error) {
       console.log("exception: ", error);
