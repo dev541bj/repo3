@@ -12,6 +12,9 @@ import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Paper from "@material-ui/core/Paper";
 import Cyan from "@material-ui/core/colors/cyan";
 import Container from "@material-ui/core/Container";
+import Button from "@material-ui/core/Button";
+import classNames from "classnames";
+import Add from "@material-ui/icons/Add";
 
 import API from "../utils/API";
 
@@ -205,6 +208,10 @@ class AccountDetailsTable extends React.Component {
 
     return (
       <Container maxWidth="lg">
+        <Button variant="contained" className={classes.button}>
+          <Add className={classNames(classes.leftIcon, classes.iconSmall)} />
+          Download Invoice
+        </Button>
         <Paper className={classes.root}>
           <div className={classes.tableWrapper}>
             <Table /* className={classes.table} */ aria-labelledby="tableTitle">
