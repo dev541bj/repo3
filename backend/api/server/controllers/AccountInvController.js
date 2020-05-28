@@ -123,6 +123,25 @@ class AccountInvController {
     // }
     const newOne = req.body;
     try {
+      const { email, startDate, endDate } = newOne;
+      const allSessions = await AccountInvController.getDetailAccountsLocal({
+        bEmail: email,
+      });
+      const injected = AccountInvController.injectBalances(
+        allSessions.reverse(),
+        email
+      );
+      const filtered = injected.filter((item) => {
+        return (
+          (moment(new Date(item.date)).isSameOrAfter(startDate) &&
+            moment(new Date(item.date)).isSameOrBefore(endDate)) ||
+          item.transType == "Payment"
+        );
+      });
+      const finalBalance = (filtered[filtered.length - 1] || { balance: 0 })
+        .balance;
+
+      newOne.amount = Math.abs(finalBalance);
       const createdOne = await AccountInvService.addOneManualInvoice(newOne);
       util.setSuccess(201, "Invoice Added!", createdOne);
       return util.send(res);
@@ -145,7 +164,7 @@ class AccountInvController {
           endDate: endDate,
         });
         const injected = AccountInvController.injectBalances(
-          allSessions,
+          allSessions.reverse(),
           account.billing_email
         );
         const filtered = injected.filter((item) => {
@@ -155,8 +174,10 @@ class AccountInvController {
             item.transType == "Payment"
           );
         });
+
         const finalBalance = (filtered[filtered.length - 1] || { balance: 0 })
           .balance;
+
         let lastPayDate = null;
         for (let item of injected.reverse()) {
           if (item.amount != 0 && item.amount != null) {
@@ -249,23 +270,21 @@ class AccountInvController {
         detailAccounts,
         bEmail
       );
-      const filtered = splitAccounts.filter((item) => {
-        return (
-          (moment(new Date(item.date)).isSameOrAfter(startDate) &&
-            moment(new Date(item.date)).isSameOrBefore(endDate)) ||
-          item.transType == "Payment"
-        );
-      });
+      const filtered = AccountInvController.injectBalances(
+        splitAccounts.reverse(),
+        bEmail
+      )
+        .reverse()
+        .filter((item) => {
+          return (
+            (moment(new Date(item.date)).isSameOrAfter(startDate) &&
+              moment(new Date(item.date)).isSameOrBefore(endDate)) ||
+            item.transType == "Payment"
+          );
+        });
 
       if (detailAccounts.length > 0) {
-        util.setSuccess(
-          200,
-          "Account details retrieved",
-          AccountInvController.injectBalances(
-            filtered.reverse(),
-            bEmail
-          ).reverse()
-        );
+        util.setSuccess(200, "Account details retrieved", filtered);
       } else {
         util.setSuccess(200, "No Account details found", []);
       }
@@ -284,16 +303,15 @@ class AccountInvController {
         detailAccounts,
         bEmail
       );
-      const filtered = splitAccounts.filter((item) => {
-        return (
-          (moment(new Date(item.date)).isSameOrAfter(startDate) &&
-            moment(new Date(item.date)).isSameOrBefore(endDate)) ||
-          item.transType == "Payment"
-        );
-      });
+      /*const filtered = splitAccounts.filter((item) => {
+        return (moment(new Date(item.date))
+        .isSameOrAfter(startDate) 
+        && moment(new Date(item.date))
+        .isSameOrBefore(endDate)) || item.transType == "Payment";
+      });*/
 
-      if (filtered.length > 0) {
-        return filtered;
+      if (splitAccounts.length > 0) {
+        return splitAccounts;
       } else {
         return [];
       }
