@@ -1,10 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {
-  withStyles,
-  createMuiTheme,
-  MuiThemeProvider,
-} from "@material-ui/core/styles";
+import { withStyles, createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
+import { saveAs } from "file-saver";
+import { pdf } from "@react-pdf/renderer";
 import Paper from "@material-ui/core/Paper";
 import classNames from "classnames";
 import Button from "@material-ui/core/Button";
@@ -25,9 +23,9 @@ import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
 import Container from "@material-ui/core/Container";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
-
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
+import AccountTemplate from "../pdf-templates/account-template";
 
 moment().toDate();
 
@@ -113,11 +111,7 @@ class AccountsActions extends React.Component {
 
   /* close date range diaglog box */
   handleCloseDateRange = () => {
-    this.props.onUpdated(
-      this.state.startDate,
-      this.state.endDate,
-      this.state.searchKeyWord
-    );
+    this.props.onUpdated(this.state.startDate, this.state.endDate, this.state.searchKeyWord);
     this.setState({ openDateRange: false });
   };
 
@@ -151,11 +145,7 @@ class AccountsActions extends React.Component {
   };
 
   handleSearchAction = () => {
-    this.props.onUpdated(
-      this.state.startDate,
-      this.state.endDate,
-      this.state.searchKeyWord
-    );
+    this.props.onUpdated(this.state.startDate, this.state.endDate, this.state.searchKeyWord);
     this.setState({
       openSearchDlg: false,
     });
@@ -165,26 +155,31 @@ class AccountsActions extends React.Component {
     this.setState({
       openSearchDlg: false,
     });
-    this.props.onUpdated(
-      this.state.startDate,
-      this.state.endDate,
-      this.state.searchKeyWord
-    );
+    this.props.onUpdated(this.state.startDate, this.state.endDate, this.state.searchKeyWord);
   };
 
   handleResetClick = () => {
-    ///localStorage.setItem("startDate", "");
+    // localStorage.setItem("startDate", "");
     // localStorage.setItem("endDate", "");
     this.setState({
       startDate: moment().format("YYYY-MM-DD"),
       endDate: moment().add(1, "month").format("YYYY-MM-DD"),
       searchKeyWord: "",
     });
-    this.props.onUpdated(
-      moment().format("YYYY-MM-DD"),
-      moment().add(1, "month").format("YYYY-MM-DD"),
-      ""
-    );
+    this.props.onUpdated(moment().format("YYYY-MM-DD"), moment().add(1, "month").format("YYYY-MM-DD"), "");
+  };
+
+  handleDownload = async () => {
+    try {
+      if (this.props.data && this.props.data.length > 0) {
+        const blob = await pdf(<AccountTemplate data={this.props.data} />).toBlob();
+        saveAs(blob, "Accounts.pdf");
+      } else {
+        console.log("no data selected");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   render() {
@@ -193,14 +188,8 @@ class AccountsActions extends React.Component {
     return (
       <div>
         {/* Date range button */}
-        <Button
-          variant="contained"
-          onClick={this.handleClickOpenDateRange}
-          className={classes.button}
-        >
-          <DateRange
-            className={classNames(classes.leftIcon, classes.iconSmall)}
-          />
+        <Button variant="contained" onClick={this.handleClickOpenDateRange} className={classes.button}>
+          <DateRange className={classNames(classes.leftIcon, classes.iconSmall)} />
           Balance Range
         </Button>
 
@@ -248,44 +237,38 @@ class AccountsActions extends React.Component {
         </Dialog>
         {/* Download button */}
 
-        <Button variant="contained" className={classes.button}>
-          <DownloadIcon
-            className={classNames(classes.leftIcon, classes.iconSmall)}
-          />
+        <Button
+          variant="contained"
+          className={classes.button}
+          onClick={(e) => {
+            e.preventDefault();
+            this.handleDownload();
+          }}
+        >
+          <DownloadIcon className={classNames(classes.leftIcon, classes.iconSmall)} />
           Download
         </Button>
 
         {/* Auto-invoice button */}
         <Button variant="contained" className={classes.button}>
-          <AutoRenew
-            className={classNames(classes.leftIcon, classes.iconSmall)}
-          />
+          <AutoRenew className={classNames(classes.leftIcon, classes.iconSmall)} />
           Auto-Invoice
         </Button>
 
         {/* Show inactive button */}
         <Button variant="contained" className={classes.button}>
-          <Visibility
-            className={classNames(classes.leftIcon, classes.iconSmall)}
-          />
+          <Visibility className={classNames(classes.leftIcon, classes.iconSmall)} />
           Show Inactive
         </Button>
 
         {/* Search button */}
 
-        <Button
-          variant="contained"
-          className={classes.button}
-          onClick={this.handleSearchClick}
-        >
+        <Button variant="contained" className={classes.button} onClick={this.handleSearchClick}>
           <Search className={classNames(classes.leftIcon, classes.iconSmall)} />
           Search
         </Button>
         {/* Search dialog box */}
-        <Dialog
-          open={this.state.openSearchDlg}
-          onClose={this.handleSearchCloseAction}
-        >
+        <Dialog open={this.state.openSearchDlg} onClose={this.handleSearchCloseAction}>
           <DialogTitle id="form-search-dialog-title">Search</DialogTitle>
           <DialogContent>
             <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -316,11 +299,7 @@ class AccountsActions extends React.Component {
           </MuiThemeProvider>
         </Dialog>
         {/* Reset button */}
-        <Button
-          variant="contained"
-          className={classes.button}
-          onClick={this.handleResetClick}
-        >
+        <Button variant="contained" className={classes.button} onClick={this.handleResetClick}>
           {/*  <Delete
                     className={classNames(classes.leftIcon, classes.iconSmall)}
                   /> */}
@@ -346,6 +325,7 @@ class AccountsActions extends React.Component {
 
 AccountsActions.propTypes = {
   classes: PropTypes.object.isRequired,
+  data: PropTypes.array.isRequired,
 };
 
 export default withStyles(styles)(AccountsActions);

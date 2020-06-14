@@ -94,10 +94,7 @@ class AccountsInvoicesTabs extends React.Component {
   };
 
   deleteTransactions = () => {
-    API.post(
-      "/accounts/transactions/deleteMany",
-      this.state.selectedTransactionIds
-    )
+    API.post("/accounts/transactions/deleteMany", this.state.selectedTransactionIds)
       .then((resp) => {
         this.updateTransactionsTable();
       })
@@ -126,12 +123,7 @@ class AccountsInvoicesTabs extends React.Component {
       <div>
         <Container maxWidth="sm">
           <AppBar className={classes.root} position="static">
-            <Tabs
-              indicatorColor="primary"
-              value={value}
-              onChange={this.handleChangeTab}
-              fontSize="17"
-            >
+            <Tabs indicatorColor="primary" value={value} onChange={this.handleChangeTab} fontSize="17">
               <Tab label="Accounts" />
               <Tab label="Payments  " />
               <Tab label="Invoices" />
@@ -141,10 +133,7 @@ class AccountsInvoicesTabs extends React.Component {
 
         {value === 0 && <AccountsTable />}
         {value === 1 && (
-          <TransactionsActions
-            onUpdated={this.updateTransactionsTable}
-            onDelete={this.deleteTransactions}
-          />
+          <TransactionsActions onUpdated={this.updateTransactionsTable} onDelete={this.deleteTransactions} />
         )}
         {value === 1 && (
           <TransactionsTable
@@ -152,7 +141,9 @@ class AccountsInvoicesTabs extends React.Component {
             onSelectedUpdated={this.handleTransactionsSelected}
           />
         )}
-        {value === 2 && <InvoiceActions onUpdated={this.updateInvoicesTable} />}
+        {value === 2 && (
+          <InvoiceActions selected={this.state.selectedInvoiceIds} onUpdated={this.updateInvoicesTable} />
+        )}
         {value === 2 && (
           <InvoicesTable
             toggleUpdated={this.state.toggleInvoicesTableUpdated}

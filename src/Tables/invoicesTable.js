@@ -1,10 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {
-  withStyles,
-  createMuiTheme,
-  MuiThemeProvider
-} from "@material-ui/core/styles";
+import { withStyles, createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -32,7 +28,7 @@ if (Array.prototype.equals)
     "Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code."
   );
 // attach the .equals method to Array's prototype to call it on any array
-Array.prototype.equals = function(array) {
+Array.prototype.equals = function (array) {
   // if the other array is a falsy value, return
   if (!array) return false;
 
@@ -71,13 +67,11 @@ function stableSort(array, cmp) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  return stabilizedThis.map(el => el[0]);
+  return stabilizedThis.map((el) => el[0]);
 }
 
 function getSorting(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => desc(a, b, orderBy)
-    : (a, b) => -desc(a, b, orderBy);
+  return order === "desc" ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
 const rows = [
@@ -86,33 +80,27 @@ const rows = [
   { id: "payor", disablePadding: true, label: "Payor" },
   { id: "start_date", disablePadding: true, label: "Start Date" },
   { id: "end_date", disablePadding: true, label: "End Date" },
-  { id: "amount", disablePadding: true, label: "Amount" }
+  { id: "amount", disablePadding: true, label: "Amount" },
 ];
 
-const CustomTableCell = withStyles(theme => ({
+const CustomTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: Cyan[800],
     color: theme.palette.common.white,
-    fontSize: 17
+    fontSize: 17,
   },
   body: {
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 }))(TableCell);
 
 class InvoicesTableHead extends React.Component {
-  createSortHandler = property => event => {
+  createSortHandler = (property) => (event) => {
     this.props.onRequestSort(event, property);
   };
 
   render() {
-    const {
-      onSelectAllClick,
-      order,
-      orderBy,
-      numSelected,
-      rowCount
-    } = this.props;
+    const { onSelectAllClick, order, orderBy, numSelected, rowCount } = this.props;
 
     return (
       <TableHead>
@@ -128,17 +116,9 @@ class InvoicesTableHead extends React.Component {
             </MuiThemeProvider>
           </CustomTableCell>
           {rows.map(
-            row => (
-              <CustomTableCell
-                key={row.id}
-                align="center"
-                sortDirection={orderBy === row.id ? order : false}
-              >
-                <TableSortLabel
-                  active={orderBy === row.id}
-                  direction={order}
-                  onClick={this.createSortHandler(row.id)}
-                >
+            (row) => (
+              <CustomTableCell key={row.id} align="center" sortDirection={orderBy === row.id ? order : false}>
+                <TableSortLabel active={orderBy === row.id} direction={order} onClick={this.createSortHandler(row.id)}>
                   {row.label}
                 </TableSortLabel>
               </CustomTableCell>
@@ -158,73 +138,73 @@ InvoicesTableHead.propTypes = {
   // previous file
   onRequestSort: PropTypes.func.isRequired,
   order: PropTypes.string.isRequired,
-  orderBy: PropTypes.string.isRequired
+  orderBy: PropTypes.string.isRequired,
   //rowCount: PropTypes.number.isRequired,
 };
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     //width: "60%",
     marginTop: theme.spacing(1) * 3,
     // marginLeft: theme.spacing(1) * 30,
-    overflowX: "auto"
+    overflowX: "auto",
   },
   table: {
     //minWidth: 1020,
   },
   tableWrapper: {
-    overflowX: "auto"
+    overflowX: "auto",
   },
   row: {
     "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.background.default
-    }
+      backgroundColor: theme.palette.background.default,
+    },
   },
   appBar: {
     position: "relative",
-    backgroundColor: Cyan[800]
+    backgroundColor: Cyan[800],
   },
   title: {
     marginLeft: theme.spacing(2),
-    flex: 1
+    flex: 1,
   },
 
   textField: {
     marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
     //width: 400
   },
   textField2: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    width: 198
+    width: 198,
   },
   textField3: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    width: "60%"
+    width: "60%",
   },
 
   root2: {
-    marginTop: theme.spacing(10)
+    marginTop: theme.spacing(10),
   },
   letter: {
     marginLeft: theme.spacing(10),
     marginRight: theme.spacing(1),
-    marginTop: theme.spacing(5)
-  }
+    marginTop: theme.spacing(5),
+  },
 });
 
 const theme = createMuiTheme({
   palette: {
-    primary: { main: "#b2dfdb" }
-  }
+    primary: { main: "#b2dfdb" },
+  },
 });
 
 const theme2 = createMuiTheme({
   palette: {
-    primary: { main: "#00838f" }
-  }
+    primary: { main: "#00838f" },
+  },
 });
 
 class InvoicesTable extends React.Component {
@@ -235,7 +215,7 @@ class InvoicesTable extends React.Component {
     page: 0,
     rowsPerPage: 10,
     selected: [],
-    open: false
+    open: false,
   };
 
   async componentDidMount() {
@@ -248,23 +228,22 @@ class InvoicesTable extends React.Component {
       const invoiceData = invoicesResp.data.data;
 
       this.setState({ invoiceData });
+      console.log(invoiceData);
     } catch (error) {
       console.log("Accounts data fetching error: ", error);
     }
   }
   componentWillUnmount() {}
 
-  handleSelectAllClick = event => {
+  handleSelectAllClick = (event) => {
     if (event.target.checked) {
       this.setState(
-        state => ({ selected: state.invoiceData.map(n => n.id) }),
+        (state) => ({ selected: state.invoiceData.map((n) => n.id) }),
         () => this.props.onSelectedUpdated(this.state.selected)
       );
       return;
     }
-    this.setState({ selected: [] }, () =>
-      this.props.onSelectedUpdated(this.state.selected)
-    );
+    this.setState({ selected: [] }, () => this.props.onSelectedUpdated(this.state.selected));
   };
 
   async componentDidUpdate(prevProps, prevState) {
@@ -291,10 +270,7 @@ class InvoicesTable extends React.Component {
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1));
     } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
+      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
     }
     this.props.onSelectedUpdated(newSelected);
 
@@ -318,7 +294,7 @@ class InvoicesTable extends React.Component {
     this.setState({ page });
   };
 
-  handleChangeRowsPerPage = event => {
+  handleChangeRowsPerPage = (event) => {
     this.setState({ rowsPerPage: event.target.value });
   };
 
@@ -330,21 +306,12 @@ class InvoicesTable extends React.Component {
     this.setState({ open: false });
   };
 
-  isSelected = id => this.state.selected.indexOf(id) !== -1;
+  isSelected = (id) => this.state.selected.indexOf(id) !== -1;
 
   render() {
     const { classes } = this.props;
-    const {
-      invoiceData,
-      order,
-      orderBy,
-      rowsPerPage,
-      page,
-      selected
-    } = this.state;
-    const emptyRows =
-      rowsPerPage -
-      Math.min(rowsPerPage, invoiceData.length - page * rowsPerPage);
+    const { invoiceData, order, orderBy, rowsPerPage, page, selected } = this.state;
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, invoiceData.length - page * rowsPerPage);
 
     return (
       <Container maxWidth="lg">
@@ -365,19 +332,13 @@ class InvoicesTable extends React.Component {
                   .map((n, i) => {
                     const isSelected = this.isSelected(n.id);
                     return (
-                      <TableRow
-                        hover
-                        className={classes.row}
-                        tabIndex={-1}
-                        key={i}
-                        selected={isSelected}
-                      >
+                      <TableRow hover className={classes.row} tabIndex={-1} key={i} selected={isSelected}>
                         <TableCell padding="checkbox">
                           <MuiThemeProvider theme={theme}>
                             <Checkbox
                               color="primary"
                               checked={isSelected}
-                              onClick={event => this.handleClick(event, n.id)}
+                              onClick={(event) => this.handleClick(event, n.id)}
                             />
                           </MuiThemeProvider>
                         </TableCell>
@@ -405,10 +366,10 @@ class InvoicesTable extends React.Component {
             rowsPerPage={rowsPerPage}
             page={page}
             backIconButtonProps={{
-              "aria-label": "Previous Page"
+              "aria-label": "Previous Page",
             }}
             nextIconButtonProps={{
-              "aria-label": "Next Page"
+              "aria-label": "Next Page",
             }}
             onChangePage={this.handleChangePage}
             onChangeRowsPerPage={this.handleChangeRowsPerPage}
@@ -420,7 +381,7 @@ class InvoicesTable extends React.Component {
 }
 
 InvoicesTable.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(InvoicesTable);

@@ -1,10 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {
-  withStyles,
-  createMuiTheme,
-  MuiThemeProvider
-} from "@material-ui/core/styles";
+import { saveAs } from "file-saver";
+import { pdf } from "@react-pdf/renderer";
+import { withStyles, createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import classNames from "classnames";
 import Button from "@material-ui/core/Button";
@@ -23,17 +21,17 @@ import MomentUtils from "@date-io/moment";
 import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-
 import API from "../utils/API";
+import InvoiceTemplate from "../pdf-templates/invoice-template";
 
 moment().toDate();
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
     marginTop: theme.spacing(1),
-    align: "center"
+    align: "center",
     // width: "31%"
   },
 
@@ -43,47 +41,47 @@ const styles = theme => ({
     /* this is text color */ color: theme.palette.getContrastText("#b2dfdb"),
     backgroundColor: "#b2dfdb",
     "&:hover": {
-      backgroundColor: "#80cbc4"
-    }
+      backgroundColor: "#80cbc4",
+    },
   },
 
   leftIcon: {
-    marginRight: theme.spacing.unit
+    marginRight: theme.spacing.unit,
   },
   rightIcon: {
-    marginLeft: theme.spacing.unit
+    marginLeft: theme.spacing.unit,
   },
   dialogTitle: {
-    marginBottom: theme.spacing.unit
+    marginBottom: theme.spacing.unit,
   },
   iconSmall: {
-    fontSize: 20
+    fontSize: 20,
   },
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 300
+    width: 300,
   },
   textField2: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 300
+    width: 300,
   },
   menu: {
-    width: 200
-  }
+    width: 200,
+  },
 });
 
 const theme = createMuiTheme({
   palette: {
-    primary: { main: "#b2dfdb" }
-  }
+    primary: { main: "#b2dfdb" },
+  },
 });
 
 const theme2 = createMuiTheme({
   palette: {
-    primary: { main: "#00838f" }
-  }
+    primary: { main: "#00838f" },
+  },
 });
 
 class InvoiceActions extends React.Component {
@@ -92,16 +90,13 @@ class InvoiceActions extends React.Component {
     openInvoices: false,
     openDateRange: false,
     payorData: [],
+    invoiceData: [],
     payor: "",
     status: "Unpaid",
-    startDate: moment()
-      .subtract(1, "month")
-      .format("YYYY-MM-DD"),
+    startDate: moment().subtract(1, "month").format("YYYY-MM-DD"),
     endDate: moment().format("YYYY-MM-DD"),
     invoiceDate: moment().format("YYYY-MM-DD"),
-    dueDate: moment()
-      .add(1, "month")
-      .format("YYYY-MM-DD")
+    dueDate: moment().add(1, "month").format("YYYY-MM-DD"),
     // invoiceNotes: null
   };
   async componentDidMount() {
@@ -116,11 +111,16 @@ class InvoiceActions extends React.Component {
       const payorData = payorsResp.data.data;
 
       this.setState({ payorData });
+
+      const invoicesResp = await API.get("/accounts/invoices");
+      const invoiceData = invoicesResp.data.data;
+
+      this.setState({ invoiceData });
     } catch (error) {
       console.log("While fetching transaction we got an error: ", error);
     }
   }
-  onSubmit = e => {
+  onSubmit = (e) => {
     //experiment keeping preventDefault
     //  e.preventDefault();
 
@@ -130,16 +130,16 @@ class InvoiceActions extends React.Component {
       startDate: this.state.startDate,
       endDate: this.state.endDate,
       dueDate: this.state.dueDate,
-      amount: this.state.invoiceAmount
+      amount: this.state.invoiceAmount,
     };
-    API.post("accounts/manualinvoices", invObj).then(async response => {
+    API.post("accounts/manualinvoices", invObj).then(async (response) => {
       this.props.onUpdated();
     });
     this.handleCloseInvoices();
   };
 
   /* change of team member dropdown */
-  handleChange = name => event => {
+  handleChange = (name) => (event) => {
     this.setState({ [name]: event.target.value });
   };
 
@@ -153,29 +153,51 @@ class InvoiceActions extends React.Component {
     this.setState({ openInvoices: false });
   };
 
-  handleDateChangeStart = date => {
+  handleDateChangeStart = (date) => {
     this.setState({ startDate: date.format("YYYY-MM-DD" /*  HH:mm:ss */) });
   };
 
-  handleDateChangeEnd = date => {
+  handleDateChangeEnd = (date) => {
     this.setState({ endDate: date.format("YYYY-MM-DD") });
   };
 
-  handleDateChangeInvoice = date => {
+  handleDateChangeInvoice = (date) => {
     this.setState({ invoiceDate: date.format("YYYY-MM-DD") });
   };
 
-  handleDateChangeDue = date => {
+  handleDateChangeDue = (date) => {
     this.setState({ dueDate: date.format("YYYY-MM-DD") });
   };
 
   /* Select menu options */
-  handleProfileMenuOpen = event => {
+  handleProfileMenuOpen = (event) => {
     this.setState({ anchorEl: event.currentTarget });
   };
 
   handleMenuClose = () => {
     this.setState({ anchorEl: null });
+  };
+
+  handleDownload = async () => {
+    let invoicesToDownload = [];
+    this.props.selected.reduce((total, current) => {
+      const invoice = this.state.invoiceData.find((d) => d.id === current);
+      if (invoice) {
+        invoicesToDownload.push(invoice);
+      }
+      return [...total];
+    }, []);
+
+    try {
+      if (invoicesToDownload.length > 0) {
+        const blob = await pdf(<InvoiceTemplate data={invoicesToDownload} />).toBlob();
+        saveAs(blob, "Invoices.pdf");
+      } else {
+        console.log("no data selected");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   render() {
@@ -192,7 +214,14 @@ class InvoiceActions extends React.Component {
         onClose={this.handleMenuClose}
       >
         <MenuItem onClick={this.handleMenuClose}>Email</MenuItem>
-        <MenuItem onClick={this.handleMenuClose}>Download</MenuItem>
+        <MenuItem
+          onClick={(e) => {
+            e.preventDefault();
+            this.handleDownload();
+          }}
+        >
+          Download
+        </MenuItem>
         <MenuItem onClick={this.handleMenuClose}>Delete</MenuItem>
       </Menu>
     );
@@ -202,28 +231,14 @@ class InvoiceActions extends React.Component {
         <Grid container direction="row" justify="center" alignItems="center">
           <Container maxWidth="sm">
             <Paper className={classes.root} elevation={7}>
-              <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-              >
+              <Grid container direction="row" justify="center" alignItems="center">
                 {/* New Invoice button */}
-                <Button
-                  variant="contained"
-                  onClick={this.handleClickOpenInvoice}
-                  className={classes.button}
-                >
-                  <AddIcon
-                    className={classNames(classes.leftIcon, classes.iconSmall)}
-                  />
+                <Button variant="contained" onClick={this.handleClickOpenInvoice} className={classes.button}>
+                  <AddIcon className={classNames(classes.leftIcon, classes.iconSmall)} />
                   New Invoice
                 </Button>
                 {/* New Invoice dialog box */}
-                <Dialog
-                  open={this.state.openInvoices}
-                  onClose={this.handleCloseInvoices}
-                >
+                <Dialog open={this.state.openInvoices} onClose={this.handleCloseInvoices}>
                   <DialogTitle id="form-dialog-title">New Invoice</DialogTitle>
                   <DialogContent>
                     <TextField
@@ -239,15 +254,12 @@ class InvoiceActions extends React.Component {
                       onChange={this.handleChange("payor")}
                       SelectProps={{
                         MenuProps: {
-                          className: classes.menu
-                        }
+                          className: classes.menu,
+                        },
                       }}
                     >
-                      {payorData.map(option => (
-                        <MenuItem
-                          key={option.value}
-                          value={option.billing_full_name}
-                        >
+                      {payorData.map((option) => (
+                        <MenuItem key={option.value} value={option.billing_full_name}>
                           {option.billing_full_name}
                         </MenuItem>
                       ))}
@@ -317,10 +329,7 @@ class InvoiceActions extends React.Component {
                   </DialogContent>
                   <MuiThemeProvider theme={theme2}>
                     <DialogActions>
-                      <Button
-                        onClick={this.handleCloseInvoices}
-                        color="primary"
-                      >
+                      <Button onClick={this.handleCloseInvoices} color="primary">
                         Cancel
                       </Button>
                       <Button
@@ -343,23 +352,15 @@ class InvoiceActions extends React.Component {
                   </MuiThemeProvider>
                 </Dialog>
                 {/* Selected button */}
-                <Button
-                  variant="contained"
-                  onClick={this.handleProfileMenuOpen}
-                  className={classes.button}
-                >
-                  <Mouse
-                    className={classNames(classes.leftIcon, classes.iconSmall)}
-                  />
+                <Button variant="contained" onClick={this.handleProfileMenuOpen} className={classes.button}>
+                  <Mouse className={classNames(classes.leftIcon, classes.iconSmall)} />
                   Selected
                 </Button>
                 {renderMenu}
 
                 {/* Search button */}
                 <Button variant="contained" className={classes.button}>
-                  <Search
-                    className={classNames(classes.leftIcon, classes.iconSmall)}
-                  />
+                  <Search className={classNames(classes.leftIcon, classes.iconSmall)} />
                   Search
                 </Button>
                 {/*
@@ -384,7 +385,8 @@ class InvoiceActions extends React.Component {
 }
 
 InvoiceActions.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  selected: PropTypes.array.isRequired,
 };
 
 export default withStyles(styles)(InvoiceActions);

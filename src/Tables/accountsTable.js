@@ -1,11 +1,7 @@
 import React from "react";
 //import classNames from "classnames";
 import PropTypes from "prop-types";
-import {
-  withStyles,
-  createMuiTheme,
-  MuiThemeProvider,
-} from "@material-ui/core/styles";
+import { withStyles, createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import moment from "moment";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -54,9 +50,7 @@ function stableSort(array, cmp) {
 }
 
 function getSorting(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => desc(a, b, orderBy)
-    : (a, b) => -desc(a, b, orderBy);
+  return order === "desc" ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
 const rows = [
@@ -87,13 +81,7 @@ class TransactionsTableHead extends React.Component {
   };
 
   render() {
-    const {
-      onSelectAllClick,
-      order,
-      orderBy,
-      numSelected,
-      rowCount,
-    } = this.props;
+    const { onSelectAllClick, order, orderBy, numSelected, rowCount } = this.props;
 
     return (
       <TableHead>
@@ -110,16 +98,8 @@ class TransactionsTableHead extends React.Component {
           </CustomTableCell>
           {rows.map(
             (row) => (
-              <CustomTableCell
-                key={row.id}
-                align="center"
-                sortDirection={orderBy === row.id ? order : false}
-              >
-                <TableSortLabel
-                  active={orderBy === row.id}
-                  direction={order}
-                  onClick={this.createSortHandler(row.id)}
-                >
+              <CustomTableCell key={row.id} align="center" sortDirection={orderBy === row.id ? order : false}>
+                <TableSortLabel active={orderBy === row.id} direction={order} onClick={this.createSortHandler(row.id)}>
                   {row.label}
                 </TableSortLabel>
               </CustomTableCell>
@@ -321,10 +301,7 @@ class AccountsTable extends React.Component {
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1));
     } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
+      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
     }
     // this.props.onSelectedUpdated(newSelected);
 
@@ -363,14 +340,8 @@ class AccountsTable extends React.Component {
   //redirect to account details;
   handleClickRedirect = (accountBillEmail = "") => {
     localStorage.setItem("BillEmail", accountBillEmail);
-    localStorage.setItem(
-      "StartDate",
-      this.state.startDate || moment().format("YYYY-MM-DD")
-    );
-    localStorage.setItem(
-      "EndDate",
-      this.state.endDate || moment().add(1, "month").format("YYYY-MM-DD")
-    );
+    localStorage.setItem("StartDate", this.state.startDate || moment().format("YYYY-MM-DD"));
+    localStorage.setItem("EndDate", this.state.endDate || moment().add(1, "month").format("YYYY-MM-DD"));
 
     this.setState({
       redirect: true,
@@ -385,17 +356,22 @@ class AccountsTable extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const {
-      accountData,
-      order,
-      orderBy,
-      rowsPerPage,
-      page,
-      selected,
-    } = this.state;
-    const emptyRows =
-      rowsPerPage -
-      Math.min(rowsPerPage, accountData.length - page * rowsPerPage);
+    const { accountData, order, orderBy, rowsPerPage, page, selected } = this.state;
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, accountData.length - page * rowsPerPage);
+
+    const dataToDisplay = stableSort(accountData, getSorting(order, orderBy)).slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage
+    );
+
+    let dataToDownload = [];
+    selected.reduce((data, item) => {
+      const account = accountData.find((d) => d.billing_email === item);
+      if (account) {
+        dataToDownload.push(account);
+      }
+      return data;
+    }, []);
 
     return (
       <Container maxWidth="lg">
@@ -412,10 +388,7 @@ class AccountsTable extends React.Component {
           />
         ) : null}
         <div>
-          <AccountsActions
-            onUpdated={this.updateAccountsTable}
-            keyword={this.state.keyword}
-          />
+          <AccountsActions data={dataToDownload} onUpdated={this.updateAccountsTable} keyword={this.state.keyword} />
         </div>
 
         <Paper className={classes.root}>
@@ -430,59 +403,44 @@ class AccountsTable extends React.Component {
                 rowCount={accountData.length || 0}
               />
               <TableBody>
-                {stableSort(accountData, getSorting(order, orderBy))
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((n, i) => {
-                    const isSelected = this.isSelected(n.billing_email);
-                    return (
-                      <TableRow
-                        hover
-                        className={classes.row}
-                        tabIndex={-1}
-                        key={i}
-                        selected={isSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          <MuiThemeProvider theme={theme}>
-                            <Checkbox
-                              color="primary"
-                              checked={isSelected}
-                              onClick={(event) =>
-                                this.handleClick(event, n.billing_email)
-                              }
-                            />
-                          </MuiThemeProvider>
-                        </TableCell>
+                {dataToDisplay.map((n, i) => {
+                  const isSelected = this.isSelected(n.billing_email);
+                  return (
+                    <TableRow hover className={classes.row} tabIndex={-1} key={i} selected={isSelected}>
+                      <TableCell padding="checkbox">
+                        <MuiThemeProvider theme={theme}>
+                          <Checkbox
+                            color="primary"
+                            checked={isSelected}
+                            onClick={(event) => this.handleClick(event, n.billing_email)}
+                          />
+                        </MuiThemeProvider>
+                      </TableCell>
 
-                        <TableCell
-                          onClick={() =>
-                            this.handleClickRedirect(n.billing_email)
-                          }
-                          align="center"
-                        >
-                          {n.payor}{" "}
-                        </TableCell>
-                        <TableCell align="center">{n.client}</TableCell>
-                        <TableCell align="center">{n.client_type}</TableCell>
-                        <TableCell align="center">{n.billing_phone}</TableCell>
-                        <TableCell align="center">{n.billing_email}</TableCell>
-                        <TableCell align="center">{n.payment_type}</TableCell>
+                      <TableCell onClick={() => this.handleClickRedirect(n.billing_email)} align="center">
+                        {n.payor}{" "}
+                      </TableCell>
+                      <TableCell align="center">{n.client}</TableCell>
+                      <TableCell align="center">{n.client_type}</TableCell>
+                      <TableCell align="center">{n.billing_phone}</TableCell>
+                      <TableCell align="center">{n.billing_email}</TableCell>
+                      <TableCell align="center">{n.payment_type}</TableCell>
 
-                        {n.balance >= "0" ? (
-                          <TableCell style={{ color: "green" }} align="center">
-                            {"-$"}
-                            {n.balance}
-                          </TableCell>
-                        ) : (
-                          <TableCell style={{ color: "red" }} align="center">
-                            {"$"}
-                            {Math.abs(n.balance)}
-                          </TableCell>
-                        )}
-                        <TableCell align="center">{n.last_pay_date}</TableCell>
-                      </TableRow>
-                    );
-                  })}
+                      {n.balance >= "0" ? (
+                        <TableCell style={{ color: "green" }} align="center">
+                          {"-$"}
+                          {n.balance}
+                        </TableCell>
+                      ) : (
+                        <TableCell style={{ color: "red" }} align="center">
+                          {"$"}
+                          {Math.abs(n.balance)}
+                        </TableCell>
+                      )}
+                      <TableCell align="center">{n.last_pay_date}</TableCell>
+                    </TableRow>
+                  );
+                })}
                 {emptyRows > 0 && (
                   <TableRow style={{ height: 49 * emptyRows }}>
                     <TableCell colSpan={6} />
