@@ -18,6 +18,7 @@ import { Redirect } from "react-router-dom";
 
 import API from "../utils/API";
 import AccountsActions from "../Actions/accountsActions";
+import { startDateVal, endDateVal } from "../utils/Util";
 
 moment().toDate();
 
@@ -180,9 +181,9 @@ class AccountsTable extends React.Component {
     try {
       const obj = {
         // start date range of accounts table is today
-        startDate: moment().format("YYYY-MM-DD"),
+        startDate: startDateVal,
         // end date is a month from now
-        endDate: moment().add(1, "month").format("YYYY-MM-DD"),
+        endDate: endDateVal,
         // keyword being searched
         keyword: this.state.keyword,
       };
@@ -190,7 +191,6 @@ class AccountsTable extends React.Component {
         this.setState({
           accountData: res.data.data,
         });
-        console.log(res.data.data);
       });
     } catch (error) {
       console.log("Account detail data fetching error: ", error);
@@ -340,15 +340,15 @@ class AccountsTable extends React.Component {
   //redirect to account details;
   handleClickRedirect = (accountBillEmail = "") => {
     localStorage.setItem("BillEmail", accountBillEmail);
-    localStorage.setItem("StartDate", this.state.startDate || moment().format("YYYY-MM-DD"));
-    localStorage.setItem("EndDate", this.state.endDate || moment().add(1, "month").format("YYYY-MM-DD"));
+    localStorage.setItem("StartDate", this.state.startDate || startDateVal);
+    localStorage.setItem("EndDate", this.state.endDate || endDateVal);
 
     this.setState({
       redirect: true,
       // curBillEmail: accountBillEmail,
-      //curStartDate: this.props.startDate || moment().format("YYYY-MM-DD"),
+      //curStartDate: this.props.startDate || startDateVal,
       //curEndDate:
-      //this.props.endDate || moment().add(1, "month").format("YYYY-MM-DD"),
+      //this.props.endDate || endDateVal,
     });
   };
 

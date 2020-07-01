@@ -1,5 +1,6 @@
 import React from "react";
 import { Page, Document, Font, View, Image, Text } from "@react-pdf/renderer";
+import moment from "moment";
 import Table from "./table";
 import { googleLogo } from "../constants";
 import { styles } from "./styles";
@@ -15,7 +16,13 @@ Font.register({
 });
 
 const AccountTemplate = (props) => {
-  const { data } = props;
+  const { data, client, balance } = props;
+
+  const dates = data.map((d) => moment(d));
+  const minDate = moment.min(dates).format("YYYY-MM-DD");
+  const maxDate = moment.max(dates).format("YYYY-MM-DD");
+
+  const balanceVal = +balance >= 0 ? "-$" + Math.abs(balance) : "$" + Math.abs(balance);
 
   return (
     <Document>
@@ -28,11 +35,11 @@ const AccountTemplate = (props) => {
           <Text style={styles.headerAddress2}>Los Angeles 100001</Text>
           <View style={styles.headerTexts}>
             <Text style={styles.headerText}>Bill To: </Text>
-            <Text style={styles.headerText}>Jill Jackson</Text>
-            <Text style={styles.headerText}>555 Lane</Text>
-            <Text style={styles.headerText}>Frisco, TX</Text>
-            <Text style={styles.headerText}>555-555-5544</Text>
-            <Text style={styles.headerText}>jillljackson.gmail.com</Text>
+            <Text style={styles.headerText}>{client.billing_full_name}</Text>
+            <Text style={styles.headerText}>{client.billing_street_address}</Text>
+            <Text style={styles.headerText}>{client.billing_city + client.billing_state}</Text>
+            <Text style={styles.headerText}>{client.billing_phone}</Text>
+            <Text style={styles.headerText}>{client.billing_email}</Text>
           </View>
         </View>
         <View style={styles.invoice}>
@@ -43,14 +50,14 @@ const AccountTemplate = (props) => {
           </View>
           <View style={styles.invoicePriorBalance}>
             <Text style={styles.invoicePriorBalanceLabel}>Prior Balance: </Text>
-            <Text style={styles.invoicePriorBalanceText}>0SAF8SD7-ASDF8A</Text>
+            <Text style={styles.invoicePriorBalanceText}>{balanceVal}</Text>
           </View>
           <View style={styles.invoiceDateRange}>
             <Text style={styles.invoiceDateRangeLabel}>Date Range: </Text>
-            <Text style={styles.invoiceDateRangeText}>0SAF8SD7-ASDF8A</Text>
+            <Text style={styles.invoiceDateRangeText}>{minDate + " - " + maxDate}</Text>
           </View>
         </View>
-        <Table tableData={data} />
+        <Table tableData={data} balanceTotal={balance} />
         <View style={styles.footer}>
           <Text style={styles.companyTitle}>Company 123</Text>
         </View>

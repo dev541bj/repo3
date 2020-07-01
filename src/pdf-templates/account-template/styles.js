@@ -144,4 +144,25 @@ export const styles = StyleSheet.create({
     margin: 5,
     fontSize: 10,
   },
+  tableFooter: {
+    display: "flex",
+    alignItems: "flex-end",
+    marginTop: "36",
+    paddingRight: "36",
+  },
+  totalDue: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+  },
+  payLink: {
+    fontSize: "16",
+    padding: "12",
+    marginTop: "30",
+    textDecoration: "none",
+    color: "#333333",
+    border: "2 solid black",
+    borderRadius: "12",
+  },
 });

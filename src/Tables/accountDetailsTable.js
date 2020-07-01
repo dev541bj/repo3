@@ -39,9 +39,7 @@ function stableSort(array, cmp) {
 }
 
 function getSorting(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => desc(a, b, orderBy)
-    : (a, b) => -desc(a, b, orderBy);
+  return order === "desc" ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
 const rows = [
@@ -83,11 +81,7 @@ class EnhancedTableHead extends React.Component {
                 padding={row.disablePadding ? "none" : "default"}
                 sortDirection={orderBy === row.id ? order : false}
               >
-                <TableSortLabel
-                  active={orderBy === row.id}
-                  direction={order}
-                  onClick={this.createSortHandler(row.id)}
-                >
+                <TableSortLabel active={orderBy === row.id} direction={order} onClick={this.createSortHandler(row.id)}>
                   {row.label}
                 </TableSortLabel>
               </CustomTableCell>
@@ -161,8 +155,9 @@ class AccountDetailsTable extends React.Component {
         startDate: localStorage.getItem("StartDate"),
         endDate: localStorage.getItem("EndDate"),
       };
-      console.log(obj);
+
       API.post("/accounts/accountdetailsbe", obj).then(async (res) => {
+        console.log(res.data);
         this.setState({
           accountDetailData: res.data.data,
         });
@@ -202,9 +197,7 @@ class AccountDetailsTable extends React.Component {
   render() {
     const { classes } = this.props;
     const { accountDetailData, order, orderBy, rowsPerPage, page } = this.state;
-    const emptyRows =
-      rowsPerPage -
-      Math.min(rowsPerPage, accountDetailData.length - page * rowsPerPage);
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, accountDetailData.length - page * rowsPerPage);
 
     return (
       <Container maxWidth="lg">
@@ -225,15 +218,10 @@ class AccountDetailsTable extends React.Component {
               <TableBody>
                 {stableSort(accountDetailData, getSorting(order, orderBy))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((n) => {
+                  .map((n, i) => {
                     // const isSelected = this.isSelected(n.id);
                     return (
-                      <TableRow
-                        hover
-                        className={classes.row}
-                        tabIndex={-1}
-                        key={n.id}
-                      >
+                      <TableRow hover className={classes.row} tabIndex={-1} key={i}>
                         <TableCell align="center" key="date">
                           {n.date}
                         </TableCell>

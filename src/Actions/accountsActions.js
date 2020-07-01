@@ -26,6 +26,8 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import AccountTemplate from "../pdf-templates/account-template";
+import API from "../utils/API";
+import { startDateVal, endDateVal } from "../utils/Util";
 
 moment().toDate();
 
@@ -82,8 +84,8 @@ class AccountsActions extends React.Component {
       openTransactions: false,
       openDateRange: false,
       payor: "",
-      startDate: moment().format("YYYY-MM-DD"),
-      endDate: moment().add(1, "month").format("YYYY-MM-DD"),
+      startDate: startDateVal,
+      endDate: endDateVal,
       invoiceDate: "",
       invoiceAmount: "",
       dueDate: "",
@@ -119,8 +121,8 @@ class AccountsActions extends React.Component {
   handleCancelDateRange = () => {
     this.setState({
       openDateRange: false,
-      startDate: moment().format("YYYY-MM-DD"),
-      endDate: moment().add(1, "month").format("YYYY-MM-DD"),
+      startDate: startDateVal,
+      endDate: endDateVal,
     });
   };
 
@@ -162,24 +164,48 @@ class AccountsActions extends React.Component {
     // localStorage.setItem("startDate", "");
     // localStorage.setItem("endDate", "");
     this.setState({
-      startDate: moment().format("YYYY-MM-DD"),
-      endDate: moment().add(1, "month").format("YYYY-MM-DD"),
+      startDate: startDateVal,
+      endDate: endDateVal,
       searchKeyWord: "",
     });
-    this.props.onUpdated(moment().format("YYYY-MM-DD"), moment().add(1, "month").format("YYYY-MM-DD"), "");
+    this.props.onUpdated(startDateVal, endDateVal, "");
   };
 
   handleDownload = async () => {
     try {
       if (this.props.data && this.props.data.length > 0) {
-        const blob = await pdf(<AccountTemplate data={this.props.data} />).toBlob();
-        saveAs(blob, "Accounts.pdf");
+        const { data: clients } = await API.get("/clients/all");
+        let promises = await this.props.data.map(async (d) => {
+          this.downloadAccount(d, clients.data);
+        });
+
+        await Promise.all(promises);
       } else {
         console.log("no data selected");
       }
     } catch (error) {
       console.log(error);
     }
+  };
+
+  downloadAccount = async (data, clients) => {
+    try {
+      const obj = {
+        bEmail: data.billing_email,
+        startDate: startDateVal,
+        endDate: endDateVal,
+      };
+
+      const client = clients.find((c) => c.billing_email === data.billing_email);
+      if (client) {
+        const res = await API.post("/accounts/accountdetailsbe", obj);
+
+        const blob = await pdf(
+          <AccountTemplate data={res.data.data} client={client} balance={data.balance} />
+        ).toBlob();
+        saveAs(blob, "Accounts.pdf");
+      }
+    } catch (error) {}
   };
 
   render() {

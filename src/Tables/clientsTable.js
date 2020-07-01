@@ -33,13 +33,11 @@ function stableSort(array, cmp) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  return stabilizedThis.map(el => el[0]);
+  return stabilizedThis.map((el) => el[0]);
 }
 
 function getSorting(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => desc(a, b, orderBy)
-    : (a, b) => -desc(a, b, orderBy);
+  return order === "desc" ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
 const rows = [
@@ -48,22 +46,22 @@ const rows = [
   { id: "phone", disablePadding: true, label: "Phone" },
   { id: "email", disablePadding: true, label: "Email" },
   { id: "assi_therapist_full_name", disablePadding: true, label: "Therapist" },
-  { id: "facility", label: "Facility" }
+  { id: "facility", label: "Facility" },
 ];
 
-const CustomTableCell = withStyles(theme => ({
+const CustomTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: Cyan[800],
     color: theme.palette.common.white,
-    fontSize: 18
+    fontSize: 18,
   },
   body: {
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 }))(TableCell);
 
 class EnhancedTableHead extends React.Component {
-  createSortHandler = property => event => {
+  createSortHandler = (property) => (event) => {
     this.props.onRequestSort(event, property);
   };
 
@@ -74,18 +72,14 @@ class EnhancedTableHead extends React.Component {
       <TableHead>
         <TableRow>
           {rows.map(
-            row => (
+            (row) => (
               <CustomTableCell
                 key={row.id}
                 align="center"
                 padding={row.disablePadding ? "none" : "default"}
                 sortDirection={orderBy === row.id ? order : false}
               >
-                <TableSortLabel
-                  active={orderBy === row.id}
-                  direction={order}
-                  onClick={this.createSortHandler(row.id)}
-                >
+                <TableSortLabel active={orderBy === row.id} direction={order} onClick={this.createSortHandler(row.id)}>
                   {row.label}
                 </TableSortLabel>
               </CustomTableCell>
@@ -101,40 +95,40 @@ class EnhancedTableHead extends React.Component {
 EnhancedTableHead.propTypes = {
   onRequestSort: PropTypes.func.isRequired,
   order: PropTypes.string.isRequired,
-  orderBy: PropTypes.string.isRequired
+  orderBy: PropTypes.string.isRequired,
   //rowCount: PropTypes.number.isRequired,
 };
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     //width: "60%",
     marginTop: theme.spacing(1) * 3,
     // marginLeft: theme.spacing(1) * 30,
-    overflowX: "auto"
+    overflowX: "auto",
   },
   table: {
     //minWidth: 1020,
   },
   tableWrapper: {
-    overflowX: "auto"
+    overflowX: "auto",
   },
   row: {
     "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.background.default
-    }
+      backgroundColor: theme.palette.background.default,
+    },
   },
   appBar: {
     position: "relative",
-    backgroundColor: Cyan[800]
+    backgroundColor: Cyan[800],
   },
   flex: {
-    flex: 1
-  }
+    flex: 1,
+  },
 });
 
 const navStyle = {
   color: "black",
-  textDecoration: "none"
+  textDecoration: "none",
 };
 
 class ClientsTable extends React.Component {
@@ -147,15 +141,16 @@ class ClientsTable extends React.Component {
     page: 0,
     rowsPerPage: 10,
     redirect: false,
-    curClientId: 0
+    curClientId: 0,
   };
 
   async componentDidMount() {
     try {
       const { data: clients } = await API.get("/clients/all");
       const clientData = clients.data || [];
+
       this.setState({
-        clientData
+        clientData,
       });
       console.log("here's the client data length: ", clientData.length);
       /*  if (clients.data.length > 0) {
@@ -193,7 +188,7 @@ class ClientsTable extends React.Component {
     this.setState({ page });
   };
 
-  handleChangeRowsPerPage = event => {
+  handleChangeRowsPerPage = (event) => {
     this.setState({ rowsPerPage: event.target.value });
   };
 
@@ -211,9 +206,7 @@ class ClientsTable extends React.Component {
   render() {
     const { classes } = this.props;
     const { clientData, order, orderBy, rowsPerPage, page } = this.state;
-    const emptyRows =
-      rowsPerPage -
-      Math.min(rowsPerPage, clientData.length - page * rowsPerPage);
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, clientData.length - page * rowsPerPage);
 
     return (
       <Container maxWidth="lg">
@@ -221,16 +214,14 @@ class ClientsTable extends React.Component {
           <Redirect
             to={{
               pathname: "/clients/details",
-              state: { curClientId: this.state.curClientId }
+              state: { curClientId: this.state.curClientId },
             }}
           />
         ) : null}
         {clientData.length > 0 ? (
           <Paper className={classes.root}>
             <div className={classes.tableWrapper}>
-              <Table
-                /* className={classes.table} */ aria-labelledby="tableTitle"
-              >
+              <Table /* className={classes.table} */ aria-labelledby="tableTitle">
                 <EnhancedTableHead
                   //numSelected={selected.length}
                   order={order}
@@ -241,7 +232,7 @@ class ClientsTable extends React.Component {
                 <TableBody>
                   {stableSort(clientData, getSorting(order, orderBy))
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map(n => {
+                    .map((n) => {
                       // const isSelected = this.isSelected(n.id);
                       return (
                         <TableRow
@@ -251,17 +242,11 @@ class ClientsTable extends React.Component {
                           key={n.id}
                           onClick={() => this.handleClickRedirect(n.id)}
                         >
-                          <TableCell align="center">
-                            {n.client_first_name}
-                          </TableCell>
-                          <TableCell align="center">
-                            {n.client_last_name}
-                          </TableCell>
+                          <TableCell align="center">{n.client_first_name}</TableCell>
+                          <TableCell align="center">{n.client_last_name}</TableCell>
                           <TableCell align="center">{n.phone}</TableCell>
                           <TableCell align="center">{n.email}</TableCell>
-                          <TableCell align="center">
-                            {n.assi_therapist_full_name}
-                          </TableCell>
+                          <TableCell align="center">{n.assi_therapist_full_name}</TableCell>
                           <TableCell align="center">{n.facility}</TableCell>
                           {/* <TableCell align="center">{n.clients}</TableCell> */}
                         </TableRow>
@@ -282,10 +267,10 @@ class ClientsTable extends React.Component {
               rowsPerPage={rowsPerPage}
               page={page}
               backIconButtonProps={{
-                "aria-label": "Previous Page"
+                "aria-label": "Previous Page",
               }}
               nextIconButtonProps={{
-                "aria-label": "Next Page"
+                "aria-label": "Next Page",
               }}
               onChangePage={this.handleChangePage}
               onChangeRowsPerPage={this.handleChangeRowsPerPage}
@@ -301,7 +286,7 @@ class ClientsTable extends React.Component {
 }
 
 ClientsTable.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(ClientsTable);
