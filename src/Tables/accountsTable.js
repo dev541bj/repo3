@@ -338,10 +338,11 @@ class AccountsTable extends React.Component {
   };
 
   //redirect to account details;
-  handleClickRedirect = (accountBillEmail = "") => {
+  handleClickRedirect = (accountBillEmail = "", balance) => {
     localStorage.setItem("BillEmail", accountBillEmail);
     localStorage.setItem("StartDate", this.state.startDate || startDateVal);
     localStorage.setItem("EndDate", this.state.endDate || endDateVal);
+    localStorage.setItem("Balance", balance || 0);
 
     this.setState({
       redirect: true,
@@ -417,7 +418,7 @@ class AccountsTable extends React.Component {
                         </MuiThemeProvider>
                       </TableCell>
 
-                      <TableCell onClick={() => this.handleClickRedirect(n.billing_email)} align="center">
+                      <TableCell onClick={() => this.handleClickRedirect(n.billing_email, n.balance)} align="center">
                         {n.payor}{" "}
                       </TableCell>
                       <TableCell align="center">{n.client}</TableCell>

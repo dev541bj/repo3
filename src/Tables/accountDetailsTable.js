@@ -1,5 +1,6 @@
 import React from "react";
-
+import { saveAs } from "file-saver";
+import { pdf } from "@react-pdf/renderer";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -15,7 +16,7 @@ import Container from "@material-ui/core/Container";
 import Button from "@material-ui/core/Button";
 import classNames from "classnames";
 import Add from "@material-ui/icons/Add";
-
+import AccountTemplate from "../pdf-templates/account-template";
 import API from "../utils/API";
 
 function desc(a, b, orderBy) {
@@ -194,6 +195,23 @@ class AccountDetailsTable extends React.Component {
 
   // isSelected = id => this.state.selected.indexOf(id) !== -1;
 
+  handleDownload = async () => {
+    try {
+      const accountDetailData = this.state.accountDetailData;
+      const bEmail = localStorage.getItem("BillEmail");
+      const balance = +localStorage.getItem("Balance");
+
+      const { data: clients } = await API.get("/clients/all");
+
+      const client = clients.data.find((c) => c.billing_email === bEmail);
+
+      const blob = await pdf(<AccountTemplate data={accountDetailData} client={client} balance={balance} />).toBlob();
+      saveAs(blob, "Accounts.pdf");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   render() {
     const { classes } = this.props;
     const { accountDetailData, order, orderBy, rowsPerPage, page } = this.state;
@@ -201,7 +219,14 @@ class AccountDetailsTable extends React.Component {
 
     return (
       <Container maxWidth="lg">
-        <Button variant="contained" className={classes.button}>
+        <Button
+          variant="contained"
+          className={classes.button}
+          onClick={(e) => {
+            e.preventDefault();
+            this.handleDownload();
+          }}
+        >
           <Add className={classNames(classes.leftIcon, classes.iconSmall)} />
           Download Invoice
         </Button>
